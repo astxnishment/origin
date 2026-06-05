@@ -2,247 +2,137 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Laptop, CheckCircle, Clock, Shield, Zap, AlertCircle } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { APPLE_MACBOOKS } from "@/lib/repair-data";
 
 const repairTypes = [
-  { name: "Screen replacement", price: "from £149", time: "2-3 hrs" },
+  { name: "Screen replacement", price: "from £149", time: "2–3 hrs" },
   { name: "Battery replacement", price: "from £99", time: "90 min" },
   { name: "Keyboard replacement", price: "from £129", time: "2 hrs" },
-  { name: "Trackpad replacement", price: "from £99", time: "90 min" },
+  { name: "Liquid damage", price: "from £95", time: "24–48 hrs" },
   { name: "SSD upgrade", price: "from £79", time: "60 min" },
   { name: "RAM upgrade", price: "from £69", time: "60 min" },
-  { name: "Water damage", price: "from £79", time: "24-48 hrs" },
-  { name: "Fan cleaning", price: "from £49", time: "30 min" },
+  { name: "Fan cleaning", price: "from £49", time: "60 min" },
+  { name: "Software repair", price: "from £49", time: "60 min" },
 ];
 
-const models = Array.from(new Set(APPLE_MACBOOKS.map((d) => d.model)));
+const brands = [
+  "MacBook Air", "MacBook Pro", "Dell XPS", "HP Spectre",
+  "Lenovo ThinkPad", "Surface Pro", "ASUS ZenBook", "Acer Swift",
+];
+
+const guarantees = [
+  "MacBook & PC laptops covered",
+  "Data always protected",
+  "12-month warranty included",
+  "Free diagnostic assessment",
+  "Transparent fixed pricing",
+  "Certified engineers only",
+];
+
+const macbookModels = Array.from(new Set(APPLE_MACBOOKS.map((d) => d.model)));
 
 export default function LaptopRepairsPage() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        {/* Header */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <Badge className="mb-4 bg-primary/10 text-primary">
-            Laptop Repairs
-          </Badge>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-                MacBook & laptop repairs.
-              </h1>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Expert MacBook and laptop repair service in Leeds. We fix Apple,
-                Dell, HP, Lenovo, and more. Expert technicians, genuine parts,
-                data-safe repairs.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-primary hover:bg-blue-700"
-                >
-                  <Link href="/book">Book Laptop Repair</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="border-2">
-                  <Link href="/quote">Get Instant Quote</Link>
-                </Button>
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
+          {/* Header */}
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Laptop &amp; MacBook Repairs · Leeds
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
+                  Laptop repair you can trust.
+                </h1>
+                <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
+                  MacBook, Dell, HP, Lenovo — we repair them all. Your data is always protected. Every repair comes with a 12-month warranty.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                    <Link href="/book">Book Laptop Repair</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                    <Link href="/quote" className="flex items-center gap-2">
+                      Get a quote <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-primary mb-1">
-                    {models.length}+
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    MacBook models
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-primary mb-1">4+</p>
-                  <p className="text-xs text-muted-foreground">
-                    Brands supported
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-green-600 mb-1">
-                    Data
-                  </p>
-                  <p className="text-xs text-muted-foreground">Protected</p>
-                </CardContent>
-              </Card>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {guarantees.map((g) => (
+                  <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                    <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                    {g}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </section>
 
-        {/* Warning Card */}
-        <section className="bg-amber-50 border-y border-amber-200 py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex gap-4">
-              <AlertCircle className="h-6 w-6 text-amber-600 shrink-0 mt-0.5" />
+          {/* Data safety notice */}
+          <div className="py-8 border-b border-border">
+            <div className="rounded-xl bg-card border border-border p-6 flex gap-4">
+              <div className="w-1 rounded-full bg-accent shrink-0" />
               <div>
-                <h3 className="font-semibold text-amber-900 mb-1">
-                  Your data is safe with us
-                </h3>
-                <p className="text-sm text-amber-800">
-                  We never access or backup your personal files. Your laptop
-                  receives only the repair it needs. Zero data access.
+                <p className="text-[13px] font-semibold text-foreground mb-1">Your data is safe with us</p>
+                <p className="text-[13px] text-muted-foreground">
+                  We never access your personal files without consent. Before any repair, we&apos;ll advise on backup options. Data protection is part of every job.
                 </p>
               </div>
             </div>
           </div>
-        </section>
 
-        {/* MacBook Models */}
-        <section className="border-y border-border bg-secondary/40 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-foreground mb-8">
-              MacBook models we repair:
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {models.map((model) => (
-                <Card
-                  key={model}
-                  className="bg-white border-border hover:border-primary transition-colors"
-                >
-                  <CardContent className="p-4">
-                    <p className="font-medium text-sm text-foreground">
-                      {model}
-                    </p>
-                  </CardContent>
-                </Card>
+          {/* Repair types */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Repair types &amp; pricing</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-xl overflow-hidden">
+              {repairTypes.map(({ name, price, time }) => (
+                <div key={name} className="bg-card p-5 hover:bg-surface transition-colors">
+                  <p className="text-[13px] font-medium text-foreground mb-1">{name}</p>
+                  <p className="text-[13px] font-semibold text-primary">{price}</p>
+                  <p className="text-[12px] text-muted-foreground mt-0.5">{time}</p>
+                </div>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground mt-6">
-              ✓ Plus Windows laptops: Dell, HP, Lenovo, ASUS, and more
-            </p>
           </div>
-        </section>
 
-        {/* Repair Types */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h2 className="text-3xl font-bold text-foreground mb-12">
-            Common laptop repairs:
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            {repairTypes.map(({ name, price, time }) => (
-              <Card key={name} className="bg-white border-border hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <CheckCircle className="h-5 w-5 text-green-600 mb-3" />
-                  <p className="font-semibold text-foreground mb-2">{name}</p>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    ⏱️ {time}
-                  </p>
-                  <p className="text-lg font-bold text-primary">{price}</p>
-                </CardContent>
-              </Card>
-            ))}
+          {/* MacBook models */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-2">MacBook models</h2>
+            <p className="text-[13px] text-muted-foreground mb-8">{macbookModels.length} models supported</p>
+            <div className="flex flex-wrap gap-2 mb-10">
+              {macbookModels.map((model) => (
+                <span key={model} className="px-3 py-1.5 rounded-full bg-surface border border-border text-[12px] text-foreground">
+                  {model}
+                </span>
+              ))}
+            </div>
+            <h3 className="text-[13px] font-semibold uppercase tracking-widest text-muted-foreground mb-4">Also supported</h3>
+            <div className="flex flex-wrap gap-2">
+              {brands.filter(b => !b.startsWith("MacBook")).map((brand) => (
+                <span key={brand} className="px-3 py-1.5 rounded-full bg-surface border border-border text-[12px] text-foreground">
+                  {brand}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="text-center">
-            <Button asChild size="lg" className="bg-primary hover:bg-blue-700">
-              <Link href="/book">Book Laptop Repair</Link>
+
+          {/* CTA */}
+          <div className="pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Ready to get your laptop fixed?</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Book online or walk in. Complex repairs booked in advance preferred.
+            </p>
+            <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-8 text-[13px]">
+              <Link href="/book">Book a Repair</Link>
             </Button>
-            <p className="text-xs text-muted-foreground mt-4">
-              Prices vary by model. Final quote given before work starts.
-            </p>
           </div>
-        </section>
-
-        {/* Why Choose */}
-        <section className="border-t border-border bg-blue-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              Why choose Origin for laptop repair?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex gap-4">
-                <Zap className="h-6 w-6 text-primary shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Expert Technicians
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Certified engineers specializing in MacBook and laptop
-                    repairs. 5+ years experience.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <Shield className="h-6 w-6 text-green-600 shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Data Safety
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Your files are yours. We never access personal data. No
-                    backups without permission.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Transparent Pricing
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Fixed quotes before we start. No diagnostics fees. No
-                    surprises.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <Clock className="h-6 w-6 text-primary shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Fast Turnaround
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Most repairs completed in hours, not days. Priority for
-                    business clients.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="border-t border-border py-20 text-center">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-foreground mb-6">
-              Get your laptop fixed today.
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Expert MacBook and laptop repairs in Leeds. Same-day service,
-              data-safe, guaranteed.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary hover:bg-blue-700"
-              >
-                <Link href="/book">Book Now</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-2">
-                <Link href="/quote">Get Quote</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        </div>
       </main>
 
       <Footer />

@@ -1,10 +1,7 @@
-"use client";
-
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import QuoteCalculator from "@/components/QuoteCalculator";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function QuotePage() {
@@ -12,37 +9,39 @@ export default function QuotePage() {
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
           {/* Header */}
-          <div className="mb-16 text-center">
-            <Badge className="mb-4 bg-primary/10 text-primary">Quote</Badge>
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Instant pricing.
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Select your device and repair type to see an instant quote. No hidden fees. No diagnostic charges. What you see is what you pay.
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Quote
             </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
+              <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
+                Instant pricing.
+              </h1>
+              <p className="text-[15px] text-muted-foreground leading-relaxed">
+                Select your device and repair type for an instant estimate. Fixed quote confirmed before we start any work.
+              </p>
+            </div>
           </div>
 
-          {/* Quote Calculator */}
-          <div className="mb-20">
+          {/* Calculator */}
+          <div className="py-16 border-b border-border">
             <QuoteCalculator />
           </div>
 
-          {/* Next steps */}
-          <div className="border-t border-border pt-20 text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-6">
-              Ready to book?
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Got your quote? Schedule your repair online or give us a call to confirm your appointment.
+          {/* Next step */}
+          <div className="pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Ready to book?</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Schedule your repair online, or walk in — we&apos;ll give you a free assessment on the spot.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-primary hover:bg-blue-700">
-                <Link href="/book">Book Now</Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                <Link href="/book">Book a Repair</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-2">
+              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <Link href="/contact">Contact Us</Link>
               </Button>
             </div>

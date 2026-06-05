@@ -2,169 +2,135 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
+
+const repairs = [
+  { device: "iPhone", service: "Screen replacement", price: "£49–£149", time: "45 min" },
+  { device: "iPhone", service: "Battery replacement", price: "£39–£59", time: "30 min" },
+  { device: "Samsung", service: "Screen replacement", price: "£59–£139", time: "60 min" },
+  { device: "Samsung", service: "Battery replacement", price: "£45–£65", time: "45 min" },
+  { device: "iPad", service: "Screen replacement", price: "£79–£179", time: "90 min" },
+  { device: "iPad", service: "Battery replacement", price: "£55–£85", time: "60 min" },
+  { device: "MacBook", service: "Screen replacement", price: "£149–£299", time: "2–3 hrs" },
+  { device: "MacBook", service: "Battery replacement", price: "£99–£149", time: "90 min" },
+  { device: "MacBook", service: "Keyboard replacement", price: "£129–£199", time: "2 hrs" },
+  { device: "Any device", service: "Charging port repair", price: "£45–£99", time: "60 min" },
+  { device: "Any device", service: "Camera replacement", price: "£49–£129", time: "60 min" },
+  { device: "Any device", service: "Water damage assessment", price: "£49–£149", time: "24–48 hrs" },
+  { device: "Laptop / Phone", service: "Data recovery", price: "£149–£599", time: "1–7 days" },
+  { device: "MacBook", service: "SSD upgrade", price: "£79–£199", time: "60 min" },
+];
+
+const included = [
+  "Fixed price quote before we start",
+  "No diagnostic charge",
+  "OEM-grade replacement parts",
+  "12-month warranty on all repairs",
+  "Free post-repair quality check",
+  "Data always protected",
+];
+
+const faqs = [
+  { q: "Are prices fixed or estimates?", a: "We give a fixed quote before any work begins. The price you're quoted is the price you pay." },
+  { q: "Is diagnostics free?", a: "Yes. We assess your device for free and tell you exactly what needs fixing before you commit." },
+  { q: "What if I don't proceed with the repair?", a: "No charge. You're never obligated to go ahead after a quote." },
+  { q: "Why cheaper than Apple or Samsung?", a: "We use OEM-grade parts at a fraction of manufacturer prices. Same quality, honest margins." },
+];
 
 export default function PricingPage() {
-  const repairs = [
-    { service: "iPhone screen replacement", price: "£49–£149" },
-    { service: "Samsung screen replacement", price: "£69–£139" },
-    { service: "iPhone battery", price: "£39–£59" },
-    { service: "Samsung battery", price: "£45–£65" },
-    { service: "iPad screen", price: "£79–£179" },
-    { service: "MacBook screen", price: "£149–£299" },
-    { service: "MacBook battery", price: "£99–£149" },
-    { service: "Water damage assessment", price: "£49–£149" },
-    { service: "Data recovery", price: "£149–£599" },
-    { service: "Charging port repair", price: "£59–£99" },
-    { service: "Camera replacement", price: "£49–£129" },
-    { service: "Keyboard replacement", price: "£99–£199" },
-  ];
-
   return (
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
           {/* Header */}
-          <div className="mb-20 text-center">
-            <Badge className="mb-4 bg-primary/10 text-primary">Pricing</Badge>
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Transparent pricing.
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              No hidden fees. No diagnostics charges. You get a fixed quote
-              before we start work. All repairs include a 12-month warranty.
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Pricing
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
+                  Transparent pricing.<br />No surprises.
+                </h1>
+                <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md">
+                  Every repair comes with a fixed quote before we start. No diagnostic fees, no hidden charges, no upselling.
+                </p>
+              </div>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {included.map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                    <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Price table */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Common repair prices</h2>
+            <div className="rounded-xl border border-border overflow-hidden">
+              {/* Header row */}
+              <div className="grid grid-cols-4 bg-surface px-5 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Device</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground col-span-2">Service</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground text-right">Price</p>
+              </div>
+              {/* Rows */}
+              {repairs.map(({ device, service, price, time }, i) => (
+                <div
+                  key={`${device}-${service}`}
+                  className={`grid grid-cols-4 px-5 py-4 items-center border-t border-border hover:bg-surface transition-colors ${
+                    i % 2 === 0 ? "bg-card" : "bg-card"
+                  }`}
+                >
+                  <p className="text-[12px] text-muted-foreground">{device}</p>
+                  <div className="col-span-2">
+                    <p className="text-[13px] font-medium text-foreground">{service}</p>
+                    <p className="text-[12px] text-muted-foreground">{time}</p>
+                  </div>
+                  <p className="text-[13px] font-semibold text-foreground text-right">{price}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-[12px] text-muted-foreground mt-4">
+              Prices shown are ranges. Exact quote given free before any work begins.
             </p>
           </div>
 
-          {/* Repair Price List */}
-          <section className="mb-20">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              Common repair prices:
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border rounded-lg overflow-hidden">
-              {repairs.map(({ service, price }) => (
-                <div
-                  key={service}
-                  className="bg-white p-6 flex justify-between items-center"
-                >
-                  <span className="text-foreground font-medium">{service}</span>
-                  <span className="text-primary font-bold text-lg">
-                    {price}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Key Points */}
-          <section className="border-t border-border pt-20 mb-20">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              What's included:
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  title: "Fixed Pricing",
-                  items: [
-                    "Quote before we start",
-                    "No hidden diagnostics fees",
-                    "No surprises",
-                  ],
-                },
-                {
-                  title: "12-Month Warranty",
-                  items: [
-                    "Parts covered",
-                    "Labour covered",
-                    "No conditions",
-                  ],
-                },
-                {
-                  title: "Expert Service",
-                  items: [
-                    "Certified technicians",
-                    "OEM-grade parts",
-                    "Proper techniques",
-                  ],
-                },
-              ].map(({ title, items }) => (
-                <div key={title}>
-                  <h3 className="text-xl font-bold text-foreground mb-6">
-                    {title}
-                  </h3>
-                  <ul className="space-y-3">
-                    {items.map((item) => (
-                      <li key={item} className="flex gap-3">
-                        <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
-                        <span className="text-muted-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Get Quote */}
-          <section className="bg-blue-50 border border-primary/20 rounded-lg p-12 text-center mb-20">
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Not sure of the price?
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Use our instant quote calculator to see estimated pricing for your
-              device. Or call us for a specific quote.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-primary hover:bg-blue-700">
-                <Link href="/quote">Get Instant Quote</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-2">
-                <Link href="/contact">Call for Quote</Link>
-              </Button>
-            </div>
-          </section>
-
           {/* FAQ */}
-          <section className="border-t border-border pt-20">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              Pricing questions:
-            </h2>
-            <div className="space-y-8 max-w-3xl">
-              {[
-                {
-                  q: "Why are prices different for the same repair?",
-                  a: "Device condition varies. A screen with minor cracks costs less than one with major damage. We inspect before quoting.",
-                },
-                {
-                  q: "Do you price match?",
-                  a: "We won't beat every lowball quote, but we're competitive and transparent. Quality costs slightly more.",
-                },
-                {
-                  q: "Are there any extra charges?",
-                  a: "No. The quote is final. No diagnostics fees, no assembly charges, no 'handling' fees. That's it.",
-                },
-                {
-                  q: "What if you discover extra damage?",
-                  a: "We'll diagnose for free and show you the full scope of work. You approve the final quote before we proceed.",
-                },
-                {
-                  q: "Do I get an invoice?",
-                  a: "Yes. Every repair includes an itemized invoice showing parts, labour, and warranty period.",
-                },
-              ].map(({ q, a }) => (
-                <div key={q}>
-                  <h3 className="font-bold text-foreground mb-2 text-lg">
-                    {q}
-                  </h3>
-                  <p className="text-muted-foreground">{a}</p>
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Pricing FAQ</h2>
+            <div className="space-y-6">
+              {faqs.map(({ q, a }) => (
+                <div key={q} className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <p className="text-[14px] font-medium text-foreground">{q}</p>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{a}</p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+
+          {/* CTA */}
+          <div className="pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Get your exact quote now</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Use our calculator for an instant estimate, or walk in for a free assessment.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                <Link href="/quote" className="flex items-center gap-2">
+                  Quote calculator <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                <Link href="/book">Book a Repair</Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </main>
 

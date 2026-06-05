@@ -1,117 +1,64 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import HeroVisual from "@/components/HeroVisual";
 import QuoteCalculator from "@/components/QuoteCalculator";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Smartphone,
-  Tablet,
-  Laptop,
-  Battery,
-  Monitor,
-  Wrench,
-  ArrowRight,
-  ShieldCheck,
-  Clock,
-  Star,
-  CheckCircle,
-  TrendingUp,
-  Zap,
-  Award,
-  MapPin,
-} from "lucide-react";
-import { BUSINESS, USP, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
+import { ArrowRight, Check } from "lucide-react";
+import { BUSINESS, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
 
 const services = [
   {
-    icon: Smartphone,
-    title: "iPhone Repair",
-    desc: "All models from iPhone 11 to iPhone 16. Screen, battery, camera, charging port & more.",
+    label: "iPhone",
+    href: "/repairs/iphone",
+    desc: "All models · Screen · Battery · Camera",
   },
   {
-    icon: Smartphone,
-    title: "Samsung Repair",
-    desc: "Galaxy S, A-series, Z-series. Screen, battery, water damage & specialist repairs.",
+    label: "Samsung",
+    href: "/repairs/samsung",
+    desc: "Galaxy S · A-series · Z-series · Tab",
   },
   {
-    icon: Tablet,
-    title: "iPad & Tablet Repairs",
-    desc: "iPad, Tab S series. Fast turnaround on all tablet repairs with warranty.",
+    label: "MacBook",
+    href: "/repairs/laptops",
+    desc: "Air · Pro · Screen · Battery · Keyboard",
   },
   {
-    icon: Laptop,
-    title: "Laptop & MacBook",
-    desc: "MacBook Air/Pro, Dell, HP, Lenovo. Screen, keyboard, battery, data recovery.",
+    label: "iPad",
+    href: "/repairs/laptops",
+    desc: "All iPad models · Screen · Battery",
   },
   {
-    icon: Battery,
-    title: "Battery Replacement",
-    desc: "Restore your device to full battery health. All brands supported.",
+    label: "Data Recovery",
+    href: "/repairs/data-recovery",
+    desc: "Phone · Laptop · SSD · Hard drive",
   },
   {
-    icon: Monitor,
-    title: "Screen Replacement",
-    desc: "Crystal-clear OEM-grade displays. Fitted in 60 minutes or less.",
+    label: "All Repairs",
+    href: "/repairs",
+    desc: "Don't see your device? We cover it.",
   },
 ];
 
-const trustMetrics = [
-  {
-    icon: TrendingUp,
-    value: "10,000+",
-    label: "Devices repaired",
-    desc: "Trusted by thousands",
-  },
-  {
-    icon: Zap,
-    value: "60 min",
-    label: "Average turnaround",
-    desc: "Most repairs while you wait",
-  },
-  {
-    icon: Award,
-    value: "12 months",
-    label: "Warranty",
-    desc: "Full coverage on all work",
-  },
-  {
-    icon: Star,
-    value: "4.8 ★",
-    label: "Google rating",
-    desc: "1,200+ verified reviews",
-  },
+const stats = [
+  { value: "10k+", label: "Devices repaired" },
+  { value: "60 min", label: "Avg. turnaround" },
+  { value: "12 mo.", label: "Warranty on all work" },
+  { value: "4.8", label: "Google rating" },
 ];
 
-const reasons = [
-  {
-    icon: ShieldCheck,
-    title: "OEM-Grade Parts",
-    desc: "We use genuine components that meet manufacturer standards. No cheap replacements.",
-  },
-  {
-    icon: Clock,
-    title: "Same-Day Service",
-    desc: "90% of repairs completed in 60 minutes while you wait or grab a coffee.",
-  },
-  {
-    icon: Wrench,
-    title: "Expert Technicians",
-    desc: "Certified engineers with 5+ years experience. Every repair is done right.",
-  },
-  {
-    icon: Star,
-    title: "12-Month Warranty",
-    desc: "Every repair covered. No hidden conditions. No fine print.",
-  },
+const guarantees = [
+  "Fixed price quote before we start",
+  "OEM-grade replacement parts",
+  "12-month warranty on all repairs",
+  "Same-day service on most repairs",
+  "Certified technicians only",
+  "No fix, no fee",
 ];
 
 export default function Home() {
@@ -119,303 +66,288 @@ export default function Home() {
     <>
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="min-h-screen flex items-center pt-24 pb-16 bg-gradient-to-b from-background to-secondary/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left: Text */}
-          <div>
-            <Badge
+      {/* ── HERO ─────────────────────────────────────── */}
+      <section className="relative overflow-hidden min-h-[90vh] flex flex-col justify-center pt-20 pb-16">
+        {/* Background texture */}
+        <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background pointer-events-none" />
+
+        {/* Top gradient accent */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/8 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 w-full">
+          {/* Label */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card text-[12px] text-muted-foreground mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+            Leeds, UK · Open Mon–Sat
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] mb-6 max-w-3xl">
+            Device repair
+            <br />
+            <span className="text-muted-foreground">done properly.</span>
+          </h1>
+
+          <p className="text-[17px] text-muted-foreground max-w-lg leading-relaxed mb-10">
+            Expert iPhone, Samsung, and laptop repair in Leeds. Same-day service, genuine parts, 12-month warranty.
+          </p>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-16">
+            <Button
+              asChild
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-white font-medium h-11 px-6 rounded-xl shadow-none text-[14px]"
+            >
+              <Link href="/book">Book a Repair</Link>
+            </Button>
+            <Button
+              asChild
               variant="outline"
-              className="mb-6 text-xs tracking-widest uppercase border-border text-muted-foreground"
+              size="lg"
+              className="border-border hover:bg-muted h-11 px-6 rounded-xl text-[14px] font-medium"
             >
-              Device Repair · Leeds
-            </Badge>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
-              Your device,
-              <br />
-              <span className="text-primary">professionally restored.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed mb-8">
-              Expert iPhone, Samsung, and laptop repair in Leeds. Same-day service, genuine parts, 12-month warranty. Fast, honest, professional.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary hover:bg-blue-700 text-white font-medium"
-              >
-                <Link href="/book">Book a Repair</Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-2 border-primary text-primary hover:bg-blue-50"
-              >
-                <Link href="/quote">Get Instant Quote</Link>
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-6 text-sm">
-              <div>
-                <p className="font-semibold text-foreground">4.8 ⭐</p>
-                <p className="text-muted-foreground">1,200+ reviews</p>
-              </div>
-              <div className="w-px h-12 bg-border" />
-              <div>
-                <p className="font-semibold text-foreground">60 min</p>
-                <p className="text-muted-foreground">Avg. turnaround</p>
-              </div>
-            </div>
+              <Link href="/quote" className="flex items-center gap-2">
+                Get instant quote
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
 
-          {/* Right: Premium Visual */}
-          <HeroVisual />
-        </div>
-      </section>
-
-      {/* Trust Metrics */}
-      <section className="border-y border-border bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trustMetrics.map(({ icon: Icon, value, label, desc }) => (
-              <div key={label} className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
-                  <Icon className="h-6 w-6 text-primary" />
-                </div>
-                <p className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-                  {value}
-                </p>
-                <p className="font-semibold text-foreground mb-1">{label}</p>
-                <p className="text-sm text-muted-foreground">{desc}</p>
+          {/* Stats */}
+          <div className="flex flex-wrap gap-x-10 gap-y-4">
+            {stats.map(({ value, label }) => (
+              <div key={label}>
+                <p className="text-2xl font-semibold text-foreground">{value}</p>
+                <p className="text-[13px] text-muted-foreground">{label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="mb-16">
-          <p className="text-xs tracking-widest uppercase text-primary font-semibold mb-3">
-            Services
-          </p>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Every device, every repair.
-          </h2>
-          <p className="text-muted-foreground text-lg mt-4 max-w-2xl">
-            From cracked screens to water damage, we repair it all with OEM parts and expert care.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-          {services.map(({ icon: Icon, title, desc }) => (
-            <Card
-              key={title}
-              className="bg-white border-border hover:border-primary hover:shadow-lg transition-all group"
-            >
-              <CardContent className="p-8">
-                <Icon className="h-8 w-8 mb-6 text-primary group-hover:scale-110 transition-transform" />
-                <h3 className="font-semibold text-lg text-foreground mb-2">
-                  {title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {desc}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <div className="flex justify-center">
-          <Button asChild variant="outline" className="border-2">
-            <Link href="/repairs" className="flex items-center gap-2">
-              View All Services
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* Why Choose Us */}
-      <section className="border-t border-border bg-secondary/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="mb-16">
-            <p className="text-xs tracking-widest uppercase text-primary font-semibold mb-3">
-              Why Choose Us
+      {/* ── SERVICES ─────────────────────────────────── */}
+      <section className="section-border">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="mb-12">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Services
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-              The standard you deserve.
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Every device. Every repair.
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {reasons.map(({ icon: Icon, title, desc }) => (
-              <Card
-                key={title}
-                className="bg-white border-border hover:shadow-lg transition-shadow"
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden">
+            {services.map(({ label, href, desc }) => (
+              <Link
+                key={label}
+                href={href}
+                className="group bg-card hover:bg-surface-raised p-7 transition-colors duration-150 flex flex-col gap-3"
               >
-                <CardContent className="p-8">
-                  <Icon className="h-8 w-8 mb-6 text-primary" />
-                  <h3 className="font-semibold text-lg text-foreground mb-3">
-                    {title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {desc}
-                  </p>
-                </CardContent>
-              </Card>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-[15px] text-foreground">{label}</h3>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-150" />
+                </div>
+                <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Repair Process */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="mb-16">
-          <p className="text-xs tracking-widest uppercase text-primary font-semibold mb-3">
-            How It Works
-          </p>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Simple repair process.
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {REPAIR_PROCESS.map(({ step, title, description }) => (
-            <div key={step} className="relative">
-              <div className="flex flex-col h-full">
-                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold mb-4">
-                  {step}
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {description}
-                </p>
-              </div>
-              {step < 4 && (
-                <div className="hidden lg:block absolute -right-3 top-10 text-primary">
-                  <ArrowRight className="h-6 w-6" />
-                </div>
-              )}
+      {/* ── GUARANTEES ───────────────────────────────── */}
+      <section className="section-border bg-card">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+                Our Standard
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-6">
+                What you get with every repair.
+              </h2>
+              <p className="text-[15px] text-muted-foreground leading-relaxed">
+                We treat every device like it's our own. No shortcuts, no upselling, no surprises. Just professional repairs done right.
+              </p>
             </div>
-          ))}
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {guarantees.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-0.5 w-5 h-5 rounded-full bg-accent/15 flex items-center justify-center shrink-0">
+                    <Check className="h-3 w-3 text-accent" />
+                  </span>
+                  <span className="text-[14px] text-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="border-t border-border bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="mb-16 text-center">
-            <p className="text-xs tracking-widest uppercase text-primary font-semibold mb-3">
-              Testimonials
+      {/* ── PROCESS ──────────────────────────────────── */}
+      <section className="section-border">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="mb-12">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              How it works
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              Trusted by Leeds customers.
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Simple from start to finish.
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Real feedback from people who&apos;ve trusted us with their devices.
+          </div>
+
+          <div className="relative">
+            {/* Connector line */}
+            <div className="hidden lg:block absolute top-5 left-[2.5rem] right-[2.5rem] h-px bg-border" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {REPAIR_PROCESS.map(({ step, title, description }) => (
+                <div key={step} className="relative flex flex-col gap-4">
+                  <div className="w-10 h-10 rounded-full bg-surface-raised border border-border flex items-center justify-center text-[13px] font-semibold text-foreground z-10">
+                    {step}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[14px] text-foreground mb-1.5">{title}</h3>
+                    <p className="text-[13px] text-muted-foreground leading-relaxed">{description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── QUOTE CALCULATOR ─────────────────────────── */}
+      <section className="section-border bg-card">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="mb-12">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Pricing
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-3">
+              Instant quote calculator.
+            </h2>
+            <p className="text-[15px] text-muted-foreground max-w-lg">
+              Select your device and repair type. No hidden fees — what you see is what you pay.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <QuoteCalculator />
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ─────────────────────────────── */}
+      <section className="section-border">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="mb-12">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Reviews
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Trusted in Leeds.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {TESTIMONIALS.map(({ author, role, content, rating, device }) => (
-              <Card
+              <div
                 key={author}
-                className="bg-background border-border hover:shadow-lg transition-shadow flex flex-col"
+                className="card-premium p-6 flex flex-col gap-4"
               >
-                <CardContent className="p-6 flex flex-col h-full">
-                  <div className="flex items-center gap-1 mb-4">
-                    {Array.from({ length: rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-primary text-primary"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm leading-relaxed mb-6 flex-1 text-muted-foreground">
-                    "{content}"
-                  </p>
-                  <div className="pt-4 border-t border-border">
-                    <p className="font-semibold text-sm text-foreground">
-                      {author}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{role}</p>
-                    <p className="text-xs text-primary font-medium mt-2">
-                      {device}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: rating }).map((_, i) => (
+                    <span key={i} className="text-primary text-sm">★</span>
+                  ))}
+                </div>
+                <p className="text-[14px] text-muted-foreground leading-relaxed flex-1">
+                  "{content}"
+                </p>
+                <div className="pt-4 border-t border-border">
+                  <p className="text-[13px] font-semibold text-foreground">{author}</p>
+                  <p className="text-[12px] text-muted-foreground">{role} · {device}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Quote Calculator */}
-      <QuoteCalculator />
-
-      {/* FAQ */}
-      <section className="border-t border-border bg-secondary/40">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="mb-16 text-center">
-            <p className="text-xs tracking-widest uppercase text-primary font-semibold mb-3">
+      {/* ── FAQ ──────────────────────────────────────── */}
+      <section className="section-border bg-card">
+        <div className="max-w-2xl mx-auto px-5 sm:px-8 py-20">
+          <div className="mb-10">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
               FAQ
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-              Common questions.
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Questions answered.
             </h2>
           </div>
-          <Accordion type="single" collapsible className="space-y-2">
+
+          <Accordion type="single" collapsible className="space-y-1">
             {FAQS.map(({ q, a }, i) => (
               <AccordionItem
                 key={q}
                 value={`item-${i}`}
-                className="border-border bg-white rounded-lg px-6"
+                className="border-b border-border last:border-0"
               >
-                <AccordionTrigger className="text-left font-semibold text-foreground hover:text-primary py-4">
+                <AccordionTrigger className="text-[14px] font-medium text-foreground hover:text-primary py-4 text-left">
                   {q}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                <AccordionContent className="text-[13px] text-muted-foreground leading-relaxed pb-4">
                   {a}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-          <div className="mt-12 p-8 bg-primary/10 border border-primary/20 rounded-lg text-center">
-            <p className="text-sm text-muted-foreground mb-4">
-              Still have questions?
-            </p>
-            <Button asChild variant="outline" className="border-primary text-primary">
-              <Link href="/contact">Get in Touch</Link>
-            </Button>
+
+          <div className="mt-10 text-center">
+            <Link href="/faq" className="text-[13px] text-primary hover:underline underline-offset-4">
+              View all questions →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="border-t border-border bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            Ready to get your device fixed?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Book online, get an instant quote, or walk in anytime. We're here Monday to Saturday.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Button
-              asChild
-              size="lg"
-              className="bg-primary hover:bg-blue-700 text-white"
-            >
-              <Link href="/book">Book a Repair Now</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-2"
-            >
-              <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phone}</a>
-            </Button>
+      {/* ── FINAL CTA ────────────────────────────────── */}
+      <section className="section-border">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24">
+          <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-10 sm:p-16 text-center">
+            {/* Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-primary/10 rounded-full blur-[60px] pointer-events-none" />
+
+            <div className="relative">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+                Ready to fix your device?
+              </h2>
+              <p className="text-[16px] text-muted-foreground mb-10 max-w-lg mx-auto">
+                Book online, get an instant quote, or walk in. Open Monday to Saturday.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-white h-11 px-8 rounded-xl text-[14px] font-medium"
+                >
+                  <Link href="/book">Book a Repair</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-border h-11 px-8 rounded-xl text-[14px] font-medium hover:bg-muted"
+                >
+                  <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phone}</a>
+                </Button>
+              </div>
+
+              <p className="text-[12px] text-muted-foreground">
+                {BUSINESS.address} · Mon–Fri 9am–6pm · Sat 10am–4pm
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            📍 {BUSINESS.address} | Mon-Sat: 9am-6pm | Sun: Closed
-          </p>
         </div>
       </section>
 

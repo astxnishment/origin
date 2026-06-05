@@ -2,222 +2,131 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Shield, Zap, Award } from "lucide-react";
 import { BUSINESS } from "@/lib/constants";
+
+const values = [
+  { title: "Honesty", desc: "Fixed quotes. No surprises. No upselling. You're told the full picture before anything starts." },
+  { title: "Speed", desc: "90% of repairs completed same day, most within 60 minutes. We respect your time." },
+  { title: "Quality", desc: "OEM-grade parts, certified engineers, and a 12-month warranty on every single repair." },
+  { title: "Accountability", desc: "Something not right? We make it right. Our warranty means what it says." },
+];
+
+const stats = [
+  { value: "2018", label: "Founded in Leeds" },
+  { value: "10k+", label: "Devices repaired" },
+  { value: "4.8★", label: "Google rating" },
+  { value: "12 mo.", label: "Warranty standard" },
+];
 
 export default function AboutPage() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        {/* Header */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <Badge className="mb-4 bg-primary/10 text-primary">About Us</Badge>
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 max-w-4xl">
-            Professional device repair.
-            <br />
-            <span className="text-primary">Honest service. Fair prices.</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Origin Repairs was founded on a simple belief: device repair should
-            be done properly, transparently, and fairly. No upselling. No
-            hidden fees. Just expert service you can trust.
-          </p>
-        </section>
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
+          {/* Header */}
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              About ORIGIN
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end">
+              <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
+                The repair shop that doesn&apos;t feel like one.
+              </h1>
+              <p className="text-[15px] text-muted-foreground leading-relaxed">
+                Founded in Leeds in {BUSINESS.founded}, ORIGIN was built on a simple idea: device repair should be fast, honest, and professional. No generic kiosk experience. No opaque pricing. Just technically excellent work, done right.
+              </p>
+            </div>
+          </div>
 
-        {/* Our Values */}
-        <section className="border-y border-border bg-secondary/40 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              Our values:
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                {
-                  icon: Shield,
-                  title: "Trust",
-                  desc: "We're honest about what's wrong and how much it costs. Fixed quote before we start.",
-                },
-                {
-                  icon: Zap,
-                  title: "Speed",
-                  desc: "Respect your time. 90% of repairs same-day. No unnecessary delays.",
-                },
-                {
-                  icon: Award,
-                  title: "Quality",
-                  desc: "OEM-grade parts, proper techniques, certified technicians. No shortcuts.",
-                },
-                {
-                  icon: CheckCircle,
-                  title: "Accountability",
-                  desc: "12-month warranty on every repair. If it goes wrong, we fix it free.",
-                },
-              ].map(({ icon: Icon, title, desc }) => (
-                <Card key={title} className="bg-white border-border">
-                  <CardContent className="p-8">
-                    <Icon className="h-8 w-8 text-primary mb-4" />
-                    <h3 className="text-xl font-bold text-foreground mb-3">
-                      {title}
-                    </h3>
-                    <p className="text-muted-foreground">{desc}</p>
-                  </CardContent>
-                </Card>
+          {/* Story */}
+          <div className="py-16 border-b border-border">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+              <div className="space-y-4 text-[15px] text-muted-foreground leading-relaxed">
+                <p>
+                  We started because we were frustrated with the state of repair services. Hidden charges. Cheap parts. Technicians who&apos;d rather replace than repair. We knew there was a better way.
+                </p>
+                <p>
+                  Today, ORIGIN has repaired over 10,000 devices. We&apos;ve built a reputation in Leeds for being the team you can actually trust — whether it&apos;s a cracked iPhone screen or a catastrophic data loss situation.
+                </p>
+                <p>
+                  Every technician we hire meets a rigorous standard. Every part we use is OEM-grade or better. Every repair comes with a 12-month warranty, because we stand behind our work.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-px bg-border rounded-xl overflow-hidden">
+                {stats.map(({ value, label }) => (
+                  <div key={label} className="bg-card p-8 flex flex-col justify-center">
+                    <p className="text-3xl font-semibold text-foreground mb-1">{value}</p>
+                    <p className="text-[13px] text-muted-foreground">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Values */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-10">What we stand for</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border rounded-xl overflow-hidden">
+              {values.map(({ title, desc }) => (
+                <div key={title} className="bg-card p-7 hover:bg-surface transition-colors">
+                  <h3 className="text-[14px] font-semibold text-foreground mb-2">{title}</h3>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
+                </div>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* Story */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h2 className="text-3xl font-bold text-foreground mb-8">Our story:</h2>
-          <div className="prose prose-invert max-w-3xl">
-            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              Origin Repairs started in {BUSINESS.founded} because we saw a gap in
-              the market. Too many repair shops were treating devices as a quick
-              cash grab. Cut corners. Misleading quotes. Upsells that customers
-              didn't need.
-            </p>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              We decided to do it differently. Fair prices. Expert technicians.
-              Real warranty. No BS.
-            </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Over {new Date().getFullYear() - BUSINESS.founded} years, we've built a reputation on
-              honest service. 10,000+ devices repaired. 4.8-star rating. Customers
-              who come back. That's what we're proud of.
-            </p>
-          </div>
-        </section>
-
-        {/* Stats */}
-        <section className="border-y border-border bg-blue-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {/* Contact details */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Find us</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               <div>
-                <p className="text-4xl font-bold text-primary mb-2">10,000+</p>
-                <p className="text-foreground font-semibold">Devices repaired</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Since {BUSINESS.founded}
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Location</p>
+                <address className="not-italic text-[14px] text-foreground">
+                  76 Cookridge Street<br />
+                  Leeds, LS2 8GL
+                </address>
               </div>
               <div>
-                <p className="text-4xl font-bold text-primary mb-2">4.8 ⭐</p>
-                <p className="text-foreground font-semibold">Google Rating</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  1,200+ reviews
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Hours</p>
+                <div className="text-[14px] text-foreground space-y-0.5">
+                  <p>Mon–Fri: 9am–6pm</p>
+                  <p>Sat: 10am–4pm</p>
+                  <p className="text-muted-foreground">Sun: Closed</p>
+                </div>
               </div>
               <div>
-                <p className="text-4xl font-bold text-primary mb-2">60 min</p>
-                <p className="text-foreground font-semibold">Avg Turnaround</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Most repairs
-                </p>
-              </div>
-              <div>
-                <p className="text-4xl font-bold text-green-600 mb-2">12mo</p>
-                <p className="text-foreground font-semibold">Warranty</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  On everything
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Contact</p>
+                <div className="text-[14px] space-y-1">
+                  <a href={`tel:${BUSINESS.phone}`} className="block text-foreground hover:text-primary transition-colors">
+                    {BUSINESS.phone}
+                  </a>
+                  <a href={`mailto:${BUSINESS.email}`} className="block text-foreground hover:text-primary transition-colors">
+                    {BUSINESS.email}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </section>
 
-        {/* Location */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h2 className="text-3xl font-bold text-foreground mb-8">
-            Visit us in Leeds:
-          </h2>
-          <Card className="bg-white border-border">
-            <CardContent className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div>
-                  <p className="text-lg font-semibold text-foreground mb-3">
-                    📍 Location
-                  </p>
-                  <p className="text-muted-foreground mb-6">
-                    {BUSINESS.address}
-                    <br />
-                    {BUSINESS.postcode}
-                  </p>
-
-                  <p className="text-lg font-semibold text-foreground mb-3">
-                    ⏰ Hours
-                  </p>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li>Monday–Friday: 9am–6pm</li>
-                    <li>Saturday: 10am–4pm</li>
-                    <li>Sunday: Closed</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <p className="text-lg font-semibold text-foreground mb-3">
-                    📞 Contact
-                  </p>
-                  <p className="text-muted-foreground mb-1">
-                    <a
-                      href={`tel:${BUSINESS.phone}`}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      {BUSINESS.phone}
-                    </a>
-                  </p>
-                  <p className="text-muted-foreground mb-6">
-                    <a
-                      href={`mailto:${BUSINESS.email}`}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      {BUSINESS.email}
-                    </a>
-                  </p>
-
-                  <p className="text-lg font-semibold text-foreground mb-3">
-                    ⭐ Reviews
-                  </p>
-                  <p className="text-muted-foreground">
-                    <a
-                      href={BUSINESS.googleReviewUrl}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      Google: 4.8★ (1,200+ reviews)
-                    </a>
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* CTA */}
-        <section className="border-t border-border py-20 text-center">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-foreground mb-6">
-              Ready to experience honest repair service?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Book online, call us, or drop in. We're in Leeds city centre.
+          {/* CTA */}
+          <div className="pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Come in and meet us.</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Walk-ins welcome. Or book a time that suits you.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary hover:bg-blue-700"
-              >
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
                 <Link href="/book">Book a Repair</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-2">
-                <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phone}</a>
+              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                <Link href="/contact">Contact Us</Link>
               </Button>
             </div>
           </div>
-        </section>
+        </div>
       </main>
 
       <Footer />

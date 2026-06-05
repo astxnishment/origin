@@ -2,119 +2,55 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { BUSINESS, FAQS } from "@/lib/constants";
+import { BUSINESS } from "@/lib/constants";
 
 const categories = [
   {
-    name: "Booking & Appointments",
+    name: "Booking",
     faqs: [
-      {
-        q: "Do I need an appointment?",
-        a: "Walk-ins welcome! For complex repairs (MacBooks, data recovery), booking ahead ensures a technician is available.",
-      },
-      {
-        q: "How do I book a repair?",
-        a: "Three ways: (1) Book online at /book, (2) Call us at 07768426754, (3) Walk into our Leeds store.",
-      },
-      {
-        q: "Can I get a quote without booking?",
-        a: "Yes—use our instant quote calculator at /quote, or email us at tech@originrepairs.co.uk.",
-      },
-      {
-        q: "What if I need to cancel?",
-        a: "No problem. If you need to reschedule, call us or use the booking confirmation email.",
-      },
+      { q: "Do I need an appointment?", a: "Walk-ins are welcome for most repairs. For MacBooks and data recovery, booking ahead ensures a technician is ready for you." },
+      { q: "How do I book?", a: "Book online at /book, call us on 07768426754, or simply walk in to 76 Cookridge Street, Leeds." },
+      { q: "Can I get a quote without booking?", a: "Yes. Use the instant quote calculator at /quote, or email tech@originrepairs.co.uk with your device details." },
+      { q: "What if I need to reschedule?", a: "No problem. Call us and we'll move your appointment. No penalties, no questions asked." },
     ],
   },
   {
-    name: "Repair Details",
+    name: "Repairs",
     faqs: [
-      {
-        q: "How long does repair actually take?",
-        a: "Most screen and battery repairs take 30-60 minutes. Water damage and data recovery take 24-48 hours. We'll give you an exact time when you book.",
-      },
-      {
-        q: "Do you use genuine parts?",
-        a: "Yes. We use OEM-grade components that meet manufacturer standards. For premium repairs, we source official parts.",
-      },
-      {
-        q: "Can you fix water-damaged devices?",
-        a: "We have specialized equipment for liquid damage recovery. Success depends on severity. We assess it free and explain your options.",
-      },
-      {
-        q: "Will my data be safe?",
-        a: "Absolutely. We never access your personal files without permission. We only repair what's needed.",
-      },
+      { q: "How long do repairs take?", a: "Most screen and battery repairs take 30–60 minutes. Water damage and data recovery take 24–48 hours. We give you an exact time when you book." },
+      { q: "Do you use genuine parts?", a: "We use OEM-grade components that meet manufacturer standards. For premium models, we source official parts where possible." },
+      { q: "Can you fix water-damaged devices?", a: "Yes. We have specialist equipment for liquid damage recovery. Success depends on severity — we assess for free and explain your options honestly." },
+      { q: "Is my data safe?", a: "Always. We never access your personal files. For laptop repairs, we advise on backup options before starting any work." },
     ],
   },
   {
-    name: "Warranty & Support",
+    name: "Warranty",
     faqs: [
-      {
-        q: "What warranty do you offer?",
-        a: "Every repair includes a 12-month warranty on parts and labour. If anything goes wrong, we fix it free.",
-      },
-      {
-        q: "What if the repair doesn't work?",
-        a: "We'll fix it free under warranty. No questions asked. No hidden conditions.",
-      },
-      {
-        q: "Is the warranty really no questions asked?",
-        a: "Yes. If our work fails, we stand behind it.",
-      },
-      {
-        q: "Do you offer extended warranty?",
-        a: "Not currently, but our 12-month warranty is comprehensive. Contact us if you need something specific.",
-      },
+      { q: "What warranty do you offer?", a: "Every repair includes a 12-month warranty on parts and labour. If something fails because of our work, we fix it — free, no questions asked." },
+      { q: "What if the repair doesn't work?", a: "We'll fix it free under warranty. No conditions, no fine print." },
+      { q: "Does the warranty cover accidental damage?", a: "No — the warranty covers failure of our repair work and parts. Accidental damage after leaving the shop isn't covered." },
     ],
   },
   {
     name: "Pricing",
     faqs: [
-      {
-        q: "How much does repair cost?",
-        a: "Prices vary by device and repair. iPhone screens from £49-£149, Samsung batteries from £45-£65, MacBook repairs from £99-£299. See our pricing page for details.",
-      },
-      {
-        q: "Will there be hidden charges?",
-        a: "No. We give a fixed quote before starting. No diagnostics fees, no assembly charges.",
-      },
-      {
-        q: "Can I get a quote before visiting?",
-        a: "Yes—use our online quote calculator at /quote, or call us with details of your device.",
-      },
-      {
-        q: "Do you offer student/senior discounts?",
-        a: "Not standard discounts, but we're fair on pricing. Ask when you book.",
-      },
+      { q: "How much does a repair cost?", a: "Prices vary by device and repair type. iPhone screens from £49, Samsung batteries from £45, MacBook repairs from £99. See the pricing page for the full list." },
+      { q: "Are there hidden charges?", a: "Never. We give a fixed quote before starting. No diagnostic fees, no assembly charges, no surprises." },
+      { q: "Why is it cheaper than Apple or Samsung?", a: "We use OEM-grade parts at fair margins. Same quality — without manufacturer pricing." },
     ],
   },
   {
-    name: "Getting to Us",
+    name: "Location",
     faqs: [
-      {
-        q: "Where are you located?",
-        a: `${BUSINESS.address}, ${BUSINESS.postcode}. We're in Leeds city centre, easy to access by car or public transport.`,
-      },
-      {
-        q: "What are your hours?",
-        a: "Mon–Fri: 9am–6pm | Sat: 10am–4pm | Sun: Closed",
-      },
-      {
-        q: "Is there parking?",
-        a: "Yes—street parking available. Kirkgate Market has a car park nearby.",
-      },
-      {
-        q: "How do I contact you?",
-        a: `Phone: 07768426754 | Email: tech@originrepairs.co.uk | Visit: ${BUSINESS.address}`,
-      },
+      { q: "Where are you?", a: `${BUSINESS.address}. We're in Leeds city centre — easy to reach by foot, car, or public transport.` },
+      { q: "What are your opening hours?", a: "Mon–Fri: 9am–6pm. Saturday: 10am–4pm. Sunday: Closed." },
+      { q: "Is there parking nearby?", a: "Yes. There's street parking on Cookridge Street and a car park at The Light shopping centre a few minutes away." },
     ],
   },
 ];
@@ -124,37 +60,39 @@ export default function FAQPage() {
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
           {/* Header */}
-          <div className="mb-20 text-center">
-            <Badge className="mb-4 bg-primary/10 text-primary">FAQ</Badge>
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              FAQ
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5 max-w-lg">
               Questions answered.
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Everything you need to know about repairs at Origin.
+            <p className="text-[15px] text-muted-foreground max-w-md">
+              Everything you need to know about repairs at ORIGIN.
             </p>
           </div>
 
-          {/* FAQ Sections */}
-          <div className="space-y-16">
+          {/* FAQ sections */}
+          <div className="py-16 space-y-16">
             {categories.map(({ name, faqs }) => (
               <section key={name}>
-                <h2 className="text-2xl font-bold text-foreground mb-6">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-6">
                   {name}
                 </h2>
-                <Accordion type="single" collapsible className="space-y-2">
+                <Accordion type="single" collapsible className="space-y-0">
                   {faqs.map(({ q, a }, idx) => (
                     <AccordionItem
                       key={q}
                       value={`${name}-${idx}`}
-                      className="border-border bg-white rounded-lg px-6"
+                      className="border-b border-border last:border-0"
                     >
-                      <AccordionTrigger className="text-left font-semibold text-foreground hover:text-primary py-4">
+                      <AccordionTrigger className="text-[14px] font-medium text-foreground hover:text-primary text-left py-4">
                         {q}
                       </AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground pb-4">
+                      <AccordionContent className="text-[13px] text-muted-foreground leading-relaxed pb-4">
                         {a}
                       </AccordionContent>
                     </AccordionItem>
@@ -165,24 +103,16 @@ export default function FAQPage() {
           </div>
 
           {/* Still have questions */}
-          <div className="border-t border-border mt-20 pt-20 text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-6">
-              Still have questions?
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Get in touch—we're here to help. Call us, email, or stop by our
-              Leeds location.
+          <div className="border-t border-border pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Still have questions?</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Get in touch — we&apos;re happy to help before you book.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-primary hover:bg-blue-700">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
                 <Link href="/contact">Contact Us</Link>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-2"
-              >
+              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phone}</a>
               </Button>
             </div>

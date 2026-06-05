@@ -2,270 +2,123 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Smartphone,
-  CheckCircle,
-  Clock,
-  Shield,
-  ArrowRight,
-  Zap,
-} from "lucide-react";
-import {
-  SAMSUNG_GALAXY_S,
-  SAMSUNG_GALAXY_A,
-  SAMSUNG_GALAXY_Z,
-  SAMSUNG_GALAXY_TAB,
-} from "@/lib/repair-data";
+import { ArrowRight, Check } from "lucide-react";
+import { SAMSUNG_GALAXY_S, SAMSUNG_GALAXY_A, SAMSUNG_GALAXY_Z, SAMSUNG_GALAXY_TAB } from "@/lib/repair-data";
 
 const repairTypes = [
-  { name: "Screen replacement", price: "from £69", time: "60 min" },
+  { name: "Screen replacement", price: "from £59", time: "60 min" },
   { name: "Battery replacement", price: "from £45", time: "45 min" },
-  { name: "Charging port", price: "from £59", time: "60 min" },
-  { name: "Back glass", price: "from £59", time: "45 min" },
-  { name: "Camera replacement", price: "from £59", time: "60 min" },
-  { name: "Speaker repair", price: "from £39", time: "45 min" },
-  { name: "Water damage diagnostic", price: "from £49", time: "24-48 hrs" },
-  { name: "Software repair", price: "from £39", time: "30-60 min" },
+  { name: "Charging port", price: "from £50", time: "60 min" },
+  { name: "Back glass", price: "from £55", time: "90 min" },
+  { name: "Camera lens", price: "from £35", time: "45 min" },
+  { name: "Speaker repair", price: "from £49", time: "45 min" },
+  { name: "Water damage", price: "from £65", time: "24–48 hrs" },
+  { name: "Software repair", price: "from £39", time: "30–60 min" },
 ];
 
-const allSamsungDevices = [
-  ...SAMSUNG_GALAXY_S,
-  ...SAMSUNG_GALAXY_A,
-  ...SAMSUNG_GALAXY_Z,
-  ...SAMSUNG_GALAXY_TAB,
+const guarantees = [
+  "Galaxy S, A, Z, Tab all covered",
+  "12-month warranty included",
+  "Same-day on most models",
+  "Fixed price quotes",
+  "Free diagnostic assessment",
+  "Data protection guaranteed",
 ];
 
-const models = Array.from(new Set(allSamsungDevices.map((d) => d.model)));
+const seriesGroups = [
+  { label: "Galaxy S Series", models: Array.from(new Set(SAMSUNG_GALAXY_S.map((d) => d.model))) },
+  { label: "Galaxy A Series", models: Array.from(new Set(SAMSUNG_GALAXY_A.map((d) => d.model))) },
+  { label: "Galaxy Z Series", models: Array.from(new Set(SAMSUNG_GALAXY_Z.map((d) => d.model))) },
+  { label: "Galaxy Tab", models: Array.from(new Set(SAMSUNG_GALAXY_TAB.map((d) => d.model))) },
+];
+
+const totalModels = seriesGroups.reduce((acc, g) => acc + g.models.length, 0);
 
 export default function SamsungRepairsPage() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        {/* Header Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <Badge className="mb-4 bg-primary/10 text-primary">
-            Samsung Repairs
-          </Badge>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-                Samsung repairs in Leeds.
-              </h1>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Expert Samsung repair for Galaxy S-series, A-series, Z-series
-                foldables, and Tab tablets. Fast, affordable, professional.
-                Same-day service, genuine parts, 12-month warranty.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-primary hover:bg-blue-700"
-                >
-                  <Link href="/book">Book Samsung Repair</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="border-2">
-                  <Link href="/quote">Get Instant Quote</Link>
-                </Button>
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
+          {/* Header */}
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Samsung Repairs · Leeds
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
+                  Samsung repair, done right.
+                </h1>
+                <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
+                  Full coverage for Galaxy S, A-series, Z-series foldables, and Galaxy Tab. {totalModels}+ models supported. 12-month warranty on every repair.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                    <Link href="/book">Book Samsung Repair</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                    <Link href="/quote" className="flex items-center gap-2">
+                      Get a quote <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-primary mb-1">
-                    {models.length}+
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Samsung models
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-primary mb-1">60 min</p>
-                  <p className="text-xs text-muted-foreground">
-                    Avg screen repair
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-green-600 mb-1">
-                    12mo
-                  </p>
-                  <p className="text-xs text-muted-foreground">Warranty</p>
-                </CardContent>
-              </Card>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {guarantees.map((g) => (
+                  <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                    <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                    {g}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </section>
 
-        {/* Device Categories */}
-        <section className="border-y border-border bg-secondary/40 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-foreground mb-8">
-              What we repair:
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <Smartphone className="h-8 w-8 text-primary mx-auto mb-3" />
-                  <p className="font-semibold text-foreground">
-                    Galaxy S20—S25
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Plus & Ultra
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <Smartphone className="h-8 w-8 text-primary mx-auto mb-3" />
-                  <p className="font-semibold text-foreground">Galaxy A-Series</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    A13 to A55
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <Smartphone className="h-8 w-8 text-primary mx-auto mb-3" />
-                  <p className="font-semibold text-foreground">Galaxy Z Fold</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Foldable series
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6 text-center">
-                  <Smartphone className="h-8 w-8 text-primary mx-auto mb-3" />
-                  <p className="font-semibold text-foreground">Galaxy Tab</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    S8 to S10
-                  </p>
-                </CardContent>
-              </Card>
+          {/* Repair types */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Repair types &amp; pricing</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-xl overflow-hidden">
+              {repairTypes.map(({ name, price, time }) => (
+                <div key={name} className="bg-card p-5 hover:bg-surface transition-colors">
+                  <p className="text-[13px] font-medium text-foreground mb-1">{name}</p>
+                  <p className="text-[13px] font-semibold text-primary">{price}</p>
+                  <p className="text-[12px] text-muted-foreground mt-0.5">{time}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </section>
 
-        {/* Repair Types */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h2 className="text-3xl font-bold text-foreground mb-12">
-            Common Samsung repairs:
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            {repairTypes.map(({ name, price, time }) => (
-              <Card key={name} className="bg-white border-border hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <CheckCircle className="h-5 w-5 text-green-600 mb-3" />
-                  <p className="font-semibold text-foreground mb-2">{name}</p>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    ⏱️ {time}
-                  </p>
-                  <p className="text-lg font-bold text-primary">{price}</p>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Supported models */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-2">Supported models</h2>
+            <p className="text-[13px] text-muted-foreground mb-10">{totalModels} models across all Galaxy series</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {seriesGroups.map(({ label, models }) => (
+                <div key={label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">{label}</p>
+                  <ul className="space-y-1.5">
+                    {models.map((m) => (
+                      <li key={m} className="text-[13px] text-foreground">{m}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-center">
-            <Button asChild size="lg" className="bg-primary hover:bg-blue-700">
-              <Link href="/book">Book Samsung Repair</Link>
+
+          {/* CTA */}
+          <div className="pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Ready to get your Samsung fixed?</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Book online or walk in. Most repairs done the same day.
+            </p>
+            <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-8 text-[13px]">
+              <Link href="/book">Book a Repair</Link>
             </Button>
-            <p className="text-xs text-muted-foreground mt-4">
-              Prices are estimates. Final quote given before work starts.
-            </p>
           </div>
-        </section>
-
-        {/* Why Choose */}
-        <section className="border-t border-border bg-blue-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              Why Origin for Samsung repair?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex gap-4">
-                <Zap className="h-6 w-6 text-primary shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Competitive Pricing
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Samsung repairs at 30-50% less than official Samsung service
-                    centers. Same quality, better price.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <Shield className="h-6 w-6 text-green-600 shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Foldable Specialist
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Experienced with Z Fold and Z Flip repairs. Rare expertise
-                    in Leeds.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    OEM Parts
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Samsung-grade replacement screens and components. No
-                    third-party knockoffs.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <Clock className="h-6 w-6 text-primary shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Fast Turnaround
-                  </h3>
-                  <p className="text-muted-foreground">
-                    90% of repairs same-day. Most screen fixes while you wait.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="border-t border-border py-20 text-center">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-foreground mb-6">
-              Ready to repair your Samsung?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Get a quote now or book your repair. We service all Samsung
-              models.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary hover:bg-blue-700"
-              >
-                <Link href="/book">Book Now</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-2">
-                <Link href="/quote">Get Quote</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        </div>
       </main>
 
       <Footer />

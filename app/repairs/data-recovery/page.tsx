@@ -2,263 +2,135 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle, Clock, HardDrive } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+
+const recoveryTypes = [
+  { name: "Phone data recovery", price: "£149–£299", time: "24–48 hrs", desc: "Deleted files, broken screen, water damage" },
+  { name: "Laptop / SSD recovery", price: "£199–£399", time: "48–72 hrs", desc: "Corrupted drive, accidental deletion, OS failure" },
+  { name: "Hard drive recovery", price: "£249–£499", time: "3–7 days", desc: "Mechanical failure, logical corruption, file system errors" },
+  { name: "RAID recovery", price: "£299–£599", time: "5–10 days", desc: "RAID 0/1/5 arrays, NAS devices, server storage" },
+  { name: "Memory card recovery", price: "£99–£199", time: "24–48 hrs", desc: "SD cards, microSD, CF cards" },
+  { name: "Emergency recovery", price: "POA", time: "Same day", desc: "Critical business data, urgent deadlines" },
+];
+
+const process = [
+  { step: "1", title: "Free assessment", desc: "We evaluate the damage and give you a fixed quote. No charge if we can't recover." },
+  { step: "2", title: "Recovery attempt", desc: "Our engineers work with specialist tools. 94% average success rate." },
+  { step: "3", title: "Verification", desc: "You review the recovered files before we charge anything." },
+  { step: "4", title: "Secure transfer", desc: "Data returned on encrypted storage device. Your privacy protected." },
+];
+
+const guarantees = [
+  "No recovery — no fee",
+  "94% success rate",
+  "Encrypted data handling",
+  "Free initial assessment",
+  "Same-day emergency service",
+  "All storage types covered",
+];
 
 export default function DataRecoveryPage() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-32 pb-24">
-        {/* Header */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <Badge className="mb-4 bg-primary/10 text-primary">
-            Data Recovery
-          </Badge>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-                Don't lose your memories.
-              </h1>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Hard drive failed? Phone won't turn on? SSD corrupted? We recover
-                data from damaged, broken, and inaccessible devices. Specialist
-                equipment. Expert technicians. Confidential.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-primary hover:bg-blue-700"
-                >
-                  <Link href="/contact">Discuss Your Case</Link>
-                </Button>
+      <main className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
+          {/* Header */}
+          <div className="pt-10 pb-16 border-b border-border">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
+              Data Recovery · Leeds
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
+                  Lost data doesn&apos;t have to mean lost forever.
+                </h1>
+                <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
+                  Professional data recovery from phones, laptops, hard drives, and SSDs. 94% success rate. No recovery means no charge.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                    <Link href="/contact">Get Free Assessment</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                    <Link href="/book" className="flex items-center gap-2">
+                      Book appointment <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {guarantees.map((g) => (
+                  <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                    <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Urgency notice */}
+          <div className="py-8 border-b border-border">
+            <div className="rounded-xl bg-card border border-border p-6 flex gap-4">
+              <div className="w-1 rounded-full bg-primary shrink-0" />
+              <div>
+                <p className="text-[13px] font-semibold text-foreground mb-1">Act quickly to maximise recovery chances</p>
+                <p className="text-[13px] text-muted-foreground">
+                  If your device has failed, stop using it immediately. Further use can overwrite recoverable data. Call us now for emergency assessment: <a href="tel:07768426754" className="text-primary">07768 426754</a>
+                </p>
               </div>
             </div>
-
-            {/* Warning */}
-            <Card className="bg-red-50 border border-red-200">
-              <CardContent className="p-8">
-                <AlertCircle className="h-8 w-8 text-red-600 mb-4" />
-                <h3 className="font-semibold text-red-900 mb-3">Act Quickly</h3>
-                <ul className="space-y-2 text-sm text-red-800">
-                  <li>• Don't force restart a dead device</li>
-                  <li>• Stop using the device immediately</li>
-                  <li>• Don't open or disassemble yourself</li>
-                  <li>• Bring it in or contact us ASAP</li>
-                </ul>
-                <p className="text-xs text-red-700 mt-4">
-                  The longer a damaged drive operates, the lower recovery chances.
-                </p>
-              </CardContent>
-            </Card>
           </div>
-        </section>
 
-        {/* What We Recover */}
-        <section className="border-y border-border bg-secondary/40 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              What we can recover:
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="bg-white border-border">
-                <CardContent className="p-6">
-                  <HardDrive className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Hard Drives
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Mechanical failure, clicking, not detected
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6">
-                  <HardDrive className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">
-                    SSDs & Flash Drives
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Corruption, water damage, accidental deletion
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6">
-                  <HardDrive className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Phones & Tablets
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Water damage, screen shattered, won't start
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6">
-                  <HardDrive className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">
-                    External Drives
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Dropped, deleted files, not recognized
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6">
-                  <HardDrive className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">
-                    USB & Memory Cards
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Corrupted, formatted by mistake
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-border">
-                <CardContent className="p-6">
-                  <HardDrive className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">
-                    Logic Board Issues
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Water damage, electrical damage, firmware corruption
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Success Rate */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <p className="text-5xl font-bold text-primary mb-2">85%+</p>
-              <p className="text-foreground font-semibold mb-1">Success Rate</p>
-              <p className="text-sm text-muted-foreground">
-                On recoverable devices
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-5xl font-bold text-primary mb-2">24-48h</p>
-              <p className="text-foreground font-semibold mb-1">Turnaround</p>
-              <p className="text-sm text-muted-foreground">Most cases</p>
-            </div>
-            <div className="text-center">
-              <p className="text-5xl font-bold text-green-600 mb-2">100%</p>
-              <p className="text-foreground font-semibold mb-1">Confidential</p>
-              <p className="text-sm text-muted-foreground">Your data is private</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Process */}
-        <section className="border-t border-border bg-blue-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-foreground mb-12">
-              Our process:
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {[
-                {
-                  step: 1,
-                  title: "Assess",
-                  desc: "Free evaluation of your device and data recovery chances",
-                },
-                {
-                  step: 2,
-                  title: "Quote",
-                  desc: "Transparent pricing. No charges if recovery fails.",
-                },
-                {
-                  step: 3,
-                  title: "Recover",
-                  desc: "Using specialist equipment in clean environment",
-                },
-                {
-                  step: 4,
-                  title: "Deliver",
-                  desc: "Data on encrypted USB or cloud link. Fully confidential.",
-                },
-              ].map(({ step, title, desc }) => (
-                <Card key={step} className="bg-white border-border">
-                  <CardContent className="p-6">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center mb-4">
-                      {step}
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">
-                      {title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{desc}</p>
-                  </CardContent>
-                </Card>
+          {/* Recovery types */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Recovery services &amp; pricing</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+              {recoveryTypes.map(({ name, price, time, desc }) => (
+                <div key={name} className="bg-card p-6 hover:bg-surface transition-colors">
+                  <p className="text-[13px] font-semibold text-foreground mb-1">{name}</p>
+                  <p className="text-[13px] font-semibold text-primary mb-1">{price}</p>
+                  <p className="text-[12px] text-muted-foreground mb-2">{time}</p>
+                  <p className="text-[12px] text-muted-foreground leading-relaxed">{desc}</p>
+                </div>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* Pricing */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h2 className="text-3xl font-bold text-foreground mb-12">Pricing:</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <Card className="bg-white border-border">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-foreground mb-6">
-                  Standard Recovery
-                </h3>
-                <p className="text-primary text-4xl font-bold mb-4">£149—£299</p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>✓ Most hard drives & SSDs</li>
-                  <li>✓ Deleted file recovery</li>
-                  <li>✓ Logical failures</li>
-                  <li>✓ 24-48 hour turnaround</li>
-                </ul>
-              </CardContent>
-            </Card>
-            <Card className="bg-white border-border border-2 border-primary">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-foreground mb-6">
-                  Complex Recovery
-                </h3>
-                <p className="text-primary text-4xl font-bold mb-4">£299—£599</p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>✓ Physical damage</li>
-                  <li>✓ Water damage</li>
-                  <li>✓ Circuit board repair</li>
-                  <li>✓ Extended turnaround</li>
-                </ul>
-              </CardContent>
-            </Card>
+          {/* Process */}
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-10">Our recovery process</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {process.map(({ step, title, desc }) => (
+                <div key={step}>
+                  <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center text-[12px] font-semibold text-foreground mb-4">
+                    {step}
+                  </div>
+                  <h3 className="text-[14px] font-semibold text-foreground mb-1.5">{title}</h3>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="text-center text-sm text-muted-foreground">
-            No charge if recovery fails. Free assessment.
-          </p>
-        </section>
 
-        {/* CTA */}
-        <section className="border-t border-border py-20 text-center">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-foreground mb-6">
-              Don't give up on your data.
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Contact us now for a free assessment. We'll tell you honestly if
-              recovery is possible.
+          {/* CTA */}
+          <div className="pt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Don&apos;t give up on your data.</h2>
+            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+              Free assessment. No recovery, no fee. Call us or book online.
             </p>
-            <Button
-              asChild
-              size="lg"
-              className="bg-primary hover:bg-blue-700"
-            >
-              <Link href="/contact">Contact Us Now</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                <Link href="/contact">Start Free Assessment</Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                <a href="tel:07768426754">07768 426754</a>
+              </Button>
+            </div>
           </div>
-        </section>
+        </div>
       </main>
 
       <Footer />
