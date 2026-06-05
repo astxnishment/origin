@@ -16,7 +16,7 @@ import {
   getRepairInfo,
   DEVICE_CATEGORIES,
 } from "@/lib/repair-data";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Clock, Shield } from "lucide-react";
 
 const steps = [
   { id: "category", label: "Category" },
@@ -67,22 +67,22 @@ export default function QuoteCalculator() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
       {/* ── Form ── */}
-      <div className="lg:col-span-3 space-y-3">
+      <div className="lg:col-span-3 space-y-4">
         {/* Progress */}
-        <div className="flex items-center gap-1 mb-6">
+        <div className="flex items-center gap-2 mb-8 flex-wrap">
           {steps.map((s, i) => (
-            <div key={s.id} className="flex items-center gap-1">
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
+            <div key={s.id} className="flex items-center gap-2">
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
                 i < currentStep
-                  ? "bg-accent/15 text-accent"
+                  ? "bg-green-500/20 text-green-500"
                   : i === currentStep
-                  ? "bg-primary/15 text-primary"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-blue-500/20 text-blue-500"
+                  : "bg-surface text-muted-foreground"
               }`}>
                 {i < currentStep ? (
-                  <Check className="h-3 w-3" />
+                  <Check className="h-3.5 w-3.5" />
                 ) : (
                   <span className="w-3.5 h-3.5 rounded-full border border-current flex items-center justify-center text-[9px]">
                     {i + 1}
@@ -91,97 +91,100 @@ export default function QuoteCalculator() {
                 {s.label}
               </div>
               {i < steps.length - 1 && (
-                <div className={`w-4 h-px ${i < currentStep ? "bg-accent/40" : "bg-border"}`} />
+                <div className={`w-4 h-px ${i < currentStep ? "bg-green-500/40" : "bg-border"}`} />
               )}
             </div>
           ))}
         </div>
 
-        {/* Device Category */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-            Device type
-          </label>
-          <Select value={category} onValueChange={(v) => { setCategory(v); resetFrom(1); }}>
-            <SelectTrigger className="bg-card border-border h-11 rounded-xl text-[14px]">
-              <SelectValue placeholder="Select device type…" />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border rounded-xl">
-              {DEVICE_CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat} className="text-[13px]">{cat}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Inputs */}
+        <div className="space-y-4">
+          {/* Device Category */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Device category
+            </label>
+            <Select value={category} onValueChange={(v) => { setCategory(v); resetFrom(1); }}>
+              <SelectTrigger className="bg-card border-border h-11 rounded-lg text-sm">
+                <SelectValue placeholder="Select device type…" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                {DEVICE_CATEGORIES.map((cat) => (
+                  <SelectItem key={cat} value={cat} className="text-sm">{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Brand */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Brand
+            </label>
+            <Select value={brand} onValueChange={(v) => { setBrand(v); resetFrom(2); }} disabled={!category}>
+              <SelectTrigger className="bg-card border-border h-11 rounded-lg text-sm disabled:opacity-50">
+                <SelectValue placeholder={category ? "Select brand…" : "Select device type first"} />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                {availableBrands.map((b) => (
+                  <SelectItem key={b} value={b} className="text-sm">{b}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Model */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Model
+            </label>
+            <Select value={modelId} onValueChange={(v) => { setModelId(v); resetFrom(3); }} disabled={!brand}>
+              <SelectTrigger className="bg-card border-border h-11 rounded-lg text-sm disabled:opacity-50">
+                <SelectValue placeholder={brand ? "Select model…" : "Select brand first"} />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                {availableModels.map((m) => (
+                  <SelectItem key={m.id} value={m.id} className="text-sm">{m.displayName}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Repair Type */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Repair type
+            </label>
+            <Select value={repairType} onValueChange={setRepairType} disabled={!selectedDevice}>
+              <SelectTrigger className="bg-card border-border h-11 rounded-lg text-sm disabled:opacity-50">
+                <SelectValue placeholder={selectedDevice ? "Select repair…" : "Select model first"} />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                {deviceRepairTypes.map((type) => (
+                  <SelectItem key={type} value={type} className="text-sm">{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        {/* Brand */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-            Brand
-          </label>
-          <Select value={brand} onValueChange={(v) => { setBrand(v); resetFrom(2); }} disabled={!category}>
-            <SelectTrigger className="bg-card border-border h-11 rounded-xl text-[14px] disabled:opacity-40">
-              <SelectValue placeholder={category ? "Select brand…" : "Select device type first"} />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border rounded-xl">
-              {availableBrands.map((b) => (
-                <SelectItem key={b} value={b} className="text-[13px]">{b}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Model */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-            Model
-          </label>
-          <Select value={modelId} onValueChange={(v) => { setModelId(v); resetFrom(3); }} disabled={!brand}>
-            <SelectTrigger className="bg-card border-border h-11 rounded-xl text-[14px] disabled:opacity-40">
-              <SelectValue placeholder={brand ? "Select model…" : "Select brand first"} />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border rounded-xl">
-              {availableModels.map((m) => (
-                <SelectItem key={m.id} value={m.id} className="text-[13px]">{m.displayName}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Repair Type */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-            Repair type
-          </label>
-          <Select value={repairType} onValueChange={setRepairType} disabled={!selectedDevice}>
-            <SelectTrigger className="bg-card border-border h-11 rounded-xl text-[14px] disabled:opacity-40">
-              <SelectValue placeholder={selectedDevice ? "Select repair…" : "Select model first"} />
-            </SelectTrigger>
-            <SelectContent className="bg-card border-border rounded-xl">
-              {deviceRepairTypes.map((type) => (
-                <SelectItem key={type} value={type} className="text-[13px]">{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <p className="text-[11px] text-muted-foreground pt-1">
-          Final price confirmed before we start any work. No obligation.
+        <p className="text-xs text-muted-foreground pt-2">
+          Final price confirmed before we start any work.
         </p>
       </div>
 
       {/* ── Result ── */}
       <div className="lg:col-span-2">
         {isComplete && quote ? (
-          <div className="h-full rounded-2xl border border-border bg-card p-7 flex flex-col gap-6">
+          <div className="h-full rounded-2xl border border-border bg-card p-7 flex flex-col gap-6 card-premium">
             {/* Price */}
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-1">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                 Estimated price
               </p>
-              <p className="text-4xl font-semibold text-foreground">
+              <p className="text-4xl font-bold text-foreground">
                 £{quote.minPrice}
-                <span className="text-muted-foreground font-normal">–</span>
+                <span className="text-muted-foreground text-2xl font-normal">–</span>
                 £{quote.maxPrice}
               </p>
             </div>
@@ -189,24 +192,33 @@ export default function QuoteCalculator() {
             <div className="h-px bg-border" />
 
             {/* Details */}
-            <div className="space-y-3 text-[13px]">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Device</span>
-                <span className="text-foreground font-medium text-right">
-                  {selectedDevice?.displayName}
-                </span>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <div className="icon-circle">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Est. time
+                  </p>
+                  <p className="text-sm font-medium text-foreground mt-0.5">
+                    {quote.estimatedTime}
+                  </p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Repair</span>
-                <span className="text-foreground font-medium">{repairType}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Est. time</span>
-                <span className="text-foreground font-medium">{quote.estimatedTime}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Warranty</span>
-                <span className="text-accent font-medium">{quote.warranty}</span>
+
+              <div className="flex gap-3">
+                <div className="icon-circle accent">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Warranty
+                  </p>
+                  <p className="text-sm font-medium text-green-500 mt-0.5">
+                    {quote.warranty}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -214,21 +226,21 @@ export default function QuoteCalculator() {
 
             <Button
               asChild
-              className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl h-11 text-[13px] font-medium"
+              className="btn-primary w-full h-11 flex items-center justify-center gap-2"
             >
-              <Link href="/book" className="flex items-center justify-center gap-2">
+              <Link href="/book">
                 Book this repair
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
         ) : (
-          <div className="h-full min-h-[280px] rounded-2xl border border-dashed border-border bg-surface flex items-center justify-center p-8">
+          <div className="h-full min-h-[320px] rounded-2xl border border-dashed border-border bg-surface/50 flex items-center justify-center p-8">
             <div className="text-center">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
-                <span className="text-[18px]">→</span>
+              <div className="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center mx-auto mb-4">
+                <span className="text-lg">→</span>
               </div>
-              <p className="text-[13px] text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {!category
                   ? "Select a device type to begin"
                   : !brand

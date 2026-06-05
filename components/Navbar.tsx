@@ -24,27 +24,30 @@ export default function Navbar() {
 
   return (
     <header className="glass fixed top-0 inset-x-0 z-50">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-8">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-8">
         {/* Logo */}
         <Link
           href="/"
-          className="font-semibold text-[15px] tracking-tight text-foreground shrink-0 flex items-center gap-2"
+          className="flex items-center gap-3 shrink-0 group"
         >
-          <span className="inline-block w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-white text-[11px] font-bold leading-none">O</span>
-          </span>
-          <span>ORIGIN</span>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg leading-none">O</span>
+          </div>
+          <div className="hidden sm:flex flex-col">
+            <span className="font-bold text-sm tracking-tight text-foreground">ORIGIN</span>
+            <span className="text-[10px] text-muted-foreground leading-none">Device Care</span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        <nav className="hidden md:flex items-center gap-8 flex-1">
           {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`text-[13px] px-3 py-1.5 rounded-md transition-colors duration-150 ${
+              className={`text-sm font-medium transition-colors duration-150 ${
                 pathname === href || pathname.startsWith(href + "/")
-                  ? "text-foreground font-medium"
+                  ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -54,18 +57,11 @@ export default function Navbar() {
         </nav>
 
         {/* Right side */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-4">
           <ThemeToggle />
-          <a
-            href={`tel:${BUSINESS.phone}`}
-            className="text-[13px] text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5"
-          >
-            {BUSINESS.phone}
-          </a>
           <Button
             asChild
-            size="sm"
-            className="bg-primary hover:bg-primary/90 text-white text-[13px] h-8 px-4 rounded-lg font-medium shadow-none"
+            className="btn-primary"
           >
             <Link href="/book">Book Repair</Link>
           </Button>
@@ -76,19 +72,22 @@ export default function Navbar() {
           <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Menu className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-10 w-10">
+                <Menu className="h-5 w-5" />
                 <span className="sr-only">Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-card border-border w-72 p-0">
+            <SheetContent side="right" className="bg-card border-border w-80 p-0">
               <div className="flex flex-col h-full p-6">
                 {/* Brand */}
-                <div className="flex items-center gap-2 mb-8">
-                  <span className="inline-block w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-                    <span className="text-white text-[11px] font-bold leading-none">O</span>
-                  </span>
-                  <span className="font-semibold text-sm">ORIGIN</span>
+                <div className="flex items-center gap-3 mb-10">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-lg leading-none">O</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-sm tracking-tight">ORIGIN</span>
+                    <span className="text-[10px] text-muted-foreground leading-none">Device Care</span>
+                  </div>
                 </div>
 
                 {/* Nav */}
@@ -97,7 +96,7 @@ export default function Navbar() {
                     <SheetClose asChild key={href}>
                       <Link
                         href={href}
-                        className="text-sm text-muted-foreground hover:text-foreground py-2 px-3 rounded-lg hover:bg-muted transition-colors"
+                        className="text-sm font-medium text-muted-foreground hover:text-foreground py-3 px-4 rounded-lg hover:bg-surface transition-colors"
                       >
                         {label}
                       </Link>
@@ -106,15 +105,9 @@ export default function Navbar() {
                 </nav>
 
                 {/* Mobile CTA */}
-                <div className="pt-4 border-t border-border space-y-3">
-                  <a
-                    href={`tel:${BUSINESS.phone}`}
-                    className="block text-sm text-muted-foreground text-center py-2"
-                  >
-                    {BUSINESS.phone}
-                  </a>
+                <div className="pt-6 border-t border-border space-y-3">
                   <SheetClose asChild>
-                    <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg">
+                    <Button asChild className="w-full btn-primary">
                       <Link href="/book">Book a Repair</Link>
                     </Button>
                   </SheetClose>
