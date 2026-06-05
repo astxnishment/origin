@@ -1,0 +1,66 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark monochrome background -->
+  <rect width="1200" height="1200" fill="#0a0a0a"/>
+
+  <!-- Subtle texture -->
+  <rect width="1200" height="1200" fill="url(#noise)" opacity="0.03"/>
+
+  <!-- Black repair mat -->
+  <rect x="150" y="200" width="900" height="700" rx="20" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+
+  <!-- iPhone body (opened) -->
+  <g>
+    <!-- Screen part (raised) -->
+    <rect x="300" y="250" width="280" height="550" rx="30" fill="#111111" stroke="#333333" stroke-width="2"/>
+    <rect x="315" y="270" width="250" height="500" rx="25" fill="#000000"/>
+
+    <!-- Display glow -->
+    <rect x="315" y="270" width="250" height="150" fill="#1a3a4a" opacity="0.4"/>
+
+    <!-- Logic board (back) -->
+    <rect x="650" y="280" width="300" height="480" rx="20" fill="#0f0f0f" stroke="#2a2a2a" stroke-width="2"/>
+
+    <!-- Circuit patterns -->
+    <circle cx="680" cy="320" r="8" fill="#333333" opacity="0.6"/>
+    <circle cx="720" cy="340" r="6" fill="#333333" opacity="0.5"/>
+    <circle cx="760" cy="310" r="7" fill="#333333" opacity="0.6"/>
+    <circle cx="800" cy="360" r="6" fill="#333333" opacity="0.5"/>
+    <circle cx="690" cy="420" r="8" fill="#333333" opacity="0.6"/>
+    <circle cx="750" cy="450" r="7" fill="#333333" opacity="0.5"/>
+    <circle cx="820" cy="400" r="6" fill="#333333" opacity="0.6"/>
+    <circle cx="710" cy="560" r="7" fill="#333333" opacity="0.5"/>
+    <circle cx="780" cy="600" r="8" fill="#333333" opacity="0.6"/>
+  </g>
+
+  <!-- Precision screwdrivers -->
+  <g>
+    <!-- Left screwdriver -->
+    <rect x="100" y="500" width="120" height="8" rx="4" fill="#c0c0c0" transform="rotate(-25 160 504)"/>
+    <circle cx="145" cy="520" r="6" fill="#a8a8a8" transform="rotate(-25 145 520)"/>
+
+    <!-- Center screwdriver -->
+    <rect x="950" y="480" width="130" height="7" rx="3.5" fill="#d4d4d4" transform="rotate(35 1015 483)"/>
+    <circle cx="1005" cy="460" r="5.5" fill="#b8b8b8" transform="rotate(35 1005 460)"/>
+
+    <!-- Right screwdriver -->
+    <rect x="900" y="620" width="140" height="8" rx="4" fill="#c0c0c0" transform="rotate(-15 970 624)"/>
+    <circle cx="960" cy="645" r="6" fill="#a8a8a8" transform="rotate(-15 960 645)"/>
+  </g>
+
+  <!-- Work lights reflection (top) -->
+  <ellipse cx="600" cy="180" rx="300" ry="80" fill="#2a2a2a" opacity="0.3"/>
+
+  <!-- Subtle shadows -->
+  <ellipse cx="450" cy="850" rx="350" ry="80" fill="#000000" opacity="0.4"/>
+
+  <!-- Definition lines on iPhone -->
+  <line x1="315" y1="350" x2="565" y2="350" stroke="#222222" stroke-width="1" opacity="0.5"/>
+  <line x1="315" y1="500" x2="565" y2="500" stroke="#222222" stroke-width="1" opacity="0.3"/>
+
+  <!-- Noise pattern definition -->
+  <defs>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/>
+    </filter>
+  </defs>
+</svg>
