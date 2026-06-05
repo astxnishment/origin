@@ -11,6 +11,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { BUSINESS } from "@/lib/constants";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const links = [
   { href: "/repairs", label: "Repairs" },
@@ -58,6 +59,7 @@ export default function Navbar() {
           >
             {BUSINESS.phone}
           </a>
+          <ThemeToggle />
           <Button asChild size="sm" className="bg-primary hover:bg-blue-700">
             <Link href="/book">Book Repair</Link>
           </Button>
@@ -92,6 +94,12 @@ export default function Navbar() {
                   </Link>
                 </SheetClose>
               ))}
+
+              {/* Dark mode toggle */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Dark mode</span>
+                <ThemeToggle />
+              </div>
 
               {/* Mobile CTA */}
               <SheetClose asChild>
