@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,15 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-3 shrink-0 group"
         >
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-            <span className="text-white font-bold text-2xl leading-none">O</span>
+          <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+            <Image
+              src="/origin_repairs_logo.png"
+              alt="ORIGIN Repairs"
+              width={48}
+              height={48}
+              className="w-full h-full object-cover"
+              priority
+            />
           </div>
           <div className="hidden sm:flex flex-col">
             <span className="font-bold text-base tracking-tight text-foreground leading-tight">ORIGIN</span>
