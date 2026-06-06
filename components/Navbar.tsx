@@ -11,7 +11,6 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 const links = [
   { href: "/repairs", label: "Repairs" },
@@ -64,7 +63,6 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="hidden md:flex items-center gap-4">
-          <ThemeToggle />
           <Button
             asChild
             className="btn-primary text-sm"
@@ -75,7 +73,6 @@ export default function Navbar() {
 
         {/* Mobile */}
         <div className="flex md:hidden items-center gap-2">
-          <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-10 w-10">

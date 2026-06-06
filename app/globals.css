@@ -34,39 +34,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* ─── LIGHT MODE ──────────────────────────────────────── */
-:root {
-  --radius: 0.625rem;
-
-  --background: #fafafa;
-  --foreground: #09090b;
-  --card: #ffffff;
-  --card-foreground: #09090b;
-  --popover: #ffffff;
-  --popover-foreground: #09090b;
-
-  --surface: #f4f4f5;
-  --surface-raised: #ffffff;
-
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-
-  --accent: #22c55e;
-  --accent-foreground: #ffffff;
-
-  --destructive: #ef4444;
-  --border: #e4e4e7;
-  --input: #f4f4f5;
-  --ring: #2563eb;
-}
-
-/* ─── DARK MODE (TRUE BLACK) ──────────────────────────── */
+/* ─── SINGLE THEME · TRUE BLACK (DARK-MODE FIRST) ─────────
+   Origin is dark-mode only. Tokens live on :root so they apply
+   everywhere; .dark is mirrored on <html> purely so Tailwind's
+   `dark:` variant (e.g. the inverted logo) still resolves. */
+:root,
 .dark {
   --radius: 0.625rem;
 
@@ -96,6 +68,8 @@
   --border: rgba(255, 255, 255, 0.08);
   --input: #0f0f0f;
   --ring: #3b82f6;
+
+  color-scheme: dark;
 }
 
 /* ─── BASE ──────────────────────────────────────────────── */
