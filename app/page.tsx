@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import QuoteCalculator from "@/components/QuoteCalculator";
 import HeroCalculator from "@/components/HeroCalculator";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,7 +64,7 @@ export default function Home() {
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center pt-36 pb-20 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-40 pb-20 overflow-hidden">
         {/* Background texture */}
         <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
 
@@ -73,63 +72,73 @@ export default function Home() {
         <div className="absolute top-40 left-1/4 w-96 h-96 bg-blue-500/8 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-32 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-          {/* Left: Text */}
-          <div>
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-16 items-center">
+          {/* Text */}
+          <div className="order-2 lg:order-1">
             {/* Badge */}
             <div className="badge-premium mb-6 w-fit">
               <MapPin className="h-3.5 w-3.5" />
-              Leeds, UK
+              Leeds · 76 Cookridge Street
             </div>
 
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
-              Premium device repair in Leeds.
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
+              Your device,
+              <br />
+              fixed today.
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed mb-12">
-              Expert repairs on iPhone, Samsung, MacBook and more. Clear pricing. Quality parts. Warranty-backed service.
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed mb-8">
+              Get an instant price for your iPhone, Samsung, or MacBook repair — no calls, no waiting. Same-day service, backed by a 12-month warranty.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-16">
-              <Button
-                asChild
-                className="btn-primary h-12 px-8 text-base"
-              >
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+              <Button asChild className="btn-primary h-[52px] px-8 text-base">
                 <Link href="/book" className="flex items-center gap-2">
-                  Book a Repair
+                  Book Same-Day Repair
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button
-                asChild
-                className="btn-secondary h-12 px-8 text-base"
-              >
+              <Button asChild className="btn-secondary h-[52px] px-8 text-base">
                 <Link href="/quote">Get Instant Quote</Link>
               </Button>
             </div>
 
-            {/* Real trust callouts */}
-            <div className="text-sm space-y-3">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span>Same-day diagnostics and repairs</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span>12-month warranty on every repair</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span>Fixed pricing, no hidden fees</span>
-              </div>
+            {/* Authentic trust row */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a
+                href={BUSINESS.googleReviewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 group"
+              >
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  Google Reviews
+                </span>
+              </a>
+              <div className="hidden sm:block h-4 w-px bg-border" />
+              {[
+                { icon: Shield, label: "12-Month Warranty" },
+                { icon: Zap, label: "Same-Day Repairs" },
+                { icon: MapPin, label: "Leeds Based" },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Icon className="h-4 w-4 text-blue-500" />
+                  {label}
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Right: Interactive Calculator */}
-          <div className="w-full">
+          {/* Interactive Calculator — the star, first on mobile */}
+          <div className="order-1 lg:order-2 w-full">
             <HeroCalculator />
           </div>
         </div>
@@ -155,7 +164,7 @@ export default function Home() {
       <section className="section-border">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
           <div className="mb-14">
-            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Services</p>
+            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Repairs We Offer</p>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
               Every device. Every repair.
             </h2>
@@ -203,19 +212,131 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── QUOTE CALCULATOR ─────────────────────────── */}
+      {/* ── WARRANTY INFORMATION ─────────────────────── */}
       <section className="section-border">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
-          <div className="mb-14">
-            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Pricing</p>
-            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              Get your instant quote.
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-lg">
-              No hidden fees. Fixed quote before we start. What you see is what you pay.
-            </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: copy */}
+            <div>
+              <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Warranty</p>
+              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-5">
+                Covered for a
+                <br />
+                full 12 months.
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                Every repair we carry out is protected by our 12-month warranty on both parts and labour. If anything related to the repair fails, we&apos;ll put it right — free of charge.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild className="btn-primary h-12 px-7">
+                  <Link href="/book" className="flex items-center gap-2">
+                    Book a Repair
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild className="btn-secondary h-12 px-7">
+                  <Link href="/quote">Check My Price</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Right: warranty card */}
+            <div className="card-premium p-8 glow-blue">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="icon-circle">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-bold text-foreground">Origin Repair Guarantee</p>
+                  <p className="text-xs text-muted-foreground">12 months · parts &amp; labour</p>
+                </div>
+              </div>
+              <ul className="space-y-4">
+                {[
+                  { t: "Parts & labour covered", d: "The full repair is guaranteed, not just the component." },
+                  { t: "Free re-repair", d: "If the same fault returns, we fix it again at no cost." },
+                  { t: "No-fix, no-fee diagnostics", d: "If we can't fix it, you don't pay for the assessment." },
+                  { t: "Genuine quality parts", d: "OEM-grade components that meet manufacturer standards." },
+                ].map(({ t, d }) => (
+                  <li key={t} className="flex gap-3">
+                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{t}</p>
+                      <p className="text-sm text-muted-foreground">{d}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <QuoteCalculator />
+        </div>
+      </section>
+
+      {/* ── LOCAL LEEDS SERVICE AREA ─────────────────── */}
+      <section className="section-border bg-surface/30">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: location card */}
+            <div className="order-2 lg:order-1 card-premium p-8">
+              <div className="flex items-start gap-3 mb-6">
+                <div className="icon-circle">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-bold text-foreground">Origin Repairs</p>
+                  <address className="not-italic text-sm text-muted-foreground">
+                    76 Cookridge Street<br />Leeds, LS2 8GL
+                  </address>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="rounded-xl border border-border p-4">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Clock className="h-3.5 w-3.5" /> Opening hours
+                  </div>
+                  <p className="text-sm font-medium text-foreground">Mon–Fri 9–6</p>
+                  <p className="text-sm font-medium text-foreground">Sat 10–4</p>
+                </div>
+                <div className="rounded-xl border border-border p-4">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Zap className="h-3.5 w-3.5" /> Walk-ins
+                  </div>
+                  <p className="text-sm font-medium text-foreground">Welcome</p>
+                  <p className="text-xs text-muted-foreground">No appointment needed</p>
+                </div>
+              </div>
+              <Button asChild className="btn-primary w-full h-11">
+                <a href={`tel:${BUSINESS.phone}`} className="flex items-center justify-center gap-2">
+                  Call {BUSINESS.phone}
+                </a>
+              </Button>
+            </div>
+
+            {/* Right: copy + areas */}
+            <div className="order-1 lg:order-2">
+              <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Service Area</p>
+              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-5">
+                Right in the heart of Leeds.
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-7">
+                Two minutes from Leeds city centre and easy to reach from across the city. Drop in on your lunch break and collect a working device the same day.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "City Centre", "Headingley", "Hyde Park", "Chapel Allerton",
+                  "Roundhay", "Horsforth", "Burley", "Woodhouse", "Meanwood",
+                  "& all LS postcodes",
+                ].map((area) => (
+                  <span
+                    key={area}
+                    className="px-3 py-1.5 rounded-full border border-border text-[13px] text-muted-foreground"
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -379,7 +500,7 @@ export default function Home() {
                   className="btn-primary h-12 px-8"
                 >
                   <Link href="/book" className="flex items-center gap-2">
-                    Book a Repair
+                    Book Same-Day Repair
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -387,7 +508,7 @@ export default function Home() {
                   asChild
                   className="btn-secondary h-12 px-8"
                 >
-                  <Link href="/quote">Get Quote</Link>
+                  <Link href="/quote">Get My Quote</Link>
                 </Button>
               </div>
 

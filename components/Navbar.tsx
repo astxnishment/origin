@@ -23,12 +23,12 @@ export default function Navbar() {
 
   return (
     <header className="glass fixed top-0 inset-x-0 z-50 border-b border-blue-500/10">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-8">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-24 flex items-center justify-between gap-8">
         {/* Logo — actual approved Origin Repairs asset */}
         <Link
           href="/"
           aria-label="Origin Repairs — home"
-          className="shrink-0 mr-2 transition-opacity duration-200 hover:opacity-70"
+          className="shrink-0 mr-3 sm:mr-6 transition-opacity duration-200 hover:opacity-70"
         >
           <Image
             src="/origin_repairs_logo.png"
@@ -36,8 +36,8 @@ export default function Navbar() {
             width={1536}
             height={1024}
             priority
-            sizes="160px"
-            className="h-14 w-auto object-contain dark:invert"
+            sizes="200px"
+            className="h-[72px] w-auto object-contain dark:invert"
           />
         </Link>
 
@@ -89,8 +89,8 @@ export default function Navbar() {
                     alt="Origin Repairs"
                     width={1536}
                     height={1024}
-                    sizes="140px"
-                    className="h-12 w-auto object-contain dark:invert"
+                    sizes="160px"
+                    className="h-16 w-auto object-contain dark:invert"
                   />
                 </div>
 

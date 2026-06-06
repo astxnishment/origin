@@ -123,13 +123,50 @@
     background-clip: text;
   }
 
-  /* Glow effects */
+  /* Glow effects — Apple Store lighting, not RGB gaming */
   .glow-blue {
-    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 4px 24px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.12), 0 10px 50px -16px rgba(59, 130, 246, 0.18);
   }
 
   .glow-blue-lg {
-    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 8px 40px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1), 0 30px 90px -24px rgba(59, 130, 246, 0.22);
+  }
+
+  /* Large, soft, diffuse ambient light source (sits behind hero card) */
+  .glow-ambient {
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 30%,
+      rgba(59, 130, 246, 0.16) 0%,
+      rgba(59, 130, 246, 0.06) 40%,
+      transparent 72%
+    );
+    filter: blur(40px);
+  }
+
+  /* Elevated glass surface — clear separation from the page */
+  .surface-glass {
+    background: linear-gradient(
+      155deg,
+      rgba(22, 22, 24, 0.92) 0%,
+      rgba(12, 12, 13, 0.96) 100%
+    );
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+      0 1px 2px 0 rgba(0, 0, 0, 0.4),
+      0 24px 70px -28px rgba(0, 0, 0, 0.9),
+      0 40px 120px -40px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Smooth price count transition wrapper */
+  @keyframes price-pop {
+    0% { opacity: 0.4; transform: translateY(4px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-price {
+    animation: price-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   /* Premium card */
