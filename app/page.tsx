@@ -65,7 +65,7 @@ export default function Home() {
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-36 pb-20 overflow-hidden">
         {/* Background texture */}
         <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
 
@@ -219,14 +219,83 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── WHY CHOOSE ORIGIN ────────────────────────── */}
+      <section className="section-border">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+          <div className="mb-14">
+            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Why Us</p>
+            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
+              Built differently.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden">
+            {[
+              {
+                icon: "⚡",
+                title: "Same-Day Service",
+                desc: "90% of repairs completed within the hour. Walk in, wait, leave with a working device.",
+              },
+              {
+                icon: "💰",
+                title: "Transparent Pricing",
+                desc: "Fixed quote before we start. No diagnostics fees, no hidden charges, no surprises.",
+              },
+              {
+                icon: "🛡️",
+                title: "12-Month Warranty",
+                desc: "Industry-leading cover on parts and labour. We'll fix it free if anything goes wrong.",
+              },
+              {
+                icon: "📍",
+                title: "Leeds Based",
+                desc: "Locally owned. Walk in at 76 Cookridge Street. Real people, real accountability.",
+              },
+              {
+                icon: "🔧",
+                title: "Quality Parts",
+                desc: "OEM-grade components that meet manufacturer standards. Nothing cheap, nothing counterfeit.",
+              },
+              {
+                icon: "🔍",
+                title: "Free Diagnostics",
+                desc: "If we can't fix it, you don't pay. Free assessment on every device, every time.",
+              },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} className="bg-card p-8 group">
+                <div className="text-3xl mb-5 group-hover:scale-110 transition-transform duration-300 w-fit">
+                  {icon}
+                </div>
+                <h3 className="font-bold text-lg text-foreground mb-2">{title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── TESTIMONIALS ─────────────────────────────── */}
       <section className="section-border bg-surface/30">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
           <div className="mb-14">
-            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Reviews</p>
-            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
-              Trusted by Leeds customers.
-            </h2>
+            <div className="flex items-start justify-between gap-6 flex-wrap">
+              <div>
+                <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Reviews</p>
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
+                  What customers say.
+                </h2>
+              </div>
+              {/* Placeholder notice */}
+              <div
+                className="px-4 py-3 rounded-xl text-xs text-muted-foreground max-w-xs"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+              >
+                Real Google reviews will appear here once collected.
+                <a href="https://www.google.com/search?q=Origin+Repairs+Leeds" target="_blank" rel="noopener noreferrer" className="text-blue-500 ml-1 hover:underline">
+                  Leave a review →
+                </a>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -241,7 +310,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                  "{content}"
+                  &ldquo;{content}&rdquo;
                 </p>
                 <div className="pt-4 border-t border-border">
                   <p className="font-semibold text-sm text-foreground">{author}</p>

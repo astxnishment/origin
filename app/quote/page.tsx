@@ -1,51 +1,42 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import QuoteCalculator from "@/components/QuoteCalculator";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import FullCalculator from "@/components/FullCalculator";
+
+export const metadata: Metadata = {
+  title: "Instant Repair Quote | ORIGIN Repairs Leeds",
+  description:
+    "Get an instant repair quote for your iPhone, Samsung, MacBook or any device. Transparent pricing, no hidden fees. Leeds based.",
+};
 
 export default function QuotePage() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
+      <main className="relative min-h-screen pt-28 pb-24 overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 dot-grid opacity-30 pointer-events-none" />
+        <div className="absolute top-32 left-1/4 w-96 h-96 bg-blue-500/6 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-32 right-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8">
           {/* Header */}
-          <div className="pt-10 pb-16 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Quote
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
-              <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
-                Instant pricing.
-              </h1>
-              <p className="text-[15px] text-muted-foreground leading-relaxed">
-                Select your device and repair type for an instant estimate. Fixed quote confirmed before we start any work.
-              </p>
+          <div className="text-center mb-14">
+            <div className="badge-premium mx-auto mb-5 w-fit">
+              Instant Quote
             </div>
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-5">
+              What does your repair cost?
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              Search your device, select the repair, get an instant estimate.
+              Fixed price confirmed before we start.
+            </p>
           </div>
 
-          {/* Calculator */}
-          <div className="py-16 border-b border-border">
-            <QuoteCalculator />
-          </div>
-
-          {/* Next step */}
-          <div className="pt-16 text-center">
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Ready to book?</h2>
-            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Schedule your repair online, or walk in — we&apos;ll give you a free assessment on the spot.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
-                <Link href="/book">Book a Repair</Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
-                <Link href="/contact">Contact Us</Link>
-              </Button>
-            </div>
-          </div>
+          {/* Full calculator */}
+          <FullCalculator />
         </div>
       </main>
 

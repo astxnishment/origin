@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FloatingCTA from "@/components/FloatingCTA";
+import EmergencyBanner from "@/components/EmergencyBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -96,6 +97,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
+          <EmergencyBanner />
           {children}
           <FloatingCTA />
         </ThemeProvider>
