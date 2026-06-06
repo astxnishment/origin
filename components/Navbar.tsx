@@ -30,12 +30,12 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-3 shrink-0 group"
         >
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-            <span className="text-white font-bold text-lg leading-none">O</span>
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+            <span className="text-white font-bold text-2xl leading-none">O</span>
           </div>
           <div className="hidden sm:flex flex-col">
-            <span className="font-bold text-sm tracking-tight text-foreground leading-tight">ORIGIN</span>
-            <span className="text-[10px] text-muted-foreground leading-tight">Device Care</span>
+            <span className="font-bold text-base tracking-tight text-foreground leading-tight">ORIGIN</span>
+            <span className="text-[11px] text-muted-foreground leading-tight">Device Care</span>
           </div>
         </Link>
 
