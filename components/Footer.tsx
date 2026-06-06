@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { BUSINESS } from "@/lib/constants";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const services = [
   { href: "/repairs/iphone", label: "iPhone Repair" },
@@ -27,14 +27,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
-                <Image src="/origin_repairs_logo.png" alt="ORIGIN Repairs" width={32} height={32} className="w-full h-full object-cover" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-sm tracking-tight">ORIGIN</span>
-                <span className="text-[10px] text-muted-foreground leading-none">Device Care</span>
-              </div>
+            <div className="mb-6">
+              <Logo size="sm" subtitle="Device Care" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
               Professional device repair in Leeds. Every repair backed by a 12-month warranty.

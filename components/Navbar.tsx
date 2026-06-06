@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,8 +10,8 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { BUSINESS } from "@/lib/constants";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import Logo from "@/components/Logo";
 
 const links = [
   { href: "/repairs", label: "Repairs" },
@@ -27,25 +26,7 @@ export default function Navbar() {
     <header className="glass fixed top-0 inset-x-0 z-50 border-b border-blue-500/10">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-8">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-3 shrink-0 group"
-        >
-          <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-            <Image
-              src="/origin_repairs_logo.png"
-              alt="ORIGIN Repairs"
-              width={48}
-              height={48}
-              className="w-full h-full object-cover"
-              priority
-            />
-          </div>
-          <div className="hidden sm:flex flex-col">
-            <span className="font-bold text-base tracking-tight text-foreground leading-tight">ORIGIN</span>
-            <span className="text-[11px] text-muted-foreground leading-tight">Device Care</span>
-          </div>
-        </Link>
+        <Logo size="md" subtitle="Device Care" className="mr-2" />
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-10 flex-1">
@@ -91,14 +72,8 @@ export default function Navbar() {
             <SheetContent side="right" className="bg-card border-border w-80 p-0">
               <div className="flex flex-col h-full p-6">
                 {/* Brand */}
-                <div className="flex items-center gap-3 mb-10">
-                  <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0">
-                    <Image src="/origin_repairs_logo.png" alt="ORIGIN Repairs" width={44} height={44} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-sm tracking-tight leading-tight">ORIGIN</span>
-                    <span className="text-[10px] text-muted-foreground leading-tight">Device Care</span>
-                  </div>
+                <div className="mb-10">
+                  <Logo size="sm" subtitle="Device Care" asLink={false} />
                 </div>
 
                 {/* Nav */}
