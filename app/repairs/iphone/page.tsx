@@ -7,7 +7,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { APPLE_IPHONES } from "@/lib/repair-data";
 
 export const metadata: Metadata = {
-  title: "iPhone Repair Leeds | All Models | ORIGIN Repairs",
+  title: "iPhone Repair Leeds | All Models",
   description: "Expert iPhone repairs in Leeds. Screen replacement, battery, charging port and more. All models from iPhone SE to 17 Pro Max. Same-day service, 12-month warranty.",
 };
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Data Recovery Leeds | Phone, Laptop, SSD | ORIGIN Repairs",
+  title: "Data Recovery Leeds | Phone, Laptop, SSD",
   description: "Professional data recovery in Leeds. Recover lost files from phones, laptops, SSDs and hard drives. Free diagnostic. No data, no fee. 76 Cookridge Street.",
 };
 

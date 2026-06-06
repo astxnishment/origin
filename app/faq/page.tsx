@@ -5,8 +5,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "FAQ | ORIGIN Repairs Leeds",
-  description: "Common questions about device repairs at ORIGIN Repairs. Pricing, warranty, turnaround times, and what to expect at our Leeds repair shop.",
+  title: "Frequently Asked Questions",
+  description: "Common questions about device repairs at Origin Repairs. Pricing, warranty, turnaround times, and what to expect at our Leeds repair shop.",
 };
 import {
   Accordion,

@@ -35,19 +35,20 @@ export async function generateMetadata({
   if (!parsed) return { title: "Repair not found" };
 
   const { device, repairType } = parsed;
-  const title = `${device.name} ${repairType} Leeds | ORIGIN Repairs`;
+  const title = `${device.name} ${repairType} Leeds`;
   const description = `Professional ${repairType.toLowerCase()} for ${device.name} in Leeds. Same-day service, OEM parts, 12-month warranty. 76 Cookridge Street, Leeds. Call 07768426754.`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Origin Repairs`,
       description,
       url: `https://originrepairs.co.uk/repairs/${slug}`,
-      siteName: "ORIGIN Repairs",
+      siteName: "Origin Repairs",
       locale: "en_GB",
       type: "website",
+      images: ["/origin_repairs_logo.png"],
     },
   };
 }
@@ -82,7 +83,7 @@ export default async function RepairPage({
     description: `Professional ${repairType.toLowerCase()} for ${device.name} in Leeds.`,
     provider: {
       "@type": "LocalBusiness",
-      name: "ORIGIN Repairs",
+      name: "Origin Repairs",
       address: {
         "@type": "PostalAddress",
         streetAddress: "76 Cookridge Street",
@@ -152,7 +153,7 @@ export default async function RepairPage({
 
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                 Professional {repairType.toLowerCase()} for your {device.name}{" "}
-                at ORIGIN Repairs, Leeds. OEM-grade parts, expert technicians,
+                at Origin Repairs, Leeds. OEM-grade parts, expert technicians,
                 and a 12-month warranty on every job.
               </p>
 

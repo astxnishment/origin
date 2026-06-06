@@ -7,7 +7,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { APPLE_MACBOOKS } from "@/lib/repair-data";
 
 export const metadata: Metadata = {
-  title: "MacBook & Laptop Repair Leeds | ORIGIN Repairs",
+  title: "MacBook & Laptop Repair Leeds",
   description: "MacBook, Dell, HP, Lenovo and iPad repairs in Leeds. Screen replacement, battery, keyboard, liquid damage and more. Same-day on many repairs. 12-month warranty.",
 };
 

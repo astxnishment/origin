@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Repair Pricing Leeds | Transparent Fixed Quotes | ORIGIN Repairs",
+  title: "Repair Pricing Leeds | Transparent Fixed Quotes",
   description: "Clear, upfront repair pricing with no hidden fees. iPhone, Samsung, MacBook, iPad repairs. Fixed quote before we start. Use our instant quote calculator.",
 };
 

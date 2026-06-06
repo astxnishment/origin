@@ -16,17 +16,39 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ORIGIN — Premium Device Repair in Leeds",
+  title: {
+    default: "Origin Repairs — Premium Device Repair in Leeds",
+    template: "%s | Origin Repairs",
+  },
   description:
     "Expert repair for iPhones, Samsung, iPads, and MacBooks. Fast, reliable, and backed by a 12-month warranty. Based in Leeds.",
   metadataBase: new URL("https://originrepairs.co.uk"),
+  icons: {
+    icon: [{ url: "/origin_repairs_logo.png", type: "image/png" }],
+    apple: [{ url: "/origin_repairs_logo.png" }],
+    shortcut: ["/origin_repairs_logo.png"],
+  },
   openGraph: {
-    title: "ORIGIN — Premium Device Repair in Leeds",
+    title: "Origin Repairs — Premium Device Repair in Leeds",
     description: "Expert device repair. Same-day service. 12-month warranty.",
     url: "https://originrepairs.co.uk",
-    siteName: "ORIGIN Repairs",
+    siteName: "Origin Repairs",
     locale: "en_GB",
     type: "website",
+    images: [
+      {
+        url: "/origin_repairs_logo.png",
+        width: 1536,
+        height: 1024,
+        alt: "Origin Repairs",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Origin Repairs — Premium Device Repair in Leeds",
+    description: "Expert device repair. Same-day service. 12-month warranty.",
+    images: ["/origin_repairs_logo.png"],
   },
 };
 
@@ -38,7 +60,7 @@ export default function RootLayout({
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: "ORIGIN Repairs",
+    name: "Origin Repairs",
     description:
       "Premium device repair service in Leeds. Expert iPhone, Samsung, MacBook, and iPad repairs with same-day service.",
     url: "https://originrepairs.co.uk",

@@ -10,8 +10,8 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import Logo from "@/components/Logo";
 
 const links = [
   { href: "/repairs", label: "Repairs" },
@@ -25,8 +25,22 @@ export default function Navbar() {
   return (
     <header className="glass fixed top-0 inset-x-0 z-50 border-b border-blue-500/10">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-8">
-        {/* Logo */}
-        <Logo size="md" subtitle="Device Care" className="mr-2" />
+        {/* Logo — actual approved Origin Repairs asset */}
+        <Link
+          href="/"
+          aria-label="Origin Repairs — home"
+          className="shrink-0 mr-2 transition-opacity duration-200 hover:opacity-70"
+        >
+          <Image
+            src="/origin_repairs_logo.png"
+            alt="Origin Repairs"
+            width={1536}
+            height={1024}
+            priority
+            sizes="160px"
+            className="h-14 w-auto object-contain dark:invert"
+          />
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-10 flex-1">
@@ -73,7 +87,14 @@ export default function Navbar() {
               <div className="flex flex-col h-full p-6">
                 {/* Brand */}
                 <div className="mb-10">
-                  <Logo size="sm" subtitle="Device Care" asLink={false} />
+                  <Image
+                    src="/origin_repairs_logo.png"
+                    alt="Origin Repairs"
+                    width={1536}
+                    height={1024}
+                    sizes="140px"
+                    className="h-12 w-auto object-contain dark:invert"
+                  />
                 </div>
 
                 {/* Nav */}

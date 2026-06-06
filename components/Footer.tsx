@@ -1,7 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { BUSINESS } from "@/lib/constants";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
-import Logo from "@/components/Logo";
 
 const services = [
   { href: "/repairs/iphone", label: "iPhone Repair" },
@@ -27,9 +27,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="mb-6">
-              <Logo size="sm" subtitle="Device Care" />
-            </div>
+            <Link href="/" aria-label="Origin Repairs — home" className="inline-block mb-6 transition-opacity duration-200 hover:opacity-70">
+              <Image
+                src="/origin_repairs_logo.png"
+                alt="Origin Repairs"
+                width={1536}
+                height={1024}
+                sizes="150px"
+                className="h-12 w-auto object-contain dark:invert"
+              />
+            </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
               Professional device repair in Leeds. Every repair backed by a 12-month warranty.
             </p>

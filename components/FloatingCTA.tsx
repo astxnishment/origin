@@ -46,7 +46,7 @@ export default function FloatingCTA() {
               Need help?
             </p>
             <p className="text-sm font-semibold text-white">
-              ORIGIN Repairs Leeds
+              Origin Repairs Leeds
             </p>
             <p className="text-xs text-zinc-400 mt-0.5">
               Mon–Fri 9am–6pm · Sat 10am–4pm

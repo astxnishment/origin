@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { BUSINESS } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "About ORIGIN Repairs | Leeds Device Repair Specialists",
-  description: "ORIGIN Repairs — a Leeds-based device repair specialist founded in 2018. Honest pricing, quality parts, 12-month warranty on every repair.",
+  title: "About — Leeds Device Repair Specialists",
+  description: "Origin Repairs — a Leeds-based device repair specialist founded in 2018. Honest pricing, quality parts, 12-month warranty on every repair.",
 };
 
 const values = [

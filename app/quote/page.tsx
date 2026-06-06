@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import FullCalculator from "@/components/FullCalculator";
 
 export const metadata: Metadata = {
-  title: "Instant Repair Quote | ORIGIN Repairs Leeds",
+  title: "Instant Repair Quote — Leeds",
   description:
     "Get an instant repair quote for your iPhone, Samsung, MacBook or any device. Transparent pricing, no hidden fees. Leeds based.",
 };
