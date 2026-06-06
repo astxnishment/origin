@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Repair Pricing Leeds | Transparent Fixed Quotes | ORIGIN Repairs",
+  description: "Clear, upfront repair pricing with no hidden fees. iPhone, Samsung, MacBook, iPad repairs. Fixed quote before we start. Use our instant quote calculator.",
+};
 
 const repairs = [
   { device: "iPhone", service: "Screen replacement", price: "£49–£149", time: "45 min" },

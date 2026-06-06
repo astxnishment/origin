@@ -71,13 +71,6 @@ export default function RootLayout({
       },
     ],
     priceRange: "£39-£599",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "1200",
-      bestRating: "5",
-      worstRating: "1",
-    },
     sameAs: [
       "https://www.google.com/search?q=Origin+Repairs+Leeds",
       "https://www.trustpilot.com",

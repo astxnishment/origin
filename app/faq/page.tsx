@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "FAQ | ORIGIN Repairs Leeds",
+  description: "Common questions about device repairs at ORIGIN Repairs. Pricing, warranty, turnaround times, and what to expect at our Leeds repair shop.",
+};
 import {
   Accordion,
   AccordionContent,

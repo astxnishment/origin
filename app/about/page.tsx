@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BUSINESS } from "@/lib/constants";
+
+export const metadata: Metadata = {
+  title: "About ORIGIN Repairs | Leeds Device Repair Specialists",
+  description: "ORIGIN Repairs — a Leeds-based device repair specialist founded in 2018. Honest pricing, quality parts, 12-month warranty on every repair.",
+};
 
 const values = [
   { title: "Honesty", desc: "Fixed quotes. No surprises. No upselling. You're told the full picture before anything starts." },
@@ -13,9 +19,9 @@ const values = [
 
 const stats = [
   { value: "2018", label: "Founded in Leeds" },
-  { value: "10k+", label: "Devices repaired" },
-  { value: "4.8★", label: "Google rating" },
+  { value: "Same Day", label: "Most repairs" },
   { value: "12 mo.", label: "Warranty standard" },
+  { value: "Free", label: "Diagnostics always" },
 ];
 
 export default function AboutPage() {
@@ -48,7 +54,7 @@ export default function AboutPage() {
                   We started because we were frustrated with the state of repair services. Hidden charges. Cheap parts. Technicians who&apos;d rather replace than repair. We knew there was a better way.
                 </p>
                 <p>
-                  Today, ORIGIN has repaired over 10,000 devices. We&apos;ve built a reputation in Leeds for being the team you can actually trust — whether it&apos;s a cracked iPhone screen or a catastrophic data loss situation.
+                  We&apos;ve built a reputation in Leeds for being the team you can actually trust — whether it&apos;s a cracked iPhone screen or a catastrophic data loss situation.
                 </p>
                 <p>
                   Every technician we hire meets a rigorous standard. Every part we use is OEM-grade or better. Every repair comes with a 12-month warranty, because we stand behind our work.

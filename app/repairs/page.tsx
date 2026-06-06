@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Device Repairs Leeds | iPhone, Samsung, MacBook | ORIGIN Repairs",
+  description: "Expert repairs for iPhone, Samsung, iPad, MacBook and more. Same-day service, OEM parts, 12-month warranty. Walk in or book online. Leeds LS2 8GL.",
+};
 
 const categories = [
   {

@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { SAMSUNG_GALAXY_S, SAMSUNG_GALAXY_A, SAMSUNG_GALAXY_Z, SAMSUNG_GALAXY_TAB } from "@/lib/repair-data";
+
+export const metadata: Metadata = {
+  title: "Samsung Repair Leeds | Galaxy S, A, Z Series | ORIGIN Repairs",
+  description: "Professional Samsung repairs in Leeds. Galaxy S, A-series, Z Fold/Flip, tablets. Screen, battery, camera and more. Same-day service, 12-month warranty.",
+};
 
 const repairTypes = [
   { name: "Screen replacement", price: "from £59", time: "60 min" },

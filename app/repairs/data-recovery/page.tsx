@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Data Recovery Leeds | Phone, Laptop, SSD | ORIGIN Repairs",
+  description: "Professional data recovery in Leeds. Recover lost files from phones, laptops, SSDs and hard drives. Free diagnostic. No data, no fee. 76 Cookridge Street.",
+};
 
 const recoveryTypes = [
   { name: "Phone data recovery", price: "£149–£299", time: "24–48 hrs", desc: "Deleted files, broken screen, water damage" },

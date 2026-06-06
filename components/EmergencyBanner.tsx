@@ -11,7 +11,7 @@ export default function EmergencyBanner() {
 
   return (
     <div
-      className="relative z-[60] w-full py-2.5 px-4"
+      className="sticky top-0 z-[70] w-full py-2.5 px-4"
       style={{
         background: "linear-gradient(90deg, rgba(37,99,235,0.95) 0%, rgba(59,130,246,0.9) 50%, rgba(37,99,235,0.95) 100%)",
         borderBottom: "1px solid rgba(255,255,255,0.1)",

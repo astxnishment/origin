@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { BUSINESS } from "@/lib/constants";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
@@ -27,8 +28,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                <span className="text-white text-sm font-bold leading-none">O</span>
+              <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+                <Image src="/origin_repairs_logo.png" alt="ORIGIN Repairs" width={32} height={32} className="w-full h-full object-cover" />
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-sm tracking-tight">ORIGIN</span>

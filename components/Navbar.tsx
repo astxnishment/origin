@@ -92,8 +92,8 @@ export default function Navbar() {
               <div className="flex flex-col h-full p-6">
                 {/* Brand */}
                 <div className="flex items-center gap-3 mb-10">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg leading-none">O</span>
+                  <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0">
+                    <Image src="/origin_repairs_logo.png" alt="ORIGIN Repairs" width={44} height={44} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-sm tracking-tight leading-tight">ORIGIN</span>

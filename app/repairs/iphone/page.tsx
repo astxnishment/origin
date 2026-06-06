@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { APPLE_IPHONES } from "@/lib/repair-data";
+
+export const metadata: Metadata = {
+  title: "iPhone Repair Leeds | All Models | ORIGIN Repairs",
+  description: "Expert iPhone repairs in Leeds. Screen replacement, battery, charging port and more. All models from iPhone SE to 17 Pro Max. Same-day service, 12-month warranty.",
+};
 
 const repairTypes = [
   { name: "Screen replacement", price: "from £79", time: "45 min" },
