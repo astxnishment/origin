@@ -9,10 +9,12 @@ import {
   getModelsByBrand,
   getRepairQuote,
   buildRepairSlug,
+  buildBookingHref,
   type Brand,
   type RepairType,
   type DeviceModel,
 } from "@/lib/calculatorData";
+import MobilePriceBar from "@/components/MobilePriceBar";
 import {
   Select,
   SelectContent,
@@ -103,6 +105,21 @@ export default function FullCalculator() {
   }
 
   const seoSlug = selectedModel ? buildRepairSlug(selectedModel, repairType) : null;
+  const bookHref = selectedModel ? buildBookingHref(selectedModel, repairType) : "/book";
+
+  // Mobile sticky bar appears once the quote card scrolls out of view
+  const quoteCardRef = useRef<HTMLDivElement | null>(null);
+  const [quoteVisible, setQuoteVisible] = useState(true);
+  useEffect(() => {
+    const el = quoteCardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setQuoteVisible(entry.isIntersecting),
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 items-start">
@@ -295,6 +312,7 @@ export default function FullCalculator() {
 
       {/* ── RIGHT: Quote result ─────────────────────────────────── */}
       <div
+        ref={quoteCardRef}
         className="lg:sticky lg:top-28 rounded-2xl overflow-hidden"
         style={{
           background: "linear-gradient(145deg, rgba(18,18,18,0.97) 0%, rgba(10,10,10,0.99) 100%)",
@@ -394,7 +412,7 @@ export default function FullCalculator() {
             className="w-full h-12 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white transition-all duration-200"
             style={{ boxShadow: "0 4px 24px rgba(59,130,246,0.3)" }}
           >
-            <Link href="/book" className="flex items-center justify-center gap-2">
+            <Link href={bookHref} className="flex items-center justify-center gap-2">
               Book This Repair
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -404,6 +422,18 @@ export default function FullCalculator() {
           </Button>
         </div>
       </div>
+
+      {/* Mobile sticky price bar */}
+      {quote && selectedModel && (
+        <MobilePriceBar
+          show={!quoteVisible}
+          deviceName={selectedModel.name}
+          repairType={repairType}
+          minPrice={quote.minPrice}
+          maxPrice={quote.maxPrice}
+          bookHref={bookHref}
+        />
+      )}
     </div>
   );
 }

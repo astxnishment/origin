@@ -6,21 +6,27 @@ export async function POST(req: NextRequest) {
       name,
       email,
       phone,
-      category,
       brand,
-      modelId,
+      model,
+      repair,
+      estimatedPrice,
+      estimatedTime,
+      warranty,
       date,
       time,
       issue,
     } = await req.json();
 
     // Validate required fields
-    if (!name || !email || !phone || !category || !brand || !modelId || !date || !time) {
+    if (!name || !email || !phone || !brand || !model || !repair || !date || !time) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
+
+    const deviceLine = `${brand} ${model}`;
+    const repairLine = repair + (estimatedPrice ? ` — ${estimatedPrice}` : "");
 
     // Format the booking details for email
     const bookingDate = new Date(date).toLocaleDateString("en-GB", {
@@ -37,11 +43,15 @@ export async function POST(req: NextRequest) {
 
       <h3>Booking Details</h3>
       <ul>
-        <li><strong>Device:</strong> ${brand} (${category})</li>
+        <li><strong>Device:</strong> ${deviceLine}</li>
+        <li><strong>Repair:</strong> ${repairLine}</li>
+        ${estimatedTime ? `<li><strong>Estimated time:</strong> ${estimatedTime}</li>` : ""}
+        ${warranty ? `<li><strong>Warranty:</strong> ${warranty}</li>` : ""}
         <li><strong>Date:</strong> ${bookingDate}</li>
         <li><strong>Time:</strong> ${time}</li>
         <li><strong>Issue:</strong> ${issue || "To be diagnosed"}</li>
       </ul>
+      <p style="font-size:13px;color:#666;">Estimated price is confirmed after a free in-store inspection.</p>
 
       <h3>What to Expect</h3>
       <ol>
@@ -98,13 +108,15 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         from: "Origin Repairs <noreply@originrepairs.co.uk>",
         to: "tech@originrepairs.co.uk",
-        subject: `New Booking: ${brand} repair on ${date}`,
+        subject: `New Booking: ${deviceLine} on ${date}`,
         html: `
           <h2>New Booking Received</h2>
           <p><strong>Customer:</strong> ${name}</p>
           <p><strong>Phone:</strong> ${phone}</p>
           <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Device:</strong> ${brand} (${category})</p>
+          <p><strong>Device:</strong> ${deviceLine}</p>
+          <p><strong>Repair:</strong> ${repairLine}</p>
+          ${estimatedTime ? `<p><strong>Estimated time:</strong> ${estimatedTime}</p>` : ""}
           <p><strong>Date:</strong> ${bookingDate}</p>
           <p><strong>Time:</strong> ${time}</p>
           <p><strong>Issue:</strong> ${issue || "To be diagnosed"}</p>

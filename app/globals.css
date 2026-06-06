@@ -160,6 +160,13 @@
       0 40px 120px -40px rgba(59, 130, 246, 0.2);
   }
 
+  /* Hide floating chat on mobile while the sticky price bar is up */
+  @media (max-width: 1023px) {
+    body.price-bar-active .floating-cta {
+      display: none;
+    }
+  }
+
   /* Smooth price count transition wrapper */
   @keyframes price-pop {
     0% { opacity: 0.4; transform: translateY(4px); }

@@ -15,11 +15,13 @@ import {
   REPAIR_TYPES,
   getModelsByBrand,
   getRepairQuote,
+  buildBookingHref,
   type Brand,
   type RepairType,
   type DeviceModel,
 } from "@/lib/calculatorData";
 import { DeviceIcon, type DeviceType } from "@/components/DeviceIcon";
+import MobilePriceBar from "@/components/MobilePriceBar";
 import { ArrowRight, Clock, ShieldCheck, CalendarCheck, Star } from "lucide-react";
 
 // ── Quick shortcuts ──────────────────────────────────────────────
@@ -98,6 +100,23 @@ export default function HeroCalculator() {
   const estimate = quote ? Math.round((quote.minPrice + quote.maxPrice) / 2) : 0;
   const animatedPrice = useCountUp(estimate);
 
+  // Booking handoff link with prefilled device/repair
+  const bookHref = selectedModel ? buildBookingHref(selectedModel, repairType) : "/book";
+
+  // Show the mobile sticky bar once the calculator card scrolls out of view
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [cardVisible, setCardVisible] = useState(true);
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setCardVisible(entry.isIntersecting),
+      { threshold: 0.25 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   function applyShortcut(sc: (typeof SHORTCUTS)[0]) {
     setBrand(sc.brand);
     setModelId(sc.modelId);
@@ -117,7 +136,7 @@ export default function HeroCalculator() {
       <div className="glow-ambient absolute -inset-x-16 -top-24 -bottom-16 pointer-events-none" />
 
       {/* ── Card ──────────────────────────────────────────────── */}
-      <div className="surface-glass relative rounded-3xl overflow-hidden">
+      <div ref={cardRef} className="surface-glass relative rounded-3xl overflow-hidden">
         {/* Top accent hairline */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
@@ -288,7 +307,7 @@ export default function HeroCalculator() {
             className="w-full h-12 rounded-xl font-semibold text-[15px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white transition-all duration-200"
             style={{ boxShadow: "0 8px 30px -8px rgba(59,130,246,0.5)" }}
           >
-            <Link href="/book" className="flex items-center justify-center gap-2">
+            <Link href={bookHref} className="flex items-center justify-center gap-2">
               Book Same-Day Repair
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -301,6 +320,18 @@ export default function HeroCalculator() {
           </div>
         </div>
       </div>
+
+      {/* Mobile sticky price bar — appears once card scrolls away */}
+      {quote && selectedModel && (
+        <MobilePriceBar
+          show={!cardVisible}
+          deviceName={selectedModel.name}
+          repairType={repairType}
+          minPrice={quote.minPrice}
+          maxPrice={quote.maxPrice}
+          bookHref={bookHref}
+        />
+      )}
     </div>
   );
 }

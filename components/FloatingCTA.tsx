@@ -25,7 +25,7 @@ export default function FloatingCTA() {
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3"
+      className="floating-cta fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3"
       style={{ filter: "drop-shadow(0 8px 32px rgba(0,0,0,0.4))" }}
     >
       {/* Expanded panel */}

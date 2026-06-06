@@ -219,3 +219,27 @@ export function parseRepairSlug(slug: string): { device: DeviceModel; repairType
   }
   return null;
 }
+
+// ── Brand <-> slug ────────────────────────────────────────────────
+export function brandToSlug(brand: Brand): string {
+  return brand.toLowerCase().replace(/\s+/g, "-");
+}
+
+export function slugToBrand(slug: string): Brand | undefined {
+  return BRANDS.find((b) => brandToSlug(b) === slug);
+}
+
+export function getDeviceById(id: string): DeviceModel | undefined {
+  return ALL_DEVICES.find((d) => d.id === id);
+}
+
+// ── Calculator → Booking handoff ──────────────────────────────────
+// Produces e.g. /book?brand=apple&model=iphone-16-pro&repair=screen-replacement
+export function buildBookingHref(device: DeviceModel, repairType: RepairType): string {
+  const params = new URLSearchParams({
+    brand: brandToSlug(device.brand),
+    model: device.id,
+    repair: repairTypeToSlug(repairType),
+  });
+  return `/book?${params.toString()}`;
+}
