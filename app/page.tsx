@@ -2,6 +2,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import QuoteCalculator from "@/components/QuoteCalculator";
+import HeroCalculator from "@/components/HeroCalculator";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -9,7 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, Sparkles } from "lucide-react";
+import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap } from "lucide-react";
 import { BUSINESS, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
 
 const services = [
@@ -127,70 +128,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: Premium Visual */}
-          <div className="relative hidden lg:block">
-            {/* Outer glow container */}
-            <div className="absolute -inset-8 bg-gradient-to-b from-blue-500/10 via-transparent to-transparent rounded-3xl blur-2xl pointer-events-none" />
-
-            {/* Premium card */}
-            <div className="relative rounded-2xl border border-blue-500/30 overflow-hidden shadow-2xl card-premium" style={{
-              background: 'linear-gradient(135deg, rgba(15,15,15,0.9) 0%, rgba(10,10,10,0.95) 100%)',
-              boxShadow: '0 0 0 1px rgba(59, 130, 246, 0.2), 0 20px 60px rgba(59, 130, 246, 0.1)',
-            }}>
-              {/* Card header */}
-              <div className="px-8 pt-8 pb-6 border-b border-blue-500/10">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-blue-500 uppercase tracking-wider">Repair Quote</span>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-green-500/15 text-green-500 font-medium">12 month warranty</span>
-                </div>
-                <h3 className="text-xl font-semibold text-foreground">iPhone 15 Pro Max</h3>
-              </div>
-
-              {/* Card body */}
-              <div className="px-8 py-8 space-y-8">
-                {/* Repair type section */}
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Repair Type</p>
-                  <p className="text-lg font-semibold text-foreground">Screen Replacement</p>
-                </div>
-
-                {/* Price section */}
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Estimated Price</p>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-4xl font-bold text-foreground">£89–£129</p>
-                    <p className="text-xs text-muted-foreground">incl. labour</p>
-                  </div>
-                </div>
-
-                {/* Status boxes */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg bg-surface/50 border border-blue-500/10 p-4">
-                    <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Est. Time</p>
-                    <p className="text-sm font-semibold text-foreground">45 minutes</p>
-                  </div>
-                  <div className="rounded-lg bg-surface/50 border border-green-500/10 p-4">
-                    <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Warranty</p>
-                    <p className="text-sm font-semibold text-green-500">12 months</p>
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <button className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium py-3 rounded-lg transition-all duration-200 text-sm shadow-lg hover:shadow-xl">
-                  Book Now
-                </button>
-              </div>
-
-              {/* Card footer - trust indicator */}
-              <div className="px-8 py-4 bg-surface/30 border-t border-blue-500/10 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-blue-500" />
-                  <span className="text-xs text-muted-foreground">Premium service</span>
-                </div>
-                <span className="text-xs text-blue-500 font-medium">Free Diagnostics</span>
-              </div>
-            </div>
-          </div>
+          {/* Right: Interactive Calculator */}
+          <HeroCalculator />
         </div>
       </section>
 
