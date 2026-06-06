@@ -23,35 +23,38 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="glass fixed top-0 inset-x-0 z-50">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-8">
+    <header className="glass fixed top-0 inset-x-0 z-50 border-b border-blue-500/10">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-8">
         {/* Logo */}
         <Link
           href="/"
           className="flex items-center gap-3 shrink-0 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
             <span className="text-white font-bold text-lg leading-none">O</span>
           </div>
           <div className="hidden sm:flex flex-col">
-            <span className="font-bold text-sm tracking-tight text-foreground">ORIGIN</span>
-            <span className="text-[10px] text-muted-foreground leading-none">Device Care</span>
+            <span className="font-bold text-sm tracking-tight text-foreground leading-tight">ORIGIN</span>
+            <span className="text-[10px] text-muted-foreground leading-tight">Device Care</span>
           </div>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8 flex-1">
+        <nav className="hidden md:flex items-center gap-10 flex-1">
           {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`text-sm font-medium transition-colors duration-150 ${
+              className={`text-sm font-medium transition-colors duration-150 relative ${
                 pathname === href || pathname.startsWith(href + "/")
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {label}
+              {(pathname === href || pathname.startsWith(href + "/")) && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full" />
+              )}
             </Link>
           ))}
         </nav>
@@ -61,7 +64,7 @@ export default function Navbar() {
           <ThemeToggle />
           <Button
             asChild
-            className="btn-primary"
+            className="btn-primary text-sm"
           >
             <Link href="/book">Book Repair</Link>
           </Button>
@@ -81,12 +84,12 @@ export default function Navbar() {
               <div className="flex flex-col h-full p-6">
                 {/* Brand */}
                 <div className="flex items-center gap-3 mb-10">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                     <span className="text-white font-bold text-lg leading-none">O</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-sm tracking-tight">ORIGIN</span>
-                    <span className="text-[10px] text-muted-foreground leading-none">Device Care</span>
+                    <span className="font-bold text-sm tracking-tight leading-tight">ORIGIN</span>
+                    <span className="text-[10px] text-muted-foreground leading-tight">Device Care</span>
                   </div>
                 </div>
 

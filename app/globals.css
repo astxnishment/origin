@@ -113,11 +113,11 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
   }
 
-  ::selection {
-    background: #2563eb22;
-    color: inherit;
+  .dark body {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -136,10 +136,9 @@
   }
 
   .dark .glass {
-    background: rgba(3, 3, 3, 0.75);
+    background: rgba(3, 3, 3, 0.8);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   /* Gradient text */
@@ -174,12 +173,12 @@
 
   /* Button base */
   .btn-primary {
-    @apply bg-primary text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-all duration-200;
+    @apply bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-all duration-200;
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2);
   }
 
   .btn-primary:hover {
-    @apply bg-blue-600 shadow-lg;
+    @apply shadow-lg from-blue-700 to-blue-600;
     box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3), 0 4px 20px rgba(59, 130, 246, 0.2);
   }
 
@@ -188,7 +187,7 @@
   }
 
   .btn-secondary:hover {
-    @apply bg-surface;
+    @apply bg-surface border-muted-foreground;
   }
 
   /* Section separator */
@@ -264,6 +263,7 @@
   .icon-circle {
     @apply w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0;
     background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
   }
 
   .icon-circle.accent {

@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap } from "lucide-react";
+import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, Sparkles } from "lucide-react";
 import { BUSINESS, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
 
 const services = [
@@ -52,10 +52,10 @@ const services = [
 ];
 
 const trustPoints = [
-  { icon: Clock, label: "Same-day", desc: "Most repairs while you wait" },
-  { icon: Shield, label: "12-month warranty", desc: "Parts & labour covered" },
-  { icon: Zap, label: "Transparent pricing", desc: "No hidden fees" },
-  { icon: Star, label: "Expert technicians", desc: "Certified engineers" },
+  { icon: Zap, label: "Same-Day Diagnostics", desc: "Free assessment, no obligation" },
+  { icon: Shield, label: "12-Month Warranty", desc: "Parts & labour fully covered" },
+  { icon: MapPin, label: "Leeds Based", desc: "Local service since 2018" },
+  { icon: Check, label: "Transparent Pricing", desc: "Fixed quotes, no surprises" },
 ];
 
 export default function Home() {
@@ -64,21 +64,21 @@ export default function Home() {
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center pt-32 pb-16 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
         {/* Background texture */}
-        <div className="absolute inset-0 dot-grid opacity-50 pointer-events-none" />
+        <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
 
-        {/* Gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-40 right-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+        {/* Gradient orbs - more subtle */}
+        <div className="absolute top-40 left-1/4 w-96 h-96 bg-blue-500/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-32 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           {/* Left: Text */}
           <div>
             {/* Badge */}
             <div className="badge-premium mb-6 w-fit">
               <MapPin className="h-3.5 w-3.5" />
-              Leeds, UK • Same-day service
+              Leeds, UK
             </div>
 
             {/* Headline */}
@@ -87,8 +87,8 @@ export default function Home() {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed mb-10">
-              iPhone, Samsung, laptop and tablet repairs with clear pricing, quality parts, and warranty-backed service.
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed mb-12">
+              Expert repairs on iPhone, Samsung, MacBook and more. Clear pricing. Quality parts. Warranty-backed service.
             </p>
 
             {/* CTAs */}
@@ -110,87 +110,100 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Trust badges row */}
-            <div className="flex flex-col sm:flex-row gap-8 text-sm">
-              <div>
-                <p className="font-bold text-2xl text-foreground">4.8★</p>
-                <p className="text-muted-foreground">1,200+ reviews</p>
+            {/* Real trust callouts */}
+            <div className="text-sm space-y-3">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                <span>Same-day diagnostics and repairs</span>
               </div>
-              <div className="w-px bg-border hidden sm:block" />
-              <div>
-                <p className="font-bold text-2xl text-foreground">60 min</p>
-                <p className="text-muted-foreground">Average turnaround</p>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                <span>12-month warranty on every repair</span>
               </div>
-              <div className="w-px bg-border hidden sm:block" />
-              <div>
-                <p className="font-bold text-2xl text-foreground">10k+</p>
-                <p className="text-muted-foreground">Devices repaired</p>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                <span>Fixed pricing, no hidden fees</span>
               </div>
             </div>
           </div>
 
-          {/* Right: Visual */}
+          {/* Right: Premium Visual */}
           <div className="relative hidden lg:block">
-            <div className="relative w-full aspect-square rounded-3xl border border-border overflow-hidden bg-gradient-to-br from-surface to-card p-8 glow-blue-lg">
-              {/* Diagnostic card visual */}
-              <div className="absolute inset-0 flex flex-col justify-between p-8">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-foreground">iPhone 15 Pro</div>
-                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Screen repair</span>
-                      <span className="text-foreground font-medium">£79–£129</span>
-                    </div>
-                    <div className="w-full bg-surface rounded-full h-1.5">
-                      <div className="bg-blue-500 h-full rounded-full" style={{ width: "100%" }} />
-                    </div>
-                  </div>
-                </div>
+            {/* Outer glow container */}
+            <div className="absolute -inset-8 bg-gradient-to-b from-blue-500/10 via-transparent to-transparent rounded-3xl blur-2xl pointer-events-none" />
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-surface rounded-lg p-3">
-                      <p className="text-[10px] text-muted-foreground mb-1">Est. time</p>
-                      <p className="text-sm font-semibold text-foreground">45 min</p>
-                    </div>
-                    <div className="bg-surface rounded-lg p-3">
-                      <p className="text-[10px] text-muted-foreground mb-1">Warranty</p>
-                      <p className="text-sm font-semibold text-green-500">12 months</p>
-                    </div>
-                  </div>
-                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg text-sm transition-all duration-200">
-                    Book Now
-                  </button>
+            {/* Premium card */}
+            <div className="relative rounded-2xl border border-blue-500/30 overflow-hidden shadow-2xl card-premium" style={{
+              background: 'linear-gradient(135deg, rgba(15,15,15,0.9) 0%, rgba(10,10,10,0.95) 100%)',
+              boxShadow: '0 0 0 1px rgba(59, 130, 246, 0.2), 0 20px 60px rgba(59, 130, 246, 0.1)',
+            }}>
+              {/* Card header */}
+              <div className="px-8 pt-8 pb-6 border-b border-blue-500/10">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-blue-500 uppercase tracking-wider">Repair Quote</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-green-500/15 text-green-500 font-medium">12 month warranty</span>
                 </div>
+                <h3 className="text-xl font-semibold text-foreground">iPhone 15 Pro Max</h3>
               </div>
-            </div>
 
-            {/* Floating badge */}
-            <div className="absolute -bottom-6 -right-6 bg-card rounded-2xl border border-border p-4 shadow-lg">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-xs">✓</div>
-                <div className="text-sm">
-                  <p className="font-semibold text-foreground">Warranty</p>
-                  <p className="text-[11px] text-muted-foreground">12-month coverage</p>
+              {/* Card body */}
+              <div className="px-8 py-8 space-y-8">
+                {/* Repair type section */}
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Repair Type</p>
+                  <p className="text-lg font-semibold text-foreground">Screen Replacement</p>
                 </div>
+
+                {/* Price section */}
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Estimated Price</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-4xl font-bold text-foreground">£89–£129</p>
+                    <p className="text-xs text-muted-foreground">incl. labour</p>
+                  </div>
+                </div>
+
+                {/* Status boxes */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-surface/50 border border-blue-500/10 p-4">
+                    <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Est. Time</p>
+                    <p className="text-sm font-semibold text-foreground">45 minutes</p>
+                  </div>
+                  <div className="rounded-lg bg-surface/50 border border-green-500/10 p-4">
+                    <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Warranty</p>
+                    <p className="text-sm font-semibold text-green-500">12 months</p>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <button className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium py-3 rounded-lg transition-all duration-200 text-sm shadow-lg hover:shadow-xl">
+                  Book Now
+                </button>
+              </div>
+
+              {/* Card footer - trust indicator */}
+              <div className="px-8 py-4 bg-surface/30 border-t border-blue-500/10 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-blue-500" />
+                  <span className="text-xs text-muted-foreground">Premium service</span>
+                </div>
+                <span className="text-xs text-blue-500 font-medium">Free Diagnostics</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── TRUST POINTS ─────────────────────────────── */}
-      <section className="section-border">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+      {/* ── TRUST STRIP ──────────────────────────────── */}
+      <section className="relative border-y border-blue-500/10 bg-gradient-to-r from-blue-500/5 via-transparent to-blue-500/5 py-12 sm:py-16">
+        <div className="absolute inset-0 dot-grid opacity-30 pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 sm:gap-6">
             {trustPoints.map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="stat-box">
-                <Icon className="h-5 w-5 text-blue-500 mb-3" />
-                <p className="font-semibold text-sm text-foreground mb-1">{label}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+              <div key={label} className="text-center sm:text-left">
+                <Icon className="h-5 w-5 text-blue-500 mb-3 mx-auto sm:mx-0" />
+                <p className="font-semibold text-sm text-foreground mb-0.5">{label}</p>
+                <p className="text-xs text-muted-foreground">{desc}</p>
               </div>
             ))}
           </div>
@@ -224,7 +237,7 @@ export default function Home() {
       </section>
 
       {/* ── REPAIR PROCESS ───────────────────────────── */}
-      <section className="section-border">
+      <section className="section-border bg-surface/30">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
           <div className="mb-14">
             <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">How it works</p>
@@ -250,7 +263,7 @@ export default function Home() {
       </section>
 
       {/* ── QUOTE CALCULATOR ─────────────────────────── */}
-      <section className="section-border bg-surface/40">
+      <section className="section-border">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
           <div className="mb-14">
             <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Pricing</p>
@@ -266,7 +279,7 @@ export default function Home() {
       </section>
 
       {/* ── TESTIMONIALS ─────────────────────────────── */}
-      <section className="section-border">
+      <section className="section-border bg-surface/30">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
           <div className="mb-14">
             <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Reviews</p>
@@ -300,7 +313,7 @@ export default function Home() {
       </section>
 
       {/* ── FAQ ──────────────────────────────────────── */}
-      <section className="section-border bg-surface/40">
+      <section className="section-border">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-20">
           <div className="mb-14">
             <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">FAQ</p>
@@ -338,7 +351,7 @@ export default function Home() {
       {/* ── FINAL CTA ────────────────────────────────── */}
       <section className="section-border">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-24">
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-12 sm:p-20 text-center glow-blue-lg">
+          <div className="relative overflow-hidden rounded-3xl border border-blue-500/20 bg-card p-12 sm:p-20 text-center glow-blue-lg">
             {/* Gradient accent */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -347,7 +360,7 @@ export default function Home() {
                 Ready to get your device fixed?
               </h2>
               <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-                Book online, get an instant quote, or walk in. We're open Monday to Saturday.
+                Book online, get an instant quote, or walk in. Free diagnostics. Fixed pricing. 12-month warranty.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
@@ -369,7 +382,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-muted-foreground">
-                {BUSINESS.address} • Mon–Fri 9am–6pm • Sat 10am–4pm
+                76 Cookridge Street, Leeds • Mon–Fri 9am–6pm • Sat 10am–4pm
               </p>
             </div>
           </div>
