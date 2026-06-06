@@ -129,7 +129,9 @@ export default function Home() {
           </div>
 
           {/* Right: Interactive Calculator */}
-          <HeroCalculator />
+          <div className="w-full">
+            <HeroCalculator />
+          </div>
         </div>
       </section>
 

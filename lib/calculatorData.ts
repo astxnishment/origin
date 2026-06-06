@@ -189,3 +189,33 @@ function getPricing(device: DeviceModel, repairType: RepairType): RepairPrice {
 export function getRepairQuote(device: DeviceModel, repairType: RepairType): RepairPrice {
   return getPricing(device, repairType);
 }
+
+// Slug helpers for SEO pages
+export function repairTypeToSlug(repairType: RepairType): string {
+  return repairType
+    .toLowerCase()
+    .replace(/\s*\/\s*/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-{2,}/g, "-");
+}
+
+export function slugToRepairType(slug: string): RepairType | undefined {
+  return REPAIR_TYPES.find((r) => repairTypeToSlug(r) === slug);
+}
+
+export function buildRepairSlug(device: DeviceModel, repairType: RepairType): string {
+  return `${device.id}-${repairTypeToSlug(repairType)}-leeds`;
+}
+
+export function parseRepairSlug(slug: string): { device: DeviceModel; repairType: RepairType } | null {
+  for (const repairType of REPAIR_TYPES) {
+    const repairSlug = repairTypeToSlug(repairType);
+    const suffix = `-${repairSlug}-leeds`;
+    if (slug.endsWith(suffix)) {
+      const deviceId = slug.slice(0, slug.length - suffix.length);
+      const device = ALL_DEVICES.find((d) => d.id === deviceId);
+      if (device) return { device, repairType };
+    }
+  }
+  return null;
+}
