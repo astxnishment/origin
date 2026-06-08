@@ -95,17 +95,21 @@ export default async function RepairPage({
       telephone: "07768426754",
     },
     areaServed: "Leeds",
-    offers: {
-      "@type": "Offer",
-      price: `${quote.minPrice}`,
-      priceCurrency: "GBP",
-      priceSpecification: {
-        "@type": "PriceSpecification",
-        minPrice: quote.minPrice,
-        maxPrice: quote.maxPrice,
-        priceCurrency: "GBP",
-      },
-    },
+    ...(quote.inspectionRequired
+      ? {}
+      : {
+          offers: {
+            "@type": "Offer",
+            price: `${quote.minPrice}`,
+            priceCurrency: "GBP",
+            priceSpecification: {
+              "@type": "PriceSpecification",
+              minPrice: quote.minPrice,
+              maxPrice: quote.maxPrice,
+              priceCurrency: "GBP",
+            },
+          },
+        }),
   };
 
   return (
@@ -214,14 +218,16 @@ export default async function RepairPage({
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                     Estimated Price
                   </p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold">
-                      £{quote.minPrice}
-                    </span>
-                    <span className="text-2xl font-semibold text-muted-foreground">
-                      – £{quote.maxPrice}
-                    </span>
-                  </div>
+                  {quote.inspectionRequired ? (
+                    <p className="text-2xl font-bold">Inspection required</p>
+                  ) : (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold">£{quote.minPrice}</span>
+                      <span className="text-2xl font-semibold text-muted-foreground">
+                        –£{quote.maxPrice}
+                      </span>
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground mt-1">
                     incl. parts & labour
                   </p>
@@ -307,7 +313,7 @@ export default async function RepairPage({
                     {rt}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    From £{q.minPrice} · {q.estimatedTime}
+                    {q.inspectionRequired ? "Inspection required" : `From £${q.minPrice}`} · {q.estimatedTime}
                   </p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />

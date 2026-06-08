@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroCalculator from "@/components/HeroCalculator";
@@ -9,45 +10,46 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, ExternalLink } from "lucide-react";
+import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, ExternalLink, Wrench } from "lucide-react";
 import { BUSINESS, REPAIR_PROCESS, FAQS } from "@/lib/constants";
+import { serviceImages } from "@/lib/serviceImages";
 
 const services = [
   {
     label: "iPhone",
     href: "/repairs/iphone",
     tagline: "All models • Screen • Battery • Camera",
-    icon: "📱",
+    image: serviceImages.iphone,
   },
   {
     label: "Samsung",
     href: "/repairs/samsung",
-    tagline: "Galaxy S • A-series • Z-series • Tab",
-    icon: "📱",
+    tagline: "Galaxy S • A-series • Z-series",
+    image: serviceImages.samsung,
   },
   {
     label: "MacBook",
     href: "/repairs/laptops",
     tagline: "Air • Pro • Screen • Battery • Keyboard",
-    icon: "💻",
+    image: serviceImages.macbook,
   },
   {
     label: "iPad",
     href: "/repairs/ipad",
     tagline: "All models • Screen • Battery • Port",
-    icon: "📱",
+    image: serviceImages.ipad,
   },
   {
     label: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phone • Laptop • SSD • Hard drive",
-    icon: "🔍",
+    image: serviceImages.dataRecovery,
   },
   {
     label: "All Repairs",
     href: "/repairs",
     tagline: "Don't see your device? We cover it.",
-    icon: "🔧",
+    image: null,
   },
 ];
 
@@ -171,13 +173,31 @@ export default function Home() {
           </div>
 
           <div className="grid-bordered grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map(({ label, href, tagline, icon }) => (
+            {services.map(({ label, href, tagline, image }) => (
               <Link
                 key={label}
                 href={href}
-                className="p-7 sm:p-8 hover:bg-surface/80 transition-colors duration-300 group"
+                className="p-7 sm:p-8 hover:bg-surface/80 transition-colors duration-300 group flex flex-col"
               >
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{icon}</div>
+                {/* Device image or fallback icon */}
+                <div className="h-32 flex items-center justify-center mb-5">
+                  {image ? (
+                    <div className="relative h-full w-full flex items-center justify-center">
+                      <div className="absolute inset-0 rounded-xl bg-blue-500/5 group-hover:bg-blue-500/8 transition-colors" />
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        width={image.width}
+                        height={image.height}
+                        className="relative object-contain max-h-28 w-auto drop-shadow-[0_8px_24px_rgba(59,130,246,0.15)] group-hover:drop-shadow-[0_8px_32px_rgba(59,130,246,0.25)] transition-all duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center group-hover:border-blue-500/30 transition-colors">
+                      <Wrench className="h-7 w-7 text-muted-foreground group-hover:text-blue-500 transition-colors" />
+                    </div>
+                  )}
+                </div>
                 <h3 className="font-bold text-lg text-foreground mb-1">{label}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{tagline}</p>
               </Link>
@@ -353,39 +373,39 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden">
             {[
               {
-                icon: "⚡",
+                Icon: Zap,
                 title: "Same-Day Service",
                 desc: "Most screen and battery repairs completed the same day. Walk in, wait, leave with a working device.",
               },
               {
-                icon: "💰",
+                Icon: Check,
                 title: "Transparent Pricing",
                 desc: "Fixed quote before we start. No diagnostics fees, no hidden charges, no surprises.",
               },
               {
-                icon: "🛡️",
+                Icon: Shield,
                 title: "12-Month Warranty",
                 desc: "Full 12-month warranty on eligible repairs. Parts and labour. We'll fix it free if anything goes wrong.",
               },
               {
-                icon: "📍",
+                Icon: MapPin,
                 title: "Leeds Based",
                 desc: "Locally owned. Walk in at 76 Cookridge Street. Real people, real accountability.",
               },
               {
-                icon: "🔧",
+                Icon: Wrench,
                 title: "Quality Parts",
                 desc: "OEM-grade components that meet manufacturer standards. Nothing cheap, nothing counterfeit.",
               },
               {
-                icon: "🔍",
+                Icon: Star,
                 title: "Free Diagnostics",
                 desc: "If we can't fix it, you don't pay. Free assessment on every device, every time.",
               },
-            ].map(({ icon, title, desc }) => (
+            ].map(({ Icon, title, desc }) => (
               <div key={title} className="bg-card p-8 group">
-                <div className="text-3xl mb-5 group-hover:scale-110 transition-transform duration-300 w-fit">
-                  {icon}
+                <div className="mb-5 w-fit">
+                  <Icon className="h-6 w-6 text-blue-500 group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <h3 className="font-bold text-lg text-foreground mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>

@@ -4,11 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
-import {
-  ALL_DEVICES,
-  getRepairQuote,
-  type RepairType,
-} from "@/lib/calculatorData";
+import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Repair Pricing Leeds | Transparent Fixed Quotes",
@@ -16,98 +12,90 @@ export const metadata: Metadata = {
     "Clear, upfront repair pricing with no hidden fees. iPhone, Samsung, MacBook, iPad repairs. Fixed quote before we start. Use our instant quote calculator.",
 };
 
-// Pull prices from the single calculatorData source so they stay consistent
-function devicePrice(deviceId: string, repairType: RepairType) {
-  const device = ALL_DEVICES.find((d) => d.id === deviceId);
-  if (!device) return null;
-  const q = getRepairQuote(device, repairType);
-  return `£${q.minPrice}–£${q.maxPrice}`;
+function price(brand: string, model: string, repairType: string): string {
+  const row = getRepairPrice(brand, model, repairType);
+  if (!row) return "POA";
+  return formatPriceRange(row.minPrice, row.maxPrice);
 }
 
 const repairs = [
   {
-    device: "iPhone (budget/older)",
+    device: "iPhone 16e",
     service: "Screen replacement",
-    price: devicePrice("iphone-se", "Screen replacement"),
-    time: "45 min",
+    price: price("Apple", "iPhone 16e", "Screen Replacement"),
+    time: "45–90 min",
   },
   {
-    device: "iPhone (flagship)",
+    device: "iPhone 16 Pro",
     service: "Screen replacement",
-    price: devicePrice("iphone-16-pro", "Screen replacement"),
-    time: "45 min",
+    price: price("Apple", "iPhone 16 Pro", "Screen Replacement"),
+    time: "45–90 min",
   },
   {
-    device: "iPhone",
+    device: "iPhone 16",
     service: "Battery replacement",
-    price: devicePrice("iphone-16", "Battery replacement"),
-    time: "30 min",
+    price: price("Apple", "iPhone 16", "Battery Replacement"),
+    time: "30–75 min",
   },
   {
-    device: "Samsung Galaxy S (flagship)",
+    device: "iPhone 16 Pro",
+    service: "Charging port",
+    price: price("Apple", "iPhone 16 Pro", "Charging Port Replacement"),
+    time: "1–2 hrs",
+  },
+  {
+    device: "Galaxy S25 Ultra",
     service: "Screen replacement",
-    price: devicePrice("galaxy-s24-ultra", "Screen replacement"),
+    price: price("Samsung", "Galaxy S25 Ultra", "Screen Replacement"),
+    time: "60–90 min",
+  },
+  {
+    device: "Galaxy A55",
+    service: "Screen replacement",
+    price: price("Samsung", "Galaxy A55", "Screen Assembly Replacement"),
     time: "60 min",
   },
   {
-    device: "Samsung Galaxy A (mid)",
-    service: "Screen replacement",
-    price: devicePrice("galaxy-a54", "Screen replacement"),
-    time: "60 min",
-  },
-  {
-    device: "Samsung",
+    device: "Galaxy S25",
     service: "Battery replacement",
-    price: devicePrice("galaxy-s24", "Battery replacement"),
-    time: "45 min",
+    price: price("Samsung", "Galaxy S25", "Battery Replacement"),
+    time: "45–75 min",
   },
   {
-    device: "iPad",
+    device: "iPad Air 11-inch M2/M3",
     service: "Screen replacement",
-    price: devicePrice("ipad-air", "Screen replacement"),
+    price: price("Apple", "iPad Air 11-inch M2/M3", "Screen Replacement"),
     time: "90 min",
   },
   {
-    device: "iPad",
+    device: "iPad 10.9 10th Gen",
     service: "Battery replacement",
-    price: devicePrice("ipad-air", "Battery replacement"),
-    time: "60 min",
+    price: price("Apple", "iPad 10.9 10th Gen", "Battery Replacement"),
+    time: "60–90 min",
   },
   {
-    device: "MacBook (flagship)",
+    device: "MacBook Air 13 M3",
+    service: "Battery replacement",
+    price: price("Apple", "MacBook Air 13 M3", "Battery Replacement"),
+    time: "90 min",
+  },
+  {
+    device: "MacBook Pro 14 M1/M2/M3",
     service: "Screen replacement",
-    price: devicePrice("macbook-pro-16-m4", "Screen replacement"),
+    price: price("Apple", "MacBook Pro 14 M1/M2/M3", "Screen Assembly Replacement"),
     time: "2–3 hrs",
-  },
-  {
-    device: "MacBook (mid)",
-    service: "Battery replacement",
-    price: devicePrice("macbook-air-13-m3", "Battery replacement"),
-    time: "90 min",
-  },
-  {
-    device: "Any device",
-    service: "Charging port repair",
-    price: "£53–£90",
-    time: "60 min",
-  },
-  {
-    device: "Any device",
-    service: "Camera replacement",
-    price: "£60–£90",
-    time: "60 min",
   },
   {
     device: "Any device",
     service: "Water damage assessment",
-    price: "£50–£72",
-    time: "24–48 hrs",
+    price: "Inspection required",
+    time: "Same day",
   },
   {
-    device: "Laptop / Phone",
-    service: "Data recovery",
-    price: devicePrice("laptop-mid", "Data recovery"),
-    time: "1–7 days",
+    device: "Any device",
+    service: "Data recovery assessment",
+    price: "Inspection required",
+    time: "24–48 hrs",
   },
 ];
 
@@ -178,18 +166,16 @@ export default function PricingPage() {
           <div className="py-16 border-b border-border">
             <h2 className="text-xl font-semibold mb-3">Common repair prices</h2>
             <p className="text-[13px] text-muted-foreground mb-8">
-              Prices shown are ranges. Exact quote given free before any work begins.{" "}
+              Prices are estimates and may vary after inspection depending on part quality, device condition, and availability.{" "}
               <Link href="/quote" className="text-primary hover:underline">Use the calculator</Link> for your specific model.
             </p>
             <div className="rounded-xl border border-border overflow-hidden">
-              {/* Header row */}
               <div className="grid grid-cols-4 bg-surface px-5 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Device</p>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground col-span-2">Service</p>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground text-right">Price</p>
               </div>
-              {/* Rows */}
-              {repairs.map(({ device, service, price, time }) => (
+              {repairs.map(({ device, service, price: p, time }) => (
                 <div
                   key={`${device}-${service}`}
                   className="grid grid-cols-4 px-5 py-4 items-center border-t border-border bg-card hover:bg-surface transition-colors"
@@ -199,7 +185,7 @@ export default function PricingPage() {
                     <p className="text-[13px] font-medium text-foreground">{service}</p>
                     <p className="text-[12px] text-muted-foreground">{time}</p>
                   </div>
-                  <p className="text-[13px] font-semibold text-foreground text-right">{price ?? "POA"}</p>
+                  <p className="text-[13px] font-semibold text-foreground text-right">{p}</p>
                 </div>
               ))}
             </div>

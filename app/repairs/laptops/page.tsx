@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { APPLE_MACBOOKS } from "@/lib/repair-data";
+import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
   title: "MacBook & Laptop Repair Leeds",
@@ -50,14 +52,22 @@ export default function LaptopRepairsPage() {
             <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
               Laptop &amp; MacBook Repairs · Leeds
             </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
                   Laptop repair you can trust.
                 </h1>
-                <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
+                <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
                   MacBook, Dell, HP, Lenovo — we repair them all. Your data is always protected. Every repair comes with a 12-month warranty.
                 </p>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
+                  {guarantees.map((g) => (
+                    <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                      <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                      {g}
+                    </li>
+                  ))}
+                </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
                     <Link href="/book">Book Laptop Repair</Link>
@@ -69,14 +79,20 @@ export default function LaptopRepairsPage() {
                   </Button>
                 </div>
               </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {guarantees.map((g) => (
-                  <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                    <Check className="h-3.5 w-3.5 text-accent shrink-0" />
-                    {g}
-                  </li>
-                ))}
-              </ul>
+              {/* Hero device image */}
+              <div className="flex items-center justify-center lg:justify-end">
+                <div className="relative w-full max-w-sm">
+                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/6 blur-3xl pointer-events-none" />
+                  <Image
+                    src={serviceImages.macbook.src}
+                    alt={serviceImages.macbook.alt}
+                    width={500}
+                    height={330}
+                    className="relative object-contain w-full drop-shadow-[0_16px_48px_rgba(59,130,246,0.18)]"
+                    priority
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

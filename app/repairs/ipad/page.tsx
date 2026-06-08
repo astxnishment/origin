@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check, Clock, Shield, ArrowRight, MapPin } from "lucide-react";
 import { BUSINESS } from "@/lib/constants";
-import { IPADS, getRepairQuote, REPAIR_TYPES } from "@/lib/calculatorData";
+import { getRepairPrice, formatPriceRange, getRepairsByFamily } from "@/lib/pricing";
+import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
   title: "iPad Repair Leeds — Screen, Battery & More | Origin Repairs",
@@ -13,42 +15,51 @@ export const metadata: Metadata = {
     "iPad screen, battery, and charging port repairs in Leeds city centre. All iPad models. Free assessment, 12-month warranty on eligible repairs. Walk-ins welcome.",
 };
 
+// Representative model for price display on this page
+const REPR_MODEL = "iPad Air 11-inch M2/M3";
+
+function repairPrice(repairType: string): string {
+  const row = getRepairPrice("Apple", REPR_MODEL, repairType);
+  if (!row) return "POA";
+  return formatPriceRange(row.minPrice, row.maxPrice);
+}
+
 const repairTypes = [
   {
-    name: "Screen Replacement",
-    repairKey: "Screen replacement" as const,
+    name: "Screen / Display Replacement",
+    repairKey: "Display Assembly Replacement",
     desc: "Cracked or unresponsive iPad screen replaced with OEM-grade glass and digitiser.",
     time: "1–2 hours",
   },
   {
     name: "Battery Replacement",
-    repairKey: "Battery replacement" as const,
+    repairKey: "Battery Replacement",
     desc: "Restore your iPad's battery life. We assess health first and replace only when needed.",
     time: "60–90 minutes",
   },
   {
     name: "Charging Port Repair",
-    repairKey: "Charging port" as const,
+    repairKey: "Charging Port Replacement",
     desc: "Faulty USB-C or Lightning port cleaned, repaired, or replaced.",
     time: "60 minutes",
   },
   {
     name: "Camera Repair",
-    repairKey: "Camera repair" as const,
+    repairKey: "Rear Camera Replacement",
     desc: "Front or rear camera replaced if damaged or producing poor-quality images.",
     time: "60 minutes",
   },
   {
     name: "Water Damage Assessment",
-    repairKey: "Water damage diagnostics" as const,
+    repairKey: "Liquid Damage Diagnostics",
     desc: "Free initial assessment. Specialist cleaning and component-level diagnostics.",
     time: "24–48 hours",
   },
   {
-    name: "Full Diagnostic",
-    repairKey: "Full diagnostic" as const,
-    desc: "Not sure what's wrong? We'll assess the device, explain the issue, and quote before starting.",
-    time: "30 minutes",
+    name: "Speaker Repair",
+    repairKey: "Speaker / Earpiece Replacement",
+    desc: "Speaker or microphone replaced if muffled, quiet, or completely silent.",
+    time: "45–90 minutes",
   },
 ];
 
@@ -59,8 +70,20 @@ const process = [
   { step: 4, title: "Quality check", desc: "Full function test before handover. 12-month warranty on eligible repairs." },
 ];
 
-// Get price range for iPad Air (mid-tier representative model)
-const representativeModel = IPADS.find((m) => m.id === "ipad-air") ?? IPADS[0];
+// Get unique iPad models from pricing data
+const iPadModels = (() => {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const family of ["iPad", "iPad Air", "iPad Mini", "iPad Pro"]) {
+    for (const row of getRepairsByFamily(family)) {
+      if (!seen.has(row.model)) {
+        seen.add(row.model);
+        result.push(row.model);
+      }
+    }
+  }
+  return result;
+})();
 
 export default function IPadRepairPage() {
   return (
@@ -78,25 +101,41 @@ export default function IPadRepairPage() {
               <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
                 iPad repair in Leeds city centre.
               </h1>
-              <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
-                Cracked screen, dead battery, or a charging port that won&apos;t connect — we repair all iPad models at our workshop on Cookridge Street. Free assessment, fixed price, 12-month warranty on eligible repairs.
+              <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
+                Screen, battery, charging port, camera, and water damage repairs for all iPad
+                models. Walk-ins welcome at 76 Cookridge Street.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
-                  <Link href="/book?brand=ipad" className="flex items-center gap-2">
+                  <Link href="/book" className="flex items-center gap-2">
                     Book iPad Repair <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border">
-                  <Link href="/quote">Get Instant Quote</Link>
+                  <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-5">
+              {/* iPad hero image */}
+              <div className="flex items-center justify-center lg:justify-end">
+                <div className="relative">
+                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
+                  <Image
+                    src={serviceImages.ipad.src}
+                    alt={serviceImages.ipad.alt}
+                    width={340}
+                    height={430}
+                    className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    priority
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
               {[
-                { icon: Shield, title: "12-Month Warranty", desc: "On eligible repairs" },
-                { icon: Check, title: "Free Assessment", desc: "No charge if you don't proceed" },
-                { icon: Clock, title: "Same Day", desc: "For most common repairs" },
+                { icon: Check, title: "Free assessment", desc: "No charge to diagnose the problem" },
+                { icon: Shield, title: "12-month warranty", desc: "On eligible parts & labour" },
+                { icon: Clock, title: "Same day", desc: "Most repairs completed today" },
                 { icon: MapPin, title: "Leeds City Centre", desc: "76 Cookridge Street" },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="rounded-xl border border-border bg-card p-5">
@@ -105,6 +144,7 @@ export default function IPadRepairPage() {
                   <p className="text-[12px] text-muted-foreground">{desc}</p>
                 </div>
               ))}
+              </div>
             </div>
           </div>
         </section>
@@ -113,11 +153,11 @@ export default function IPadRepairPage() {
         <section className="max-w-6xl mx-auto px-5 sm:px-8 py-16 border-b border-border">
           <h2 className="text-xl font-semibold mb-2">iPad repairs &amp; pricing</h2>
           <p className="text-[13px] text-muted-foreground mb-8">
-            Prices shown are estimates for an iPad Air. Exact quote given free before any work starts.
+            Prices shown are estimates for an iPad Air 11-inch. Exact quote given free before any work starts.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {repairTypes.map(({ name, repairKey, desc, time }) => {
-              const quote = getRepairQuote(representativeModel, repairKey);
+              const priceDisplay = repairPrice(repairKey);
               return (
                 <div key={name} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
                   <div>
@@ -126,13 +166,11 @@ export default function IPadRepairPage() {
                   </div>
                   <div className="mt-auto pt-3 border-t border-border flex items-center justify-between">
                     <div>
-                      <p className="text-[13px] font-semibold text-foreground">
-                        £{quote.minPrice}–£{quote.maxPrice}
-                      </p>
+                      <p className="text-[13px] font-semibold text-foreground">{priceDisplay}</p>
                       <p className="text-[11px] text-muted-foreground">{time}</p>
                     </div>
                     <Button asChild size="sm" variant="outline" className="rounded-lg text-[12px] border-border h-8 px-3">
-                      <Link href={`/book?brand=ipad`}>Book</Link>
+                      <Link href="/book">Book</Link>
                     </Button>
                   </div>
                 </div>
@@ -140,7 +178,7 @@ export default function IPadRepairPage() {
             })}
           </div>
           <p className="text-[12px] text-muted-foreground mt-6">
-            * Prices vary by model. iPad Pro repairs may cost more due to OLED screens and complex disassembly.{" "}
+            * Prices are estimates and may vary after inspection depending on part quality, device condition, and availability.{" "}
             <Link href="/quote" className="text-primary hover:underline">Use the quote calculator</Link> for your exact model.
           </p>
         </section>
@@ -149,9 +187,9 @@ export default function IPadRepairPage() {
         <section className="max-w-6xl mx-auto px-5 sm:px-8 py-16 border-b border-border">
           <h2 className="text-xl font-semibold mb-6">Supported iPad models</h2>
           <div className="flex flex-wrap gap-2">
-            {IPADS.map((model) => (
-              <span key={model.id} className="px-3 py-1.5 rounded-full border border-border text-[13px] text-muted-foreground">
-                {model.name}
+            {iPadModels.map((model) => (
+              <span key={model} className="px-3 py-1.5 rounded-full border border-border text-[13px] text-muted-foreground">
+                {model}
               </span>
             ))}
             <span className="px-3 py-1.5 rounded-full border border-border text-[13px] text-muted-foreground">
@@ -218,7 +256,7 @@ export default function IPadRepairPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
-              <Link href="/book?brand=ipad" className="flex items-center gap-2">
+              <Link href="/book" className="flex items-center gap-2">
                 Book iPad Repair <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </Button>

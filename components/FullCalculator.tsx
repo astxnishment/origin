@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   BRANDS,
   REPAIR_TYPES,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/calculatorData";
 import MobilePriceBar from "@/components/MobilePriceBar";
 import { BUSINESS } from "@/lib/constants";
+import { serviceImages } from "@/lib/serviceImages";
 import {
   Select,
   SelectContent,
@@ -24,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { DeviceIcon, type DeviceType } from "@/components/DeviceIcon";
 import {
   Search,
   ArrowRight,
@@ -39,21 +40,16 @@ import {
 // ── Constants ─────────────────────────────────────────────────────
 const POPULAR_REPAIRS: RepairType[] = ["Screen replacement", "Battery replacement"];
 
-const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
-  Apple: "iphone",
-  Samsung: "samsung",
-  "Google Pixel": "pixel",
-  iPad: "ipad",
-  MacBook: "macbook",
-  Laptop: "laptop",
-  Console: "console",
+const BRAND_IMAGE: Record<Brand, (typeof serviceImages)[string]> = {
+  Apple: serviceImages.iphone,
+  Samsung: serviceImages.samsung,
 };
 
 const POPULAR_SHORTCUTS = [
-  { label: "iPhone 17 Pro Max", id: "iphone-17-pro-max", brand: "Apple" as Brand },
   { label: "iPhone 16 Pro", id: "iphone-16-pro", brand: "Apple" as Brand },
-  { label: "Galaxy S24 Ultra", id: "galaxy-s24-ultra", brand: "Samsung" as Brand },
-  { label: "MacBook Air M3", id: "macbook-air-13-m3", brand: "MacBook" as Brand },
+  { label: "iPhone 16", id: "iphone-16", brand: "Apple" as Brand },
+  { label: "Galaxy S25 Ultra", id: "galaxy-s25-ultra", brand: "Samsung" as Brand },
+  { label: "Galaxy S24", id: "galaxy-s24", brand: "Samsung" as Brand },
 ];
 
 // ── Main component ────────────────────────────────────────────────
@@ -175,8 +171,14 @@ export default function FullCalculator() {
                   onClick={() => selectDevice(device)}
                   className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.04] border-b border-white/[0.04] last:border-0"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                    <DeviceIcon device={BRAND_ICON_TYPE[device.brand]} size={22} />
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <Image
+                      src={BRAND_IMAGE[device.brand].src}
+                      alt=""
+                      width={32}
+                      height={40}
+                      className="object-contain w-6 h-6"
+                    />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{device.name}</p>
@@ -337,10 +339,13 @@ export default function FullCalculator() {
               <p className="text-sm text-muted-foreground mt-0.5">{repairType}</p>
             </div>
             <div className="flex-shrink-0 opacity-90">
-              <DeviceIcon
-                device={BRAND_ICON_TYPE[brand]}
-                size={brand === "MacBook" || brand === "Laptop" || brand === "Console" ? 60 : 80}
-              />
+              <Image
+                  src={BRAND_IMAGE[brand].src}
+                  alt={BRAND_IMAGE[brand].alt}
+                  width={160}
+                  height={200}
+                  className="object-contain w-16 h-20 drop-shadow-[0_4px_16px_rgba(59,130,246,0.2)]"
+                />
             </div>
           </div>
         </div>
@@ -351,10 +356,14 @@ export default function FullCalculator() {
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Estimated Price
             </p>
-            <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-foreground">£{quote.minPrice}</span>
-              <span className="text-2xl font-semibold text-muted-foreground">–£{quote.maxPrice}</span>
-            </div>
+            {quote.inspectionRequired ? (
+              <p className="text-2xl font-bold text-foreground">Inspection required</p>
+            ) : (
+              <div className="flex items-baseline gap-3">
+                <span className="text-5xl font-bold text-foreground">£{quote.minPrice}</span>
+                <span className="text-2xl font-semibold text-muted-foreground">–£{quote.maxPrice}</span>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-2">
               Includes parts & labour · Final price confirmed after free inspection
             </p>
@@ -423,8 +432,8 @@ export default function FullCalculator() {
         </div>
       </div>
 
-      {/* Mobile sticky price bar */}
-      {quote && selectedModel && (
+      {/* Mobile sticky price bar — only when we have a real price */}
+      {quote && selectedModel && !quote.inspectionRequired && (
         <MobilePriceBar
           show={!quoteVisible}
           deviceName={selectedModel.name}

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,7 @@ import {
   type RepairType,
   type DeviceModel,
 } from "@/lib/calculatorData";
-import { DeviceIcon, type DeviceType } from "@/components/DeviceIcon";
+import { serviceImages } from "@/lib/serviceImages";
 import MobilePriceBar from "@/components/MobilePriceBar";
 import { ArrowRight, Clock, ShieldCheck, CalendarCheck, Star } from "lucide-react";
 
@@ -28,20 +29,15 @@ import { ArrowRight, Clock, ShieldCheck, CalendarCheck, Star } from "lucide-reac
 const SHORTCUTS: { label: string; brand: Brand; modelId: string; repairType: RepairType }[] = [
   { label: "iPhone Screen", brand: "Apple", modelId: "iphone-16-pro", repairType: "Screen replacement" },
   { label: "iPhone Battery", brand: "Apple", modelId: "iphone-16", repairType: "Battery replacement" },
-  { label: "Samsung Screen", brand: "Samsung", modelId: "galaxy-s24-ultra", repairType: "Screen replacement" },
-  { label: "MacBook", brand: "MacBook", modelId: "macbook-air-13-m3", repairType: "Battery replacement" },
+  { label: "Samsung Screen", brand: "Samsung", modelId: "galaxy-s25-ultra", repairType: "Screen replacement" },
+  { label: "Samsung Battery", brand: "Samsung", modelId: "galaxy-s24", repairType: "Battery replacement" },
 ];
 
 const POPULAR_REPAIRS: RepairType[] = ["Screen replacement", "Battery replacement"];
 
-const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
-  Apple: "iphone",
-  Samsung: "samsung",
-  "Google Pixel": "pixel",
-  iPad: "ipad",
-  MacBook: "macbook",
-  Laptop: "laptop",
-  Console: "console",
+const BRAND_IMAGE: Record<Brand, (typeof serviceImages)[string]> = {
+  Apple: serviceImages.iphone,
+  Samsung: serviceImages.samsung,
 };
 
 const DEFAULT_BRAND: Brand = "Apple";
@@ -96,8 +92,11 @@ export default function HeroCalculator() {
     return getRepairQuote(selectedModel, repairType);
   }, [selectedModel, repairType]);
 
-  // Single headline estimate (midpoint of the range — "your quote")
-  const estimate = quote ? Math.round((quote.minPrice + quote.maxPrice) / 2) : 0;
+  // Single headline estimate (midpoint of the range)
+  const estimate =
+    quote && !quote.inspectionRequired
+      ? Math.round((quote.minPrice + quote.maxPrice) / 2)
+      : 0;
   const animatedPrice = useCountUp(estimate);
 
   // Booking handoff link with prefilled device/repair
@@ -157,10 +156,13 @@ export default function HeroCalculator() {
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">{repairType}</p>
           </div>
-          <div className="flex-shrink-0 opacity-90">
-            <DeviceIcon
-              device={BRAND_ICON_TYPE[brand]}
-              size={brand === "MacBook" || brand === "Laptop" || brand === "Console" ? 58 : 76}
+          <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center">
+            <Image
+              src={BRAND_IMAGE[brand].src}
+              alt={BRAND_IMAGE[brand].alt}
+              width={160}
+              height={200}
+              className="object-contain w-full h-full drop-shadow-[0_4px_12px_rgba(59,130,246,0.2)]"
             />
           </div>
         </div>
@@ -268,14 +270,20 @@ export default function HeroCalculator() {
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-300/70 mb-1">
                 Your estimated price
               </p>
-              <div key={estimate} className="animate-price flex items-start justify-center gap-1 leading-none">
-                <span className="text-2xl font-bold text-white/80 mt-2">£</span>
-                <span className="text-6xl font-extrabold text-white tracking-tight tabular-nums">
-                  {animatedPrice}
-                </span>
-              </div>
+                  {quote.inspectionRequired ? (
+                <p className="text-3xl font-bold text-white py-2">Inspection required</p>
+              ) : (
+                <div key={estimate} className="animate-price flex items-start justify-center gap-1 leading-none">
+                  <span className="text-2xl font-bold text-white/80 mt-2">£</span>
+                  <span className="text-6xl font-extrabold text-white tracking-tight tabular-nums">
+                    {animatedPrice}
+                  </span>
+                </div>
+              )}
               <p className="text-xs text-zinc-400 mt-2">
-                Range £{quote.minPrice}–£{quote.maxPrice} · confirmed after free inspection
+                {quote.inspectionRequired
+                  ? "Free assessment · no charge if we can't fix it"
+                  : `Range £${quote.minPrice}–£${quote.maxPrice} · confirmed after free inspection`}
               </p>
             </div>
 
@@ -322,7 +330,7 @@ export default function HeroCalculator() {
       </div>
 
       {/* Mobile sticky price bar — appears once card scrolls away */}
-      {quote && selectedModel && (
+      {quote && selectedModel && !quote.inspectionRequired && (
         <MobilePriceBar
           show={!cardVisible}
           deviceName={selectedModel.name}

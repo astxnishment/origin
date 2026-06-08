@@ -34,11 +34,6 @@ const TIME_SLOTS = [
 const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
   Apple: "iphone",
   Samsung: "samsung",
-  "Google Pixel": "pixel",
-  iPad: "ipad",
-  MacBook: "macbook",
-  Laptop: "laptop",
-  Console: "console",
 };
 
 interface Props {
@@ -122,7 +117,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
           model: selectedModel?.name ?? "",
           modelId,
           repair: repairType,
-          estimatedPrice: quote ? `£${quote.minPrice}–£${quote.maxPrice}` : "TBC after assessment",
+          estimatedPrice: quote && !quote.inspectionRequired ? `£${quote.minPrice}–£${quote.maxPrice}` : "TBC after assessment",
           estimatedTime: quote?.estimatedTime ?? "",
           warranty: quote?.warranty ?? "12 months on eligible repairs",
         }),
@@ -200,10 +195,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
           <div className="flex items-center justify-between gap-4 px-5 py-4">
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex-shrink-0 opacity-90">
-                <DeviceIcon
-                  device={BRAND_ICON_TYPE[selectedModel.brand]}
-                  size={brand === "MacBook" || brand === "Laptop" || brand === "Console" ? 36 : 44}
-                />
+                <DeviceIcon device={BRAND_ICON_TYPE[selectedModel.brand]} size={44} />
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-blue-300/70">
@@ -216,10 +208,14 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-2xl font-bold text-foreground leading-none">
-                £{quote.minPrice}
-                <span className="text-muted-foreground font-semibold">–£{quote.maxPrice}</span>
-              </p>
+              {quote.inspectionRequired ? (
+                <p className="text-base font-bold text-foreground leading-none">Inspection required</p>
+              ) : (
+                <p className="text-2xl font-bold text-foreground leading-none">
+                  £{quote.minPrice}
+                  <span className="text-muted-foreground font-semibold">–£{quote.maxPrice}</span>
+                </p>
+              )}
               <p className="text-[11px] text-muted-foreground mt-1">est. incl. parts &amp; labour</p>
             </div>
           </div>

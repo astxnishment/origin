@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
   title: "Device Repairs Leeds | iPhone, Samsung, MacBook",
@@ -15,6 +17,7 @@ const categories = [
     device: "iPhone",
     href: "/repairs/iphone",
     tagline: "All models from iPhone 11 to 16 Pro Max",
+    image: serviceImages.iphone,
     repairs: [
       { name: "Screen Replacement", time: "45 min", from: "£49" },
       { name: "Battery Replacement", time: "30 min", from: "£39" },
@@ -28,6 +31,7 @@ const categories = [
     device: "Samsung",
     href: "/repairs/samsung",
     tagline: "Galaxy S, A-series, Z-series, Tab",
+    image: serviceImages.samsung,
     repairs: [
       { name: "Screen Replacement", time: "60 min", from: "£59" },
       { name: "Battery Replacement", time: "45 min", from: "£45" },
@@ -39,8 +43,9 @@ const categories = [
   },
   {
     device: "iPad",
-    href: "/repairs/laptops",
+    href: "/repairs/ipad",
     tagline: "All iPad models including Pro and mini",
+    image: serviceImages.ipad,
     repairs: [
       { name: "Screen Replacement", time: "90 min", from: "£79" },
       { name: "Battery Replacement", time: "60 min", from: "£55" },
@@ -54,6 +59,7 @@ const categories = [
     device: "MacBook & Laptop",
     href: "/repairs/laptops",
     tagline: "MacBook Air/Pro, Dell, HP, Lenovo",
+    image: serviceImages.macbook,
     repairs: [
       { name: "Screen Replacement", time: "2–3 hrs", from: "£149" },
       { name: "Battery Replacement", time: "90 min", from: "£99" },
@@ -104,16 +110,28 @@ export default function RepairsPage() {
 
           {/* Device categories */}
           <div className="space-y-14">
-            {categories.map(({ device, href, tagline, repairs }) => (
+            {categories.map(({ device, href, tagline, image, repairs }) => (
               <div key={device} className="section-border pt-10 first:border-0 first:pt-0">
-                <div className="flex items-baseline justify-between gap-4 mb-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-foreground">{device}</h2>
-                    <p className="text-[13px] text-muted-foreground mt-0.5">{tagline}</p>
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-5">
+                    {/* Device image thumbnail */}
+                    <div className="w-16 h-16 rounded-xl bg-surface border border-border flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        width={image.width}
+                        height={image.height}
+                        className="object-contain w-12 h-12"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-foreground">{device}</h2>
+                      <p className="text-[13px] text-muted-foreground mt-0.5">{tagline}</p>
+                    </div>
                   </div>
                   <Link
                     href={href}
-                    className="text-[13px] text-primary hover:underline underline-offset-4 whitespace-nowrap flex items-center gap-1"
+                    className="text-[13px] text-primary hover:underline underline-offset-4 whitespace-nowrap flex items-center gap-1 flex-shrink-0"
                   >
                     View all <ArrowRight className="h-3.5 w-3.5" />
                   </Link>

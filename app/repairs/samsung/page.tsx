@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { SAMSUNG_GALAXY_S, SAMSUNG_GALAXY_A, SAMSUNG_GALAXY_Z, SAMSUNG_GALAXY_TAB } from "@/lib/repair-data";
+import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
   title: "Samsung Repair Leeds | Galaxy S, A, Z Series",
@@ -52,14 +54,22 @@ export default function SamsungRepairsPage() {
             <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
               Samsung Repairs · Leeds
             </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
                   Samsung repair, done right.
                 </h1>
-                <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
+                <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
                   Full coverage for Galaxy S, A-series, Z-series foldables, and Galaxy Tab. {totalModels}+ models supported. 12-month warranty on every repair.
                 </p>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
+                  {guarantees.map((g) => (
+                    <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                      <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                      {g}
+                    </li>
+                  ))}
+                </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
                     <Link href="/book">Book Samsung Repair</Link>
@@ -71,14 +81,20 @@ export default function SamsungRepairsPage() {
                   </Button>
                 </div>
               </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {guarantees.map((g) => (
-                  <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                    <Check className="h-3.5 w-3.5 text-accent shrink-0" />
-                    {g}
-                  </li>
-                ))}
-              </ul>
+              {/* Hero device image */}
+              <div className="flex items-center justify-center lg:justify-end">
+                <div className="relative">
+                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
+                  <Image
+                    src={serviceImages.samsung.src}
+                    alt={serviceImages.samsung.alt}
+                    width={300}
+                    height={400}
+                    className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    priority
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
