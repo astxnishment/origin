@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Phone, X, ArrowRight, MessageCircle } from "lucide-react";
+import { BUSINESS } from "@/lib/constants";
 
 export default function FloatingCTA() {
   const [expanded, setExpanded] = useState(false);
@@ -25,7 +26,7 @@ export default function FloatingCTA() {
 
   return (
     <div
-      className="floating-cta fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3"
+      className="floating-cta fixed bottom-6 right-6 z-50 hidden md:flex flex-col items-end gap-3"
       style={{ filter: "drop-shadow(0 8px 32px rgba(0,0,0,0.4))" }}
     >
       {/* Expanded panel */}
@@ -55,7 +56,7 @@ export default function FloatingCTA() {
 
           <div className="p-3 space-y-2">
             <a
-              href="tel:07768426754"
+              href={`tel:${BUSINESS.phone}`}
               className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-150 hover:scale-[1.02]"
               style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.25)" }}
             >
@@ -64,7 +65,7 @@ export default function FloatingCTA() {
                 <p className="text-xs font-semibold text-white leading-tight">
                   Call Now
                 </p>
-                <p className="text-[11px] text-blue-400">07768 426754</p>
+                <p className="text-[11px] text-blue-400">{BUSINESS.phoneDisplay}</p>
               </div>
             </a>
 

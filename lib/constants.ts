@@ -3,6 +3,7 @@ export const BUSINESS = {
   name: "Origin Repairs",
   email: "tech@originrepairs.co.uk",
   phone: "07768426754",
+  phoneDisplay: "07768 426754",
   address: "76 Cookridge Street, Leeds, LS2 8GL",
   coordinates: {
     lat: 53.8017,
@@ -36,12 +37,12 @@ export const SEO = {
   twitterHandle: "@originrepairs",
 };
 
-// Reviews (placeholder - will be fetched from Google)
+// Reviews — update these once real reviews are collected
 export const REVIEWS = {
-  googleRating: 4.8,
-  googleReviews: 1247,
-  trustpilotRating: 4.7,
-  trustpilotReviews: 89,
+  googleRating: null as number | null,
+  googleReviews: null as number | null,
+  trustpilotRating: null as number | null,
+  trustpilotReviews: null as number | null,
 };
 
 // Services
@@ -73,52 +74,33 @@ export const SERVICES = [
   },
 ];
 
-// Testimonials (placeholder)
-export const TESTIMONIALS = [
-  {
-    author: "Sarah M.",
-    role: "Google Review",
-    content:
-      "My iPhone screen was shattered. They fixed it in 45 minutes while I waited. Fair price, no upselling. Highly recommend.",
-    rating: 5,
-    device: "iPhone Screen",
-  },
-  {
-    author: "James T.",
-    role: "Customer",
-    content:
-      "Finally found an honest repair shop. They told me upfront it would cost £89 and take 60 minutes. Exact. Got my MacBook working perfectly again.",
-    rating: 5,
-    device: "MacBook Battery",
-  },
-  {
-    author: "IT Manager, Tech Company",
-    role: "Business Client",
-    content:
-      "Used them for our company devices. Professional, quick, and they offered bulk discounts. Will continue using them.",
-    rating: 5,
-    device: "Multiple",
-  },
-];
+// Testimonials — add real verified reviews here when collected
+export const TESTIMONIALS: {
+  author: string;
+  role: string;
+  content: string;
+  rating: number;
+  device: string;
+}[] = [];
 
 // USP Points
 export const USP = [
   {
     title: "Same-Day Repairs",
     description:
-      "90% of repairs completed in 60 minutes. Or discount your next visit.",
+      "Most common repairs completed same day. Screen, battery, charging port.",
     icon: "⚡",
   },
   {
     title: "12-Month Warranty",
     description:
-      "Industry-leading warranty on all repairs. No hidden conditions.",
+      "12-month warranty on eligible repairs. Parts and labour, no hidden conditions.",
     icon: "🛡️",
   },
   {
     title: "Honest Pricing",
     description:
-      "Fixed quote before we start. No diagnostics fees. No surprises.",
+      "Fixed quote before we start. Free assessment. No diagnostic fees. No surprises.",
     icon: "💰",
   },
 ];
@@ -135,7 +117,7 @@ export const REPAIR_PROCESS = [
     step: 2,
     title: "Expert Diagnosis",
     description:
-      "Our certified technician inspects your device completely. We'll confirm the issue and final cost.",
+      "Our experienced technician inspects your device completely. We'll confirm the issue and final cost before any work begins.",
   },
   {
     step: 3,

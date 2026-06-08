@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingCTA from "@/components/FloatingCTA";
 import EmergencyBanner from "@/components/EmergencyBanner";
+import MobileCTABar from "@/components/MobileCTABar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -110,10 +111,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background text-foreground pb-[60px] md:pb-0">
         <EmergencyBanner />
         {children}
         <FloatingCTA />
+        <MobileCTABar />
       </body>
     </html>
   );

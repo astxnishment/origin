@@ -6,11 +6,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Check } from "lucide-react";
+import { Check, AlertCircle, MapPin, Clock, ExternalLink } from "lucide-react";
 import { BUSINESS } from "@/lib/constants";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,15 +20,30 @@ export default function ContactPage() {
     issue: "",
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+
+  function validate() {
+    const errs: Record<string, string> = {};
+    if (!formData.name.trim()) errs.name = "Please enter your name.";
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      errs.email = "Please enter a valid email address.";
+    if (!formData.issue.trim()) errs.issue = "Please describe your issue.";
+    return errs;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      document.getElementById(Object.keys(errs)[0])?.focus();
+      return;
+    }
+    setErrors({});
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
@@ -38,7 +54,7 @@ export default function ContactPage() {
       if (res.ok) {
         setStatus("sent");
         setFormData({ name: "", email: "", phone: "", device: "", issue: "" });
-        setTimeout(() => setStatus("idle"), 6000);
+        setTimeout(() => setStatus("idle"), 8000);
       } else {
         setStatus("error");
       }
@@ -54,7 +70,7 @@ export default function ContactPage() {
       <main className="pt-24 pb-24">
         <div className="max-w-6xl mx-auto px-5 sm:px-8">
           {/* Header */}
-          <div className="pt-10 pb-16 border-b border-border">
+          <div className="pt-10 pb-14 border-b border-border">
             <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
               Contact
             </p>
@@ -62,152 +78,198 @@ export default function ContactPage() {
               Get in touch.
             </h1>
             <p className="text-[15px] text-muted-foreground max-w-md leading-relaxed">
-              Questions, quotes, or complex repairs — we respond within the hour during business hours.
+              Questions, quotes, or complex repairs — we respond within the hour during business
+              hours.
             </p>
           </div>
 
-          {/* Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 py-16">
-            {/* Contact info */}
-            <div className="lg:col-span-2 space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 py-14">
+            {/* ── Contact info ─────────────────────────────────────── */}
+            <aside className="lg:col-span-2 space-y-8">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Phone</p>
-                <a href={`tel:${BUSINESS.phone}`} className="text-[15px] font-medium text-foreground hover:text-primary transition-colors">
-                  {BUSINESS.phone}
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                  Phone
+                </p>
+                <a
+                  href={`tel:${BUSINESS.phone}`}
+                  className="text-[15px] font-medium text-foreground hover:text-primary transition-colors"
+                >
+                  {BUSINESS.phoneDisplay}
                 </a>
               </div>
+
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Email</p>
-                <a href={`mailto:${BUSINESS.email}`} className="text-[15px] font-medium text-foreground hover:text-primary transition-colors">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                  Email
+                </p>
+                <a
+                  href={`mailto:${BUSINESS.email}`}
+                  className="text-[15px] font-medium text-foreground hover:text-primary transition-colors"
+                >
                   {BUSINESS.email}
                 </a>
               </div>
+
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Location</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                  Address
+                </p>
                 <address className="not-italic text-[15px] text-foreground">
-                  76 Cookridge Street<br />
+                  76 Cookridge Street
+                  <br />
                   Leeds, LS2 8GL
                 </address>
+                <a
+                  href="https://maps.google.com/?q=76+Cookridge+Street+Leeds+LS2+8GL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline mt-2"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  View on Google Maps
+                  <ExternalLink className="h-3 w-3" />
+                </a>
               </div>
+
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Hours</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                  Hours
+                </p>
                 <div className="text-[15px] text-foreground space-y-0.5">
                   <p>Mon–Fri: 9am–6pm</p>
                   <p>Sat: 10am–4pm</p>
                   <p className="text-muted-foreground">Sun: Closed</p>
                 </div>
               </div>
-              <div className="pt-2 p-5 rounded-xl border border-border bg-card">
-                <p className="text-[13px] text-muted-foreground">
-                  Walk-ins welcome for most repairs. For MacBook and data recovery, calling ahead ensures a technician is available.
+
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="flex items-start gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-[13px] font-semibold text-foreground">Walk-ins welcome</p>
+                </div>
+                <p className="text-[13px] text-muted-foreground leading-relaxed">
+                  Walk-ins welcome for most repairs. For MacBook and data recovery work, calling
+                  ahead ensures a technician is available and has parts ready.
                 </p>
               </div>
-            </div>
+            </aside>
 
-            {/* Form */}
+            {/* ── Form ─────────────────────────────────────────────── */}
             <div className="lg:col-span-3">
               {status === "sent" ? (
-                <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-                  <div className="w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center">
-                    <Check className="h-5 w-5 text-accent" />
+                <div className="flex flex-col gap-4 py-12 text-center items-center">
+                  <div className="w-12 h-12 rounded-full bg-green-500/15 flex items-center justify-center">
+                    <Check className="h-5 w-5 text-green-500" />
                   </div>
                   <h3 className="text-xl font-semibold">Message sent</h3>
                   <p className="text-[14px] text-muted-foreground max-w-xs">
-                    We&apos;ll get back to you within the hour. Check your email for a confirmation.
+                    We&apos;ll get back to you within the hour during business hours. Check your
+                    email for a confirmation.
                   </p>
+                  <Button
+                    variant="outline"
+                    className="rounded-xl h-10 px-6 text-[13px] border-border mt-2"
+                    onClick={() => setStatus("idle")}
+                  >
+                    Send another message
+                  </Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} noValidate className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        Name *
-                      </label>
+                    <FormField label="Name" id="name" required error={errors.name}>
                       <Input
+                        id="name"
                         name="name"
-                        placeholder="Your name"
                         value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="bg-card border-border h-10 rounded-xl text-[13px] focus-visible:ring-primary"
+                        onChange={handleChange}
+                        placeholder="Your name"
+                        autoComplete="name"
+                        className="bg-card border-border h-10 rounded-xl text-[13px]"
+                        aria-describedby={errors.name ? "name-error" : undefined}
                       />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        Email *
-                      </label>
+                    </FormField>
+
+                    <FormField label="Email" id="email" required error={errors.email}>
                       <Input
+                        id="email"
                         name="email"
                         type="email"
-                        placeholder="you@email.com"
                         value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="bg-card border-border h-10 rounded-xl text-[13px] focus-visible:ring-primary"
+                        onChange={handleChange}
+                        placeholder="you@email.com"
+                        autoComplete="email"
+                        className="bg-card border-border h-10 rounded-xl text-[13px]"
+                        aria-describedby={errors.email ? "email-error" : undefined}
                       />
-                    </div>
+                    </FormField>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        Phone
-                      </label>
+                    <FormField label="Phone" id="phone" error={errors.phone}>
                       <Input
+                        id="phone"
                         name="phone"
                         type="tel"
-                        placeholder="07xxx xxxxxx"
                         value={formData.phone}
-                        onChange={handleInputChange}
-                        className="bg-card border-border h-10 rounded-xl text-[13px] focus-visible:ring-primary"
+                        onChange={handleChange}
+                        placeholder="07xxx xxxxxx"
+                        autoComplete="tel"
+                        className="bg-card border-border h-10 rounded-xl text-[13px]"
                       />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        Device
-                      </label>
+                    </FormField>
+
+                    <FormField label="Device" id="device" error={errors.device}>
                       <Input
+                        id="device"
                         name="device"
-                        placeholder="e.g. iPhone 15 Pro"
                         value={formData.device}
-                        onChange={handleInputChange}
-                        className="bg-card border-border h-10 rounded-xl text-[13px] focus-visible:ring-primary"
+                        onChange={handleChange}
+                        placeholder="e.g. iPhone 15 Pro"
+                        className="bg-card border-border h-10 rounded-xl text-[13px]"
                       />
-                    </div>
+                    </FormField>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      Issue *
-                    </label>
+                  <FormField label="How can we help?" id="issue" required error={errors.issue}>
                     <Textarea
+                      id="issue"
                       name="issue"
-                      placeholder="Describe the problem…"
                       value={formData.issue}
-                      onChange={handleInputChange}
-                      required
+                      onChange={handleChange}
+                      placeholder="Describe the problem — screen cracked, won't turn on, water damage…"
                       rows={5}
-                      className="bg-card border-border rounded-xl text-[13px] resize-none focus-visible:ring-primary"
+                      className="bg-card border-border rounded-xl text-[13px] resize-none"
+                      aria-describedby={errors.issue ? "issue-error" : undefined}
                     />
-                  </div>
+                  </FormField>
 
                   {status === "error" && (
-                    <p className="text-[13px] text-destructive">
-                      Something went wrong. Please try again or call{" "}
-                      <a href={`tel:${BUSINESS.phone}`} className="underline">{BUSINESS.phone}</a>.
-                    </p>
+                    <div
+                      role="alert"
+                      className="flex items-start gap-3 p-4 rounded-xl border border-destructive/30 bg-destructive/10"
+                    >
+                      <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <p className="text-[13px] text-destructive">
+                        Something went wrong. Please try again, or call us on{" "}
+                        <a href={`tel:${BUSINESS.phone}`} className="underline font-medium">
+                          {BUSINESS.phoneDisplay}
+                        </a>
+                        .
+                      </p>
+                    </div>
                   )}
 
                   <Button
                     type="submit"
                     disabled={status === "sending"}
-                    className="w-full bg-primary hover:bg-primary/90 text-white h-10 rounded-xl text-[13px] font-medium"
+                    className="w-full bg-primary hover:bg-primary/90 text-white h-11 rounded-xl text-[13px] font-semibold disabled:opacity-50"
                   >
                     {status === "sending" ? "Sending…" : "Send Message"}
                   </Button>
 
                   <p className="text-[12px] text-muted-foreground text-center">
-                    We respond within 1 hour during business hours.
+                    We respond within 1 hour during business hours (Mon–Fri 9am–6pm, Sat 10am–4pm).
                   </p>
                 </form>
               )}
@@ -218,5 +280,30 @@ export default function ContactPage() {
 
       <Footer />
     </>
+  );
+}
+
+function FormField({
+  label, id, required, error, children,
+}: {
+  label: string; id: string; required?: boolean; error?: string; children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label
+        htmlFor={id}
+        className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+      >
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </label>
+      {children}
+      {error && (
+        <p id={`${id}-error`} role="alert" className="text-[12px] text-destructive flex items-center gap-1">
+          <AlertCircle className="h-3 w-3 flex-shrink-0" />
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

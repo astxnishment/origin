@@ -9,8 +9,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap } from "lucide-react";
-import { BUSINESS, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
+import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, ExternalLink } from "lucide-react";
+import { BUSINESS, REPAIR_PROCESS, FAQS } from "@/lib/constants";
 
 const services = [
   {
@@ -33,8 +33,8 @@ const services = [
   },
   {
     label: "iPad",
-    href: "/repairs/laptops",
-    tagline: "All models • Screen • Battery",
+    href: "/repairs/ipad",
+    tagline: "All models • Screen • Battery • Port",
     icon: "📱",
   },
   {
@@ -54,7 +54,7 @@ const services = [
 const trustPoints = [
   { icon: Zap, label: "Same-Day Diagnostics", desc: "Free assessment, no obligation" },
   { icon: Shield, label: "12-Month Warranty", desc: "Parts & labour fully covered" },
-  { icon: MapPin, label: "Leeds Based", desc: "Local service since 2018" },
+  { icon: MapPin, label: "Leeds Based", desc: "76 Cookridge Street, LS2 8GL" },
   { icon: Check, label: "Transparent Pricing", desc: "Fixed quotes, no surprises" },
 ];
 
@@ -355,7 +355,7 @@ export default function Home() {
               {
                 icon: "⚡",
                 title: "Same-Day Service",
-                desc: "90% of repairs completed within the hour. Walk in, wait, leave with a working device.",
+                desc: "Most screen and battery repairs completed the same day. Walk in, wait, leave with a working device.",
               },
               {
                 icon: "💰",
@@ -365,7 +365,7 @@ export default function Home() {
               {
                 icon: "🛡️",
                 title: "12-Month Warranty",
-                desc: "Industry-leading cover on parts and labour. We'll fix it free if anything goes wrong.",
+                desc: "Full 12-month warranty on eligible repairs. Parts and labour. We'll fix it free if anything goes wrong.",
               },
               {
                 icon: "📍",
@@ -395,50 +395,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ─────────────────────────────── */}
+      {/* ── TRUST / REVIEWS ──────────────────────────── */}
       <section className="section-border bg-surface/30">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
-          <div className="mb-14">
-            <div className="flex items-start justify-between gap-6 flex-wrap">
-              <div>
-                <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Reviews</p>
-                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
-                  What customers say.
-                </h2>
-              </div>
-              {/* Placeholder notice */}
-              <div
-                className="px-4 py-3 rounded-xl text-xs text-muted-foreground max-w-xs"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
-              >
-                Real Google reviews will appear here once collected.
-                <a href="https://www.google.com/search?q=Origin+Repairs+Leeds" target="_blank" rel="noopener noreferrer" className="text-blue-500 ml-1 hover:underline">
-                  Leave a review →
-                </a>
-              </div>
-            </div>
+          <div className="mb-12">
+            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">Reviews &amp; Trust</p>
+            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
+              Why Leeds chooses Origin.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map(({ author, role, content, rating, device }) => (
-              <div
-                key={author}
-                className="card-premium p-7 flex flex-col gap-4"
-              >
-                <div className="flex gap-1">
-                  {Array.from({ length: rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-blue-500 text-blue-500" />
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                  &ldquo;{content}&rdquo;
-                </p>
-                <div className="pt-4 border-t border-border">
-                  <p className="font-semibold text-sm text-foreground">{author}</p>
-                  <p className="text-xs text-muted-foreground">{role} · {device}</p>
+          {/* Trust badges grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {[
+              { icon: Shield, title: "12-Month Warranty", desc: "On all eligible repairs — parts and labour" },
+              { icon: Zap, title: "Free Diagnostics", desc: "No charge if we can't fix it" },
+              { icon: MapPin, title: "Leeds City Centre", desc: "76 Cookridge Street, LS2 8GL" },
+              { icon: Clock, title: "Same-Day Service", desc: "Most screen and battery repairs done today" },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="card-premium p-6 flex flex-col gap-3">
+                <Icon className="h-5 w-5 text-blue-500" />
+                <div>
+                  <p className="font-semibold text-sm text-foreground mb-1">{title}</p>
+                  <p className="text-xs text-muted-foreground">{desc}</p>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Google reviews CTA */}
+          <div className="rounded-2xl border border-border bg-card p-8 flex flex-col sm:flex-row items-center gap-6 justify-between">
+            <div>
+              <div className="flex gap-0.5 mb-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="font-semibold text-foreground mb-1">Happy with your repair?</p>
+              <p className="text-sm text-muted-foreground">Leave us a Google review — it genuinely helps a local business.</p>
+            </div>
+            <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border shrink-0 flex items-center gap-2">
+              <a href={BUSINESS.googleReviewUrl} target="_blank" rel="noopener noreferrer">
+                Leave a review <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </Button>
           </div>
         </div>
       </section>

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 const values = [
   { title: "Honesty", desc: "Fixed quotes. No surprises. No upselling. You're told the full picture before anything starts." },
-  { title: "Speed", desc: "90% of repairs completed same day, most within 60 minutes. We respect your time." },
-  { title: "Quality", desc: "OEM-grade parts, certified engineers, and a 12-month warranty on every single repair." },
+  { title: "Speed", desc: "Most common repairs completed same day. Screen replacements, batteries, charging ports — done while you wait." },
+  { title: "Quality", desc: "OEM-grade parts and experienced technicians. 12-month warranty on eligible repairs, because we stand behind our work." },
   { title: "Accountability", desc: "Something not right? We make it right. Our warranty means what it says." },
 ];
 
@@ -107,7 +107,7 @@ export default function AboutPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Contact</p>
                 <div className="text-[14px] space-y-1">
                   <a href={`tel:${BUSINESS.phone}`} className="block text-foreground hover:text-primary transition-colors">
-                    {BUSINESS.phone}
+                    {BUSINESS.phoneDisplay}
                   </a>
                   <a href={`mailto:${BUSINESS.email}`} className="block text-foreground hover:text-primary transition-colors">
                     {BUSINESS.email}

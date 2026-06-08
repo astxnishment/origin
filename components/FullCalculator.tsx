@@ -15,6 +15,7 @@ import {
   type DeviceModel,
 } from "@/lib/calculatorData";
 import MobilePriceBar from "@/components/MobilePriceBar";
+import { BUSINESS } from "@/lib/constants";
 import {
   Select,
   SelectContent,
@@ -296,15 +297,14 @@ export default function FullCalculator() {
           </div>
         </div>
 
-        {/* SEO page link */}
-        {seoSlug && (
+        {/* Clean repair page link — no raw slug shown */}
+        {seoSlug && selectedModel && (
           <p className="text-xs text-muted-foreground">
-            View dedicated repair page:{" "}
             <Link
               href={`/repairs/${seoSlug}`}
               className="text-blue-500 hover:underline font-medium"
             >
-              /repairs/{seoSlug}
+              View {selectedModel.name} {repairType.toLowerCase()} page →
             </Link>
           </p>
         )}
@@ -353,7 +353,7 @@ export default function FullCalculator() {
             </p>
             <div className="flex items-baseline gap-3">
               <span className="text-5xl font-bold text-foreground">£{quote.minPrice}</span>
-              <span className="text-2xl font-semibold text-muted-foreground">– £{quote.maxPrice}</span>
+              <span className="text-2xl font-semibold text-muted-foreground">–£{quote.maxPrice}</span>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               Includes parts & labour · Final price confirmed after free inspection
@@ -418,7 +418,7 @@ export default function FullCalculator() {
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full h-10 rounded-xl text-sm border-border hover:bg-surface">
-            <a href="tel:07768426754">Call 07768 426754</a>
+            <a href={`tel:${BUSINESS.phone}`}>Call {BUSINESS.phoneDisplay}</a>
           </Button>
         </div>
       </div>

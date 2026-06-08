@@ -6,6 +6,7 @@ import { MapPin, Mail, Phone, Clock } from "lucide-react";
 const services = [
   { href: "/repairs/iphone", label: "iPhone Repair" },
   { href: "/repairs/samsung", label: "Samsung Repair" },
+  { href: "/repairs/ipad", label: "iPad Repair" },
   { href: "/repairs/laptops", label: "Laptop & MacBook" },
   { href: "/repairs/data-recovery", label: "Data Recovery" },
   { href: "/pricing", label: "Pricing" },
@@ -17,6 +18,12 @@ const company = [
   { href: "/contact", label: "Contact" },
   { href: "/faq", label: "FAQ" },
   { href: "/book", label: "Book Repair" },
+];
+
+const legal = [
+  { href: "/warranty", label: "Warranty Terms" },
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Service" },
 ];
 
 export default function Footer() {
@@ -105,7 +112,7 @@ export default function Footer() {
                   href={`tel:${BUSINESS.phone}`}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {BUSINESS.phone}
+                  {BUSINESS.phoneDisplay}
                 </a>
               </li>
               <li className="flex items-start gap-2">
@@ -135,10 +142,19 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Origin Repairs Ltd. All rights reserved.</p>
-          <p>76 Cookridge Street, Leeds, LS2 8GL, UK</p>
+        {/* Legal links */}
+        <div className="pt-8 border-t border-border">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Origin Repairs. All rights reserved.</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {legal.map(({ href, label }) => (
+                <Link key={href} href={href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">76 Cookridge Street, Leeds, LS2 8GL, UK</p>
         </div>
       </div>
     </footer>

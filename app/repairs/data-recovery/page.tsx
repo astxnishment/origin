@@ -21,14 +21,14 @@ const recoveryTypes = [
 
 const process = [
   { step: "1", title: "Free assessment", desc: "We evaluate the damage and give you a fixed quote. No charge if we can't recover." },
-  { step: "2", title: "Recovery attempt", desc: "Our engineers work with specialist tools. 94% average success rate." },
+  { step: "2", title: "Recovery attempt", desc: "Our technicians work with specialist tools to extract and reconstruct your data." },
   { step: "3", title: "Verification", desc: "You review the recovered files before we charge anything." },
   { step: "4", title: "Secure transfer", desc: "Data returned on encrypted storage device. Your privacy protected." },
 ];
 
 const guarantees = [
   "No recovery — no fee",
-  "94% success rate",
+  "High success rate on logical failures",
   "Encrypted data handling",
   "Free initial assessment",
   "Same-day emergency service",
@@ -53,7 +53,7 @@ export default function DataRecoveryPage() {
                   Lost data doesn&apos;t have to mean lost forever.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-md">
-                  Professional data recovery from phones, laptops, hard drives, and SSDs. 94% success rate. No recovery means no charge.
+                  Professional data recovery from phones, laptops, hard drives, and SSDs. Free initial assessment. No recovery means no charge.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
