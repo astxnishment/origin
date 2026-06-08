@@ -22,15 +22,15 @@ export const REPAIR_TYPES = [
 
 export type RepairType = (typeof REPAIR_TYPES)[number];
 
-// Map UI repair type → Excel repair_type value
+// Map UI repair type → Excel repair_type value (v3 workbook names)
 const REPAIR_TYPE_MAP: Record<RepairType, string> = {
   "Screen replacement": "Screen Replacement",
   "Battery replacement": "Battery Replacement",
   "Back glass": "Back Glass Replacement",
   "Charging port": "Charging Port Replacement",
-  "Camera repair": "Rear Camera Replacement",
+  "Camera repair": "Camera Lens Replacement",
   "Speaker / microphone": "Speaker / Earpiece Replacement",
-  "Water damage diagnostics": "Water Damage Diagnostics",
+  "Water damage diagnostics": "Water Damage Diagnostic",
   "Data recovery": "Data Recovery Assessment",
 };
 

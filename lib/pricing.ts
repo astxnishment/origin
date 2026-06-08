@@ -5,7 +5,7 @@ export type { RepairRow };
 // ── Basic lookups ─────────────────────────────────────────────────
 
 export function getAllBrands(): string[] {
-  return [...new Set(REPAIR_PRICING.map((r) => r.brand))];
+  return [...new Set(REPAIR_PRICING.filter((r) => r.brand !== "Generic").map((r) => r.brand))];
 }
 
 export function getModelsByBrand(brand: string): string[] {
@@ -20,14 +20,14 @@ export function getRepairTypesByModel(brand: string, model: string): string[] {
   ];
 }
 
-/** All quality tiers available for a given brand + model + repair type, active rows only */
+/** All quality tiers for a given brand + model + repair type */
 export function getRepairTiers(brand: string, model: string, repairType: string): RepairRow[] {
   return REPAIR_PRICING.filter(
     (r) => r.brand === brand && r.model === model && r.repairType === repairType
   );
 }
 
-/** Cheapest non-inspection tier for a given repair — used for "from £X" display */
+/** Cheapest non-inspection tier — used for "from £X" display */
 export function getRepairPrice(
   brand: string,
   model: string,
@@ -39,14 +39,13 @@ export function getRepairPrice(
   return fixed.sort((a, b) => (a.minPrice ?? 0) - (b.minPrice ?? 0))[0];
 }
 
-/** The "recommended" tier (falls back to cheapest priced) */
+/** The recommended tier (Balanced → Best non-genuine → priced fallback) */
 export function getRecommendedTier(
   brand: string,
   model: string,
   repairType: string
 ): RepairRow | undefined {
   const rows = getRepairTiers(brand, model, repairType);
-  // Prefer "Balanced" or "Best non-genuine", then "Budget", then first
   const order = ["Balanced", "Best non-genuine", "Budget", "Premium"];
   for (const tier of order) {
     const match = rows.find((r) => r.recommendedTier === tier && r.minPrice !== null);
@@ -61,18 +60,27 @@ export function formatPriceRange(min: number | null, max: number | null): string
   return `£${min}–£${max}`;
 }
 
-/** Whether a repair has multiple quality tiers (i.e. the tier selector should be shown) */
+/** Whether a repair has multiple quality tiers */
 export function hasMultipleTiers(brand: string, model: string, repairType: string): boolean {
   return getRepairTiers(brand, model, repairType).length > 1;
 }
 
-/** Whether the model has OLED as a native display (so LCD warning applies) */
+/**
+ * Whether the model has OLED as its native display.
+ * Used to decide when to show the LCD vs OLED quality warning.
+ */
 export function isOledModel(model: string): boolean {
-  // iPhones X and later are OLED (except XR, 11, SE which are LCD)
-  const lcdModels = ["iPhone 8", "iPhone 8 Plus", "iPhone XR", "iPhone 11", "iPhone SE"];
+  // Phones that shipped with LCD (not OLED)
+  const lcdModels = [
+    "iPhone 8",
+    "iPhone 8 Plus",
+    "iPhone XR",
+    "iPhone 11",
+    "iPhone SE",
+  ];
+  if (!model.startsWith("iPhone")) return false;
   if (lcdModels.some((m) => model === m || model.startsWith(m + " "))) return false;
-  // Everything iPhone X onwards is OLED
-  return model.startsWith("iPhone") && !model.startsWith("iPhone 8");
+  return true; // iPhone X and all later models are OLED
 }
 
 export function getPopularRepairs(): RepairRow[] {
@@ -80,18 +88,19 @@ export function getPopularRepairs(): RepairRow[] {
     { brand: "Apple", model: "iPhone 16 Pro", repairType: "Screen Replacement" },
     { brand: "Apple", model: "iPhone 16", repairType: "Screen Replacement" },
     { brand: "Apple", model: "iPhone 16", repairType: "Battery Replacement" },
-    { brand: "Samsung", model: "Samsung Galaxy S25", repairType: "Screen Replacement" },
-    { brand: "Samsung", model: "Samsung Galaxy S24", repairType: "Screen Replacement" },
+    { brand: "Samsung", model: "Galaxy S25", repairType: "Screen Replacement" },
+    { brand: "Samsung", model: "Galaxy S24", repairType: "Screen Replacement" },
   ];
   return targets
     .map(({ brand, model, repairType }) => getRepairPrice(brand, model, repairType))
     .filter((r): r is RepairRow => r !== undefined);
 }
 
-export function getModelsByCategory(websiteCategory: string): string[] {
+/** All models for a given category (e.g. "Phone") */
+export function getModelsByCategory(category: string): string[] {
   return [
     ...new Set(
-      REPAIR_PRICING.filter((r) => r.websiteCategory === websiteCategory).map((r) => r.model)
+      REPAIR_PRICING.filter((r) => r.category === category).map((r) => r.model)
     ),
   ];
 }

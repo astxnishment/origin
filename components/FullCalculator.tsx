@@ -607,16 +607,16 @@ export default function FullCalculator() {
   );
 }
 
-// Maps UI repair type to Excel repair_type column
+// Maps UI repair type to Excel repair_type column (v3 workbook names)
 function repairTypeToExcel(repairType: RepairType): string {
   const map: Record<RepairType, string> = {
     "Screen replacement": "Screen Replacement",
     "Battery replacement": "Battery Replacement",
     "Back glass": "Back Glass Replacement",
     "Charging port": "Charging Port Replacement",
-    "Camera repair": "Rear Camera Replacement",
+    "Camera repair": "Camera Lens Replacement",
     "Speaker / microphone": "Speaker / Earpiece Replacement",
-    "Water damage diagnostics": "Water Damage Diagnostics",
+    "Water damage diagnostics": "Water Damage Diagnostic",
     "Data recovery": "Data Recovery Assessment",
   };
   return map[repairType] ?? repairType;
