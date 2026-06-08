@@ -64,14 +64,14 @@ function modelsFromPricing(brandName: Brand): DeviceModel[] {
   for (const row of REPAIR_PRICING) {
     if (row.brand !== brandName || seen.has(row.model)) continue;
     seen.add(row.model);
-    // Rough tier from family
+    const name = row.model;
     const tier: DeviceModel["tier"] =
-      row.family.includes("Pro") || row.family.includes("Ultra") || row.family === "S Series"
+      name.includes("Pro") || name.includes("Ultra") || name.includes("Air")
         ? "flagship"
-        : row.family.includes("Mini") || row.family === "A Series"
+        : name.includes("SE") || name.includes(" A ")
         ? "budget"
         : "mid";
-    result.push({ id: modelId(row.model), name: row.model, brand: brandName, tier });
+    result.push({ id: modelId(name), name, brand: brandName, tier });
   }
   return result;
 }
@@ -94,7 +94,7 @@ export function getRepairQuote(device: DeviceModel, repairType: RepairType): Rep
     (r) => r.model === device.name && r.repairType === excelType
   );
 
-  const fixed = rows.filter((r) => !r.inspectionRequired && r.minPrice !== null);
+  const fixed = rows.filter((r) => r.minPrice !== null);
   if (fixed.length > 0) {
     const row = fixed.sort((a, b) => (a.minPrice ?? 0) - (b.minPrice ?? 0))[0];
     return {
@@ -105,7 +105,7 @@ export function getRepairQuote(device: DeviceModel, repairType: RepairType): Rep
     };
   }
 
-  const inspRow = rows.find((r) => r.inspectionRequired);
+  const inspRow = rows.find((r) => r.minPrice === null);
   if (inspRow) {
     return {
       minPrice: 0,

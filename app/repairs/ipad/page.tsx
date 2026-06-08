@@ -6,7 +6,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check, Clock, Shield, ArrowRight, MapPin } from "lucide-react";
 import { BUSINESS } from "@/lib/constants";
-import { getRepairPrice, formatPriceRange, getRepairsByFamily } from "@/lib/pricing";
+import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
+import { REPAIR_PRICING } from "@/lib/repairPricing";
 import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
@@ -70,16 +71,14 @@ const process = [
   { step: 4, title: "Quality check", desc: "Full function test before handover. 12-month warranty on eligible repairs." },
 ];
 
-// Get unique iPad models from pricing data
+// Get unique iPad models from pricing data (brand "Apple", model starts with "iPad")
 const iPadModels = (() => {
   const seen = new Set<string>();
   const result: string[] = [];
-  for (const family of ["iPad", "iPad Air", "iPad Mini", "iPad Pro"]) {
-    for (const row of getRepairsByFamily(family)) {
-      if (!seen.has(row.model)) {
-        seen.add(row.model);
-        result.push(row.model);
-      }
+  for (const row of REPAIR_PRICING) {
+    if (row.brand === "Apple" && row.model.startsWith("iPad") && !seen.has(row.model)) {
+      seen.add(row.model);
+      result.push(row.model);
     }
   }
   return result;

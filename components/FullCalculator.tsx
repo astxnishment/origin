@@ -15,6 +15,12 @@ import {
   type RepairType,
   type DeviceModel,
 } from "@/lib/calculatorData";
+import {
+  getRepairTiers,
+  hasMultipleTiers,
+  isOledModel,
+  type RepairRow,
+} from "@/lib/pricing";
 import MobilePriceBar from "@/components/MobilePriceBar";
 import { BUSINESS } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
@@ -35,6 +41,7 @@ import {
   Check,
   Star,
   X,
+  AlertTriangle,
 } from "lucide-react";
 
 // ── Constants ─────────────────────────────────────────────────────
@@ -52,6 +59,13 @@ const POPULAR_SHORTCUTS = [
   { label: "Galaxy S24", id: "galaxy-s24", brand: "Samsung" as Brand },
 ];
 
+const TIER_BADGE: Record<string, { label: string; color: string }> = {
+  Budget: { label: "Budget", color: "bg-zinc-500/20 text-zinc-300" },
+  Balanced: { label: "Recommended", color: "bg-blue-500/20 text-blue-300" },
+  "Best non-genuine": { label: "Best Value", color: "bg-emerald-500/20 text-emerald-300" },
+  Premium: { label: "Premium", color: "bg-amber-500/20 text-amber-300" },
+};
+
 // ── Main component ────────────────────────────────────────────────
 export default function FullCalculator() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,6 +73,7 @@ export default function FullCalculator() {
   const [brand, setBrand] = useState<Brand>("Apple");
   const [modelId, setModelId] = useState<string>("iphone-16-pro");
   const [repairType, setRepairType] = useState<RepairType>("Screen replacement");
+  const [selectedTier, setSelectedTier] = useState<RepairRow | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -82,10 +97,37 @@ export default function FullCalculator() {
 
   const models = useMemo(() => getModelsByBrand(brand), [brand]);
   const selectedModel = useMemo(() => models.find((m) => m.id === modelId), [models, modelId]);
+
+  // Legacy quote (cheapest tier) used as fallback
   const quote = useMemo(() => {
     if (!selectedModel) return null;
     return getRepairQuote(selectedModel, repairType);
   }, [selectedModel, repairType]);
+
+  // Quality tiers from v2 data
+  const tiers = useMemo(() => {
+    if (!selectedModel) return [];
+    return getRepairTiers(selectedModel.brand, selectedModel.name, repairTypeToExcel(repairType));
+  }, [selectedModel, repairType]);
+
+  const showTierSelector = tiers.length > 1;
+
+  // Auto-select recommended tier when tiers change
+  useEffect(() => {
+    if (tiers.length === 0) { setSelectedTier(null); return; }
+    const balanced = tiers.find((t) => t.recommendedTier === "Balanced" && t.minPrice !== null);
+    const bestNonGenuine = tiers.find((t) => t.recommendedTier === "Best non-genuine" && t.minPrice !== null);
+    const priced = tiers.find((t) => t.minPrice !== null);
+    setSelectedTier(balanced ?? bestNonGenuine ?? priced ?? tiers[0]);
+  }, [tiers]);
+
+  // Effective quote: use selected tier if available
+  const effectiveTier = selectedTier ?? (tiers.length === 1 ? tiers[0] : null);
+  const showLcdWarning =
+    effectiveTier?.partQuality === "Aftermarket LCD (Cheapest)" &&
+    selectedModel &&
+    isOledModel(selectedModel.name) &&
+    tiers.some((t) => t.partQuality !== "Aftermarket LCD (Cheapest)");
 
   function selectDevice(device: DeviceModel) {
     setBrand(device.brand);
@@ -95,7 +137,7 @@ export default function FullCalculator() {
     setSearchOpen(false);
   }
 
-  function selectShortcut(s: typeof POPULAR_SHORTCUTS[0]) {
+  function selectShortcut(s: (typeof POPULAR_SHORTCUTS)[0]) {
     setBrand(s.brand);
     setModelId(s.id);
     setRepairType("Screen replacement");
@@ -104,7 +146,7 @@ export default function FullCalculator() {
   const seoSlug = selectedModel ? buildRepairSlug(selectedModel, repairType) : null;
   const bookHref = selectedModel ? buildBookingHref(selectedModel, repairType) : "/book";
 
-  // Mobile sticky bar appears once the quote card scrolls out of view
+  // Mobile sticky bar
   const quoteCardRef = useRef<HTMLDivElement | null>(null);
   const [quoteVisible, setQuoteVisible] = useState(true);
   useEffect(() => {
@@ -117,6 +159,23 @@ export default function FullCalculator() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // Price display
+  const priceDisplay = effectiveTier
+    ? effectiveTier.displayPrice
+    : quote?.inspectionRequired
+    ? "Inspection required"
+    : quote
+    ? `£${quote.minPrice}–£${quote.maxPrice}`
+    : null;
+
+  const isInspection = effectiveTier
+    ? effectiveTier.minPrice === null
+    : !!quote?.inspectionRequired;
+
+  const timeEstimate = effectiveTier?.timeEstimate ?? quote?.estimatedTime ?? "Contact us";
+  const warrantyMonths = effectiveTier?.warrantyMonths ?? (quote ? 12 : 0);
+  const customerNote = effectiveTier?.customerNote ?? "";
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 items-start">
@@ -299,7 +358,94 @@ export default function FullCalculator() {
           </div>
         </div>
 
-        {/* Clean repair page link — no raw slug shown */}
+        {/* ── Quality tier selector ─────────────────────────────── */}
+        {showTierSelector && (
+          <div className="space-y-3">
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Part Quality
+            </label>
+            <div className="space-y-2">
+              {tiers.map((tier) => {
+                const isSelected = selectedTier?.partQuality === tier.partQuality;
+                const badge = TIER_BADGE[tier.recommendedTier] ?? null;
+                const isLcd = tier.partQuality === "Aftermarket LCD (Cheapest)";
+                return (
+                  <button
+                    key={tier.partQuality}
+                    onClick={() => setSelectedTier(tier)}
+                    className="w-full text-left rounded-xl px-4 py-3 transition-all duration-150 hover:scale-[1.005]"
+                    style={{
+                      background: isSelected
+                        ? "rgba(59,130,246,0.12)"
+                        : "rgba(255,255,255,0.03)",
+                      border: `1px solid ${isSelected ? "rgba(59,130,246,0.4)" : "rgba(255,255,255,0.07)"}`,
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {/* Radio dot */}
+                        <div
+                          className="flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all"
+                          style={{
+                            borderColor: isSelected ? "#3b82f6" : "rgba(255,255,255,0.2)",
+                          }}
+                        >
+                          {isSelected && (
+                            <div className="w-2 h-2 rounded-full bg-blue-500" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <span
+                            className="text-sm font-medium"
+                            style={{ color: isSelected ? "#e2e8f0" : "rgba(255,255,255,0.65)" }}
+                          >
+                            {tier.partQuality}
+                          </span>
+                          {isLcd && (
+                            <span className="ml-2 text-[10px] text-amber-400 font-medium">
+                              ⚠ LCD
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {badge && (
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase leading-none ${badge.color}`}>
+                            {badge.label}
+                          </span>
+                        )}
+                        <span
+                          className="text-sm font-bold tabular-nums"
+                          style={{ color: isSelected ? "#60a5fa" : "rgba(255,255,255,0.5)" }}
+                        >
+                          {tier.displayPrice}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* LCD warning */}
+            {showLcdWarning && (
+              <div
+                className="flex items-start gap-3 rounded-xl px-4 py-3"
+                style={{
+                  background: "rgba(245,158,11,0.08)",
+                  border: "1px solid rgba(245,158,11,0.25)",
+                }}
+              >
+                <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-200/80 leading-relaxed">
+                  Budget LCD is the cheapest option but has lower colour, brightness and resale value than OLED.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Clean repair page link */}
         {seoSlug && selectedModel && (
           <p className="text-xs text-muted-foreground">
             <Link
@@ -337,62 +483,69 @@ export default function FullCalculator() {
                 {selectedModel?.name ?? "No device selected"}
               </h2>
               <p className="text-sm text-muted-foreground mt-0.5">{repairType}</p>
+              {effectiveTier && (
+                <p className="text-xs text-zinc-500 mt-0.5">{effectiveTier.partQuality}</p>
+              )}
             </div>
             <div className="flex-shrink-0 opacity-90">
               <Image
-                  src={BRAND_IMAGE[brand].src}
-                  alt={BRAND_IMAGE[brand].alt}
-                  width={160}
-                  height={200}
-                  className="object-contain w-16 h-20 drop-shadow-[0_4px_16px_rgba(59,130,246,0.2)]"
-                />
+                src={BRAND_IMAGE[brand].src}
+                alt={BRAND_IMAGE[brand].alt}
+                width={160}
+                height={200}
+                className="object-contain w-16 h-20 drop-shadow-[0_4px_16px_rgba(59,130,246,0.2)]"
+              />
             </div>
           </div>
         </div>
 
         {/* Price */}
-        {quote && (
+        {priceDisplay && (
           <div className="px-7 pt-6 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Estimated Price
             </p>
-            {quote.inspectionRequired ? (
+            {isInspection ? (
               <p className="text-2xl font-bold text-foreground">Inspection required</p>
             ) : (
-              <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-bold text-foreground">£{quote.minPrice}</span>
-                <span className="text-2xl font-semibold text-muted-foreground">–£{quote.maxPrice}</span>
-              </div>
+              <p className="text-4xl font-bold text-foreground">{priceDisplay}</p>
             )}
             <p className="text-xs text-muted-foreground mt-2">
-              Includes parts & labour · Final price confirmed after free inspection
+              {isInspection
+                ? "Free assessment · no charge if we can't fix it"
+                : "Includes parts & labour · Final price confirmed after free inspection"}
             </p>
+            {customerNote && (
+              <p className="text-xs text-zinc-400 mt-2 leading-relaxed border-t border-white/5 pt-2">
+                {customerNote}
+              </p>
+            )}
           </div>
         )}
 
         {/* Stats */}
-        {quote && (
-          <div className="grid grid-cols-3 divide-x" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-            <div className="px-5 py-4">
-              <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground mb-1.5">
-                <Clock className="h-2.5 w-2.5" /> Time
-              </div>
-              <p className="text-sm font-bold text-foreground">{quote.estimatedTime}</p>
+        <div className="grid grid-cols-3 divide-x" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="px-5 py-4">
+            <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground mb-1.5">
+              <Clock className="h-2.5 w-2.5" /> Time
             </div>
-            <div className="px-5 py-4">
-              <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground mb-1.5">
-                <Shield className="h-2.5 w-2.5" /> Warranty
-              </div>
-              <p className="text-sm font-bold text-green-500">{quote.warranty}</p>
-            </div>
-            <div className="px-5 py-4">
-              <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground mb-1.5">
-                <Zap className="h-2.5 w-2.5" /> Avail.
-              </div>
-              <p className="text-sm font-bold text-blue-400">Same Day</p>
-            </div>
+            <p className="text-sm font-bold text-foreground">{timeEstimate}</p>
           </div>
-        )}
+          <div className="px-5 py-4">
+            <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground mb-1.5">
+              <Shield className="h-2.5 w-2.5" /> Warranty
+            </div>
+            <p className="text-sm font-bold text-green-500">
+              {warrantyMonths > 0 ? `${warrantyMonths} months` : "After inspection"}
+            </p>
+          </div>
+          <div className="px-5 py-4">
+            <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground mb-1.5">
+              <Zap className="h-2.5 w-2.5" /> Avail.
+            </div>
+            <p className="text-sm font-bold text-blue-400">Same Day</p>
+          </div>
+        </div>
 
         {/* Trust checks */}
         <div className="px-7 py-4 border-t grid grid-cols-2 gap-2" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
@@ -414,6 +567,13 @@ export default function FullCalculator() {
           </div>
         </div>
 
+        {/* Pricing note */}
+        <div className="px-7 pb-4">
+          <p className="text-[10px] text-zinc-500 leading-relaxed">
+            Prices are estimates and may vary after inspection depending on part quality, device condition, and part availability.
+          </p>
+        </div>
+
         {/* CTA */}
         <div className="px-5 pb-6 space-y-3">
           <Button
@@ -433,16 +593,31 @@ export default function FullCalculator() {
       </div>
 
       {/* Mobile sticky price bar — only when we have a real price */}
-      {quote && selectedModel && !quote.inspectionRequired && (
+      {!isInspection && selectedModel && priceDisplay && (
         <MobilePriceBar
           show={!quoteVisible}
           deviceName={selectedModel.name}
           repairType={repairType}
-          minPrice={quote.minPrice}
-          maxPrice={quote.maxPrice}
+          minPrice={effectiveTier?.minPrice ?? quote?.minPrice ?? 0}
+          maxPrice={effectiveTier?.maxPrice ?? quote?.maxPrice ?? 0}
           bookHref={bookHref}
         />
       )}
     </div>
   );
+}
+
+// Maps UI repair type to Excel repair_type column
+function repairTypeToExcel(repairType: RepairType): string {
+  const map: Record<RepairType, string> = {
+    "Screen replacement": "Screen Replacement",
+    "Battery replacement": "Battery Replacement",
+    "Back glass": "Back Glass Replacement",
+    "Charging port": "Charging Port Replacement",
+    "Camera repair": "Rear Camera Replacement",
+    "Speaker / microphone": "Speaker / Earpiece Replacement",
+    "Water damage diagnostics": "Water Damage Diagnostics",
+    "Data recovery": "Data Recovery Assessment",
+  };
+  return map[repairType] ?? repairType;
 }
