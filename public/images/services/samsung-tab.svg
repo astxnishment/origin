@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" fill="none">
+  <rect width="400" height="520" fill="#0a0a0a"/>
+  <!-- Tablet body -->
+  <rect x="80" y="40" width="240" height="440" rx="20" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <!-- Screen -->
+  <rect x="95" y="70" width="210" height="360" rx="6" fill="#111"/>
+  <!-- Screen glow -->
+  <rect x="95" y="70" width="210" height="360" rx="6" fill="url(#tabGlow)" opacity="0.6"/>
+  <!-- Camera -->
+  <circle cx="200" cy="57" r="5" fill="#222" stroke="#333" stroke-width="1"/>
+  <circle cx="200" cy="57" r="2.5" fill="#0a0a0a"/>
+  <!-- Home indicator -->
+  <rect x="178" y="448" width="44" height="4" rx="2" fill="#2a2a2a"/>
+  <!-- Screen content lines -->
+  <rect x="115" y="100" width="80" height="8" rx="4" fill="#1e3a5f" opacity="0.8"/>
+  <rect x="115" y="120" width="50" height="6" rx="3" fill="#1e3a5f" opacity="0.5"/>
+  <rect x="115" y="160" width="170" height="90" rx="8" fill="#0d2340" opacity="0.7"/>
+  <rect x="115" y="265" width="80" height="80" rx="8" fill="#0d2340" opacity="0.6"/>
+  <rect x="205" y="265" width="80" height="80" rx="8" fill="#0d2340" opacity="0.6"/>
+  <rect x="115" y="355" width="170" height="60" rx="8" fill="#0d2340" opacity="0.5"/>
+  <!-- Blue accent -->
+  <rect x="115" y="160" width="3" height="90" rx="1.5" fill="#3b82f6" opacity="0.9"/>
+  <defs>
+    <linearGradient id="tabGlow" x1="95" y1="70" x2="305" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.03"/>
+    </linearGradient>
+  </defs>
+</svg>

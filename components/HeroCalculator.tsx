@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -12,117 +12,63 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import {
-  BRANDS,
-  REPAIR_TYPES,
-  getModelsByBrand,
-  getRepairQuote,
-  buildBookingHref,
+  getDeviceTypesByBrand,
+  formatPrice,
+  buildBookingUrl,
   type Brand,
-  type RepairType,
-  type DeviceModel,
-} from "@/lib/calculatorData";
+} from "@/lib/deviceData";
 import { serviceImages } from "@/lib/serviceImages";
-import MobilePriceBar from "@/components/MobilePriceBar";
-import { ArrowRight, Clock, ShieldCheck, CalendarCheck, Star } from "lucide-react";
-
-// ── Quick shortcuts ──────────────────────────────────────────────
-const SHORTCUTS: { label: string; brand: Brand; modelId: string; repairType: RepairType }[] = [
-  { label: "iPhone Screen", brand: "Apple", modelId: "iphone-16-pro", repairType: "Screen replacement" },
-  { label: "iPhone Battery", brand: "Apple", modelId: "iphone-16", repairType: "Battery replacement" },
-  { label: "Samsung Screen", brand: "Samsung", modelId: "galaxy-s25-ultra", repairType: "Screen replacement" },
-  { label: "Samsung Battery", brand: "Samsung", modelId: "galaxy-s24", repairType: "Battery replacement" },
-];
-
-const POPULAR_REPAIRS: RepairType[] = ["Screen replacement", "Battery replacement"];
+import { ArrowRight, Clock, ShieldCheck, CalendarCheck } from "lucide-react";
 
 const BRAND_IMAGE: Record<Brand, (typeof serviceImages)[string]> = {
-  Apple: serviceImages.iphone,
+  Apple:   serviceImages.iphone,
   Samsung: serviceImages.samsung,
 };
 
-const DEFAULT_BRAND: Brand = "Apple";
-const DEFAULT_MODEL = "iphone-16-pro";
-const DEFAULT_REPAIR: RepairType = "Screen replacement";
-
-// ── Smooth count-up for the headline price ───────────────────────
-function useCountUp(target: number, duration = 450) {
-  const [value, setValue] = useState(target);
-  const fromRef = useRef(target);
-  const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const from = fromRef.current;
-    const to = target;
-    if (from === to) return;
-    const start = performance.now();
-
-    const tick = (now: number) => {
-      const t = Math.min((now - start) / duration, 1);
-      // easeOutExpo
-      const eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-      setValue(Math.round(from + (to - from) * eased));
-      if (t < 1) {
-        rafRef.current = requestAnimationFrame(tick);
-      } else {
-        fromRef.current = to;
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      fromRef.current = to;
-    };
-  }, [target, duration]);
-
-  return value;
-}
-
-// ── Component ────────────────────────────────────────────────────
 export default function HeroCalculator() {
-  const [brand, setBrand] = useState<Brand>(DEFAULT_BRAND);
-  const [modelId, setModelId] = useState<string>(DEFAULT_MODEL);
-  const [repairType, setRepairType] = useState<RepairType>(DEFAULT_REPAIR);
+  const [brand, setBrand]         = useState<Brand>("Apple");
+  const [deviceTypeId, setTypeId] = useState<string>(() => {
+    return getDeviceTypesByBrand("Apple")[0]?.id ?? "";
+  });
+  const [modelId, setModelId]     = useState<string>(() => {
+    return getDeviceTypesByBrand("Apple")[0]?.models[0]?.id ?? "";
+  });
+  const [repairId, setRepairId]   = useState<string>(() => {
+    return getDeviceTypesByBrand("Apple")[0]?.models[0]?.repairs[0]?.id ?? "";
+  });
 
-  const models = useMemo<DeviceModel[]>(() => getModelsByBrand(brand), [brand]);
-  const selectedModel = useMemo(() => models.find((m) => m.id === modelId), [models, modelId]);
+  const deviceTypes = useMemo(() => getDeviceTypesByBrand(brand), [brand]);
+  const deviceType  = useMemo(() => deviceTypes.find((d) => d.id === deviceTypeId) ?? null, [deviceTypes, deviceTypeId]);
+  const models      = deviceType?.models ?? [];
+  const selectedModel  = models.find((m) => m.id === modelId) ?? null;
+  const repairs        = selectedModel?.repairs ?? [];
+  const selectedRepair = repairs.find((r) => r.id === repairId) ?? null;
 
-  const quote = useMemo(() => {
-    if (!selectedModel) return null;
-    return getRepairQuote(selectedModel, repairType);
-  }, [selectedModel, repairType]);
-
-  // Single headline estimate (midpoint of the range)
-  const estimate =
-    quote && !quote.inspectionRequired
-      ? Math.round((quote.minPrice + quote.maxPrice) / 2)
-      : 0;
-  const animatedPrice = useCountUp(estimate);
-
-  // Booking handoff link with prefilled device/repair
-  const bookHref = selectedModel ? buildBookingHref(selectedModel, repairType) : "/book";
-
-  // Show the mobile sticky bar once the calculator card scrolls out of view
-  const cardRef = useRef<HTMLDivElement | null>(null);
-  const [cardVisible, setCardVisible] = useState(true);
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setCardVisible(entry.isIntersecting),
-      { threshold: 0.25 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  function applyShortcut(sc: (typeof SHORTCUTS)[0]) {
-    setBrand(sc.brand);
-    setModelId(sc.modelId);
-    setRepairType(sc.repairType);
+  function changeBrand(b: Brand) {
+    setBrand(b);
+    const types = getDeviceTypesByBrand(b);
+    const t = types[0];
+    setTypeId(t?.id ?? "");
+    setModelId(t?.models[0]?.id ?? "");
+    setRepairId(t?.models[0]?.repairs[0]?.id ?? "");
   }
-  const isActive = (sc: (typeof SHORTCUTS)[0]) =>
-    brand === sc.brand && modelId === sc.modelId && repairType === sc.repairType;
+
+  function changeType(id: string) {
+    setTypeId(id);
+    const dt = deviceTypes.find((d) => d.id === id);
+    setModelId(dt?.models[0]?.id ?? "");
+    setRepairId(dt?.models[0]?.repairs[0]?.id ?? "");
+  }
+
+  function changeModel(id: string) {
+    setModelId(id);
+    const mdl = deviceType?.models.find((m) => m.id === id);
+    setRepairId(mdl?.repairs[0]?.id ?? "");
+  }
+
+  const priceStr       = selectedRepair ? formatPrice(selectedRepair.price) : "—";
+  const isQuoteReq     = !selectedRepair?.price;
+  const bookUrl        = buildBookingUrl(brand, deviceTypeId, modelId, repairId);
 
   const selectStyle = {
     background: "rgba(255,255,255,0.05)",
@@ -131,15 +77,12 @@ export default function HeroCalculator() {
 
   return (
     <div className="relative w-full">
-      {/* Soft ambient light — Apple Store, not RGB */}
       <div className="glow-ambient absolute -inset-x-16 -top-24 -bottom-16 pointer-events-none" />
 
-      {/* ── Card ──────────────────────────────────────────────── */}
-      <div ref={cardRef} className="surface-glass relative rounded-3xl overflow-hidden">
-        {/* Top accent hairline */}
+      <div className="surface-glass relative rounded-3xl overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-        {/* ── Header ───────────────────────────────────────── */}
+        {/* Header */}
         <div className="relative px-7 pt-6 pb-5 flex items-center justify-between gap-4 border-b border-white/[0.07]">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
@@ -154,7 +97,7 @@ export default function HeroCalculator() {
             <h3 className="text-lg font-bold text-white leading-tight truncate">
               {selectedModel?.name ?? "Select your device"}
             </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">{repairType}</p>
+            <p className="text-xs text-zinc-400 mt-0.5">{selectedRepair?.label ?? ""}</p>
           </div>
           <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center">
             <Image
@@ -167,179 +110,127 @@ export default function HeroCalculator() {
           </div>
         </div>
 
-        {/* ── Shortcuts ────────────────────────────────────── */}
-        <div className="px-7 pt-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500 mb-2.5">
-            Popular repairs
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {SHORTCUTS.map((sc) => {
-              const active = isActive(sc);
-              return (
-                <button
-                  key={sc.label}
-                  onClick={() => applyShortcut(sc)}
-                  className="text-left px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 hover:scale-[1.015] active:scale-[0.98] flex items-center gap-1.5"
-                  style={{
-                    background: active ? "rgba(59,130,246,0.16)" : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${active ? "rgba(59,130,246,0.4)" : "rgba(255,255,255,0.08)"}`,
-                    color: active ? "#60a5fa" : "rgba(255,255,255,0.7)",
-                  }}
-                >
-                  <Star className="h-2.5 w-2.5 flex-shrink-0 opacity-70" />
-                  {sc.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Selects */}
+        <div className="px-7 pt-5 pb-5 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">Brand</label>
+              <Select value={brand} onValueChange={(v) => changeBrand(v as Brand)}>
+                <SelectTrigger className="h-10 rounded-xl text-sm font-medium" style={selectStyle}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(["Apple", "Samsung"] as Brand[]).map((b) => (
+                    <SelectItem key={b} value={b}>{b}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* ── Selects ──────────────────────────────────────── */}
-        <div className="px-7 pt-5 pb-5 grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">Brand</label>
-            <Select
-              value={brand}
-              onValueChange={(v) => {
-                const b = v as Brand;
-                setBrand(b);
-                setModelId(getModelsByBrand(b)[0]?.id ?? "");
-                setRepairType("Screen replacement");
-              }}
-            >
-              <SelectTrigger className="h-10 rounded-xl text-sm font-medium" style={selectStyle}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {BRANDS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">Type</label>
+              <Select value={deviceTypeId} onValueChange={changeType}>
+                <SelectTrigger className="h-10 rounded-xl text-sm font-medium" style={selectStyle}>
+                  <SelectValue placeholder="Type…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {deviceTypes.map((dt) => (
+                    <SelectItem key={dt.id} value={dt.id}>{dt.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">Model</label>
-            <Select
-              value={modelId}
-              onValueChange={(v) => { setModelId(v); setRepairType("Screen replacement"); }}
-            >
+            <Select value={modelId} onValueChange={changeModel} disabled={!deviceType}>
               <SelectTrigger className="h-10 rounded-xl text-sm font-medium" style={selectStyle}>
-                <SelectValue />
+                <SelectValue placeholder="Select model…" />
               </SelectTrigger>
               <SelectContent>
-                {models.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+                {models.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="col-span-2 space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">Repair Type</label>
-            <Select value={repairType} onValueChange={(v) => setRepairType(v as RepairType)}>
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">Repair</label>
+            <Select value={repairId} onValueChange={setRepairId} disabled={!selectedModel}>
               <SelectTrigger className="h-10 rounded-xl text-sm font-medium" style={selectStyle}>
-                <SelectValue />
+                <SelectValue placeholder="Select repair…" />
               </SelectTrigger>
               <SelectContent>
-                {REPAIR_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    <span className="flex items-center gap-2">
-                      {type}
-                      {POPULAR_REPAIRS.includes(type) && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-bold uppercase tracking-wide leading-none">
-                          Popular
-                        </span>
-                      )}
-                    </span>
-                  </SelectItem>
+                {repairs.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* ── Result — the star ────────────────────────────── */}
-        {quote && (
+        {/* Result */}
+        {selectedRepair && (
           <div
             className="mx-4 mb-4 rounded-2xl overflow-hidden"
             style={{
-              background:
-                "linear-gradient(160deg, rgba(59,130,246,0.12) 0%, rgba(59,130,246,0.04) 100%)",
+              background: "linear-gradient(160deg, rgba(59,130,246,0.12) 0%, rgba(59,130,246,0.04) 100%)",
               border: "1px solid rgba(59,130,246,0.22)",
             }}
           >
-            {/* Price */}
             <div className="px-6 pt-5 pb-4 text-center border-b border-blue-500/10">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-300/70 mb-1">
-                Your estimated price
+                Estimated price
               </p>
-                  {quote.inspectionRequired ? (
-                <p className="text-3xl font-bold text-white py-2">Inspection required</p>
-              ) : (
-                <div key={estimate} className="animate-price flex items-start justify-center gap-1 leading-none">
-                  <span className="text-2xl font-bold text-white/80 mt-2">£</span>
-                  <span className="text-6xl font-extrabold text-white tracking-tight tabular-nums">
-                    {animatedPrice}
-                  </span>
-                </div>
-              )}
-              <p className="text-xs text-zinc-400 mt-2">
-                {quote.inspectionRequired
-                  ? "Free assessment · no charge if we can't fix it"
-                  : `Range £${quote.minPrice}–£${quote.maxPrice} · confirmed after free inspection`}
+              <p className="text-3xl font-bold text-white py-1">{priceStr}</p>
+              <p className="text-xs text-zinc-400 mt-1">
+                {isQuoteReq
+                  ? "Free assessment — no charge if we can't fix it"
+                  : "Confirmed after free inspection · includes parts & labour"}
               </p>
             </div>
-
-            {/* Instant trust line */}
             <div className="grid grid-cols-3 divide-x divide-blue-500/10">
               <div className="px-3 py-3 flex flex-col items-center gap-1 text-center">
                 <CalendarCheck className="h-4 w-4 text-green-400" />
-                <span className="text-[11px] font-semibold text-white leading-tight">Same Day</span>
+                <span className="text-[11px] font-semibold text-white">Same Day</span>
                 <span className="text-[9px] text-zinc-500 uppercase tracking-wide">Repair</span>
               </div>
               <div className="px-3 py-3 flex flex-col items-center gap-1 text-center">
                 <ShieldCheck className="h-4 w-4 text-green-400" />
-                <span className="text-[11px] font-semibold text-white leading-tight">12 Month</span>
+                <span className="text-[11px] font-semibold text-white">{selectedRepair.warranty}</span>
                 <span className="text-[9px] text-zinc-500 uppercase tracking-wide">Warranty</span>
               </div>
               <div className="px-3 py-3 flex flex-col items-center gap-1 text-center">
                 <Clock className="h-4 w-4 text-green-400" />
-                <span className="text-[11px] font-semibold text-white leading-tight">Ready</span>
-                <span className="text-[9px] text-zinc-500 uppercase tracking-wide">Today</span>
+                <span className="text-[11px] font-semibold text-white">{selectedRepair.time}</span>
+                <span className="text-[9px] text-zinc-500 uppercase tracking-wide">Est. time</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── CTA ──────────────────────────────────────────── */}
+        {/* CTA */}
         <div className="px-4 pb-5 space-y-2.5">
           <Button
             asChild
-            className="w-full h-12 rounded-xl font-semibold text-[15px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white transition-all duration-200"
+            className="w-full h-12 rounded-xl font-semibold text-[15px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
             style={{ boxShadow: "0 8px 30px -8px rgba(59,130,246,0.5)" }}
           >
-            <Link href={bookHref} className="flex items-center justify-center gap-2">
+            <Link href={bookUrl} className="flex items-center justify-center gap-2">
               Book Same-Day Repair
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500">
-            <span>Prefer to browse?</span>
+            <span>More options?</span>
             <Link href="/quote" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-              Open full calculator →
+              Full calculator →
             </Link>
           </div>
         </div>
       </div>
-
-      {/* Mobile sticky price bar — appears once card scrolls away */}
-      {quote && selectedModel && !quote.inspectionRequired && (
-        <MobilePriceBar
-          show={!cardVisible}
-          deviceName={selectedModel.name}
-          repairType={repairType}
-          minPrice={quote.minPrice}
-          maxPrice={quote.maxPrice}
-          bookHref={bookHref}
-        />
-      )}
     </div>
   );
 }

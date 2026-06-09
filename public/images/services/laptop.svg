@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" fill="none">
+  <rect width="600" height="420" fill="#0a0a0a"/>
+  <!-- Screen lid -->
+  <rect x="80" y="30" width="440" height="290" rx="14" fill="#161616" stroke="#252525" stroke-width="1.5"/>
+  <!-- Screen bezel top/sides -->
+  <rect x="96" y="46" width="408" height="258" rx="8" fill="#0d0d0d"/>
+  <!-- Screen content -->
+  <rect x="104" y="54" width="392" height="242" rx="6" fill="#090909"/>
+  <rect x="104" y="54" width="392" height="242" rx="6" fill="url(#screenGlow)"/>
+  <!-- Menubar -->
+  <rect x="104" y="54" width="392" height="22" rx="6" fill="#111" opacity="0.8"/>
+  <!-- Menu items -->
+  <circle cx="120" cy="65" r="5" fill="#1a1a1a"/>
+  <circle cx="134" cy="65" r="5" fill="#1a1a1a"/>
+  <circle cx="148" cy="65" r="5" fill="#1a1a1a"/>
+  <rect x="165" y="60" width="35" height="10" rx="5" fill="#1a1a1a" opacity="0.6"/>
+  <rect x="206" y="60" width="30" height="10" rx="5" fill="#1a1a1a" opacity="0.6"/>
+  <rect x="242" y="60" width="30" height="10" rx="5" fill="#1a1a1a" opacity="0.6"/>
+  <!-- Sidebar -->
+  <rect x="104" y="76" width="80" height="220" rx="0" fill="#0d1117" opacity="0.9"/>
+  <rect x="112" y="90" width="60" height="8" rx="4" fill="#1e3a5f" opacity="0.7"/>
+  <rect x="112" y="108" width="55" height="8" rx="4" fill="#1e3a5f" opacity="0.5"/>
+  <rect x="112" y="126" width="65" height="8" rx="4" fill="#1e3a5f" opacity="0.5"/>
+  <rect x="112" y="144" width="50" height="8" rx="4" fill="#3b82f6" opacity="0.4"/>
+  <rect x="112" y="162" width="60" height="8" rx="4" fill="#1e3a5f" opacity="0.4"/>
+  <!-- Main area -->
+  <rect x="192" y="82" width="290" height="40" rx="8" fill="#0d2340" opacity="0.7"/>
+  <rect x="192" y="82" width="3" height="40" rx="1.5" fill="#3b82f6" opacity="0.9"/>
+  <rect x="192" y="132" width="140" height="80" rx="8" fill="#0d2340" opacity="0.6"/>
+  <rect x="342" y="132" width="140" height="80" rx="8" fill="#0d2340" opacity="0.6"/>
+  <rect x="192" y="222" width="290" height="60" rx="8" fill="#0d2340" opacity="0.5"/>
+  <!-- Webcam -->
+  <circle cx="300" cy="40" r="4" fill="#111" stroke="#1a1a1a" stroke-width="0.5"/>
+  <!-- Base/keyboard -->
+  <path d="M60 320 L540 320 L510 380 L90 380 Z" fill="#141414" stroke="#222" stroke-width="1"/>
+  <!-- Keyboard area -->
+  <rect x="120" y="328" width="360" height="38" rx="6" fill="#111"/>
+  <!-- Key rows suggestion -->
+  <rect x="130" y="334" width="340" height="6" rx="3" fill="#1a1a1a" opacity="0.8"/>
+  <rect x="135" y="344" width="330" height="6" rx="3" fill="#1a1a1a" opacity="0.6"/>
+  <rect x="140" y="354" width="200" height="6" rx="3" fill="#1a1a1a" opacity="0.4"/>
+  <!-- Trackpad -->
+  <rect x="240" y="354" width="120" height="9" rx="4.5" fill="#1e1e1e"/>
+  <!-- Hinge -->
+  <rect x="80" y="318" width="440" height="5" rx="2.5" fill="#222"/>
+  <defs>
+    <linearGradient id="screenGlow" x1="104" y1="54" x2="496" y2="296" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"/>
+    </linearGradient>
+  </defs>
+</svg>

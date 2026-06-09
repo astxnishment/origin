@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 600" fill="none">
+  <rect width="300" height="600" fill="#0a0a0a"/>
+  <!-- Phone body -->
+  <rect x="50" y="30" width="200" height="540" rx="28" fill="#161616" stroke="#252525" stroke-width="1.5"/>
+  <!-- Screen -->
+  <rect x="58" y="55" width="184" height="490" rx="22" fill="#0d0d0d"/>
+  <!-- Punch-hole camera -->
+  <circle cx="150" cy="78" r="6" fill="#0a0a0a"/>
+  <circle cx="150" cy="78" r="3.5" fill="#111" stroke="#1a1a1a" stroke-width="0.5"/>
+  <!-- Screen glow -->
+  <rect x="58" y="55" width="184" height="490" rx="22" fill="url(#phoneGlow)" opacity="0.5"/>
+  <!-- UI elements -->
+  <rect x="75" y="105" width="90" height="10" rx="5" fill="#1e3a5f" opacity="0.9"/>
+  <rect x="75" y="125" width="60" height="7" rx="3.5" fill="#1e3a5f" opacity="0.5"/>
+  <!-- App grid -->
+  <rect x="75" y="160" width="50" height="50" rx="10" fill="#0d2340" opacity="0.8"/>
+  <rect x="135" y="160" width="50" height="50" rx="10" fill="#0d2340" opacity="0.8"/>
+  <rect x="195" y="160" width="45" height="50" rx="10" fill="#0d2340" opacity="0.8"/>
+  <rect x="75" y="222" width="50" height="50" rx="10" fill="#0d2340" opacity="0.6"/>
+  <rect x="135" y="222" width="50" height="50" rx="10" fill="#0d2340" opacity="0.6"/>
+  <rect x="195" y="222" width="45" height="50" rx="10" fill="#0d2340" opacity="0.6"/>
+  <!-- Big card -->
+  <rect x="75" y="290" width="165" height="120" rx="14" fill="#0d2340" opacity="0.7"/>
+  <rect x="75" y="290" width="3" height="120" rx="1.5" fill="#3b82f6" opacity="0.9"/>
+  <!-- Bottom bar -->
+  <rect x="75" y="428" width="165" height="60" rx="12" fill="#0d2340" opacity="0.5"/>
+  <!-- Home indicator -->
+  <rect x="115" y="522" width="70" height="4" rx="2" fill="#222"/>
+  <!-- Side button -->
+  <rect x="248" y="180" width="4" height="55" rx="2" fill="#222"/>
+  <!-- Volume buttons -->
+  <rect x="48" y="165" width="4" height="40" rx="2" fill="#222"/>
+  <rect x="48" y="215" width="4" height="40" rx="2" fill="#222"/>
+  <defs>
+    <linearGradient id="phoneGlow" x1="58" y1="55" x2="242" y2="545" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"/>
+    </linearGradient>
+  </defs>
+</svg>
