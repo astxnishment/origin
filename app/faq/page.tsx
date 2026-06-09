@@ -21,7 +21,7 @@ const categories = [
       },
       {
         q: "How do I book?",
-        a: "You can book online at originrepairs.co.uk/book, call us on 07768 426754, or simply walk in to 76 Cookridge Street, Leeds during opening hours. We'll confirm your slot by email within the hour.",
+        a: "You can book online at originrepairs.co.uk/book, call us on 07768 426 754, or simply walk in to 76 Cookridge Street, Leeds during opening hours. We'll confirm your slot by email within the hour.",
       },
       {
         q: "Can I get a quote without booking?",
@@ -29,7 +29,7 @@ const categories = [
       },
       {
         q: "What if I need to reschedule?",
-        a: "No problem at all. Call us on 07768 426754 and we'll move your appointment. There are no cancellation fees or penalties — we just ask for a bit of notice so we can offer the slot to someone else.",
+        a: "No problem at all. Call us on 07768 426 754 and we'll move your appointment. There are no cancellation fees or penalties — we just ask for a bit of notice so we can offer the slot to someone else.",
       },
     ],
   },

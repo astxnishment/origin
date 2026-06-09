@@ -64,7 +64,7 @@ export default function RootLayout({
     description:
       "Premium device repair service in Leeds. Expert iPhone, Samsung, MacBook, and iPad repairs with same-day service.",
     url: "https://originrepairs.co.uk",
-    telephone: "07768426754",
+    telephone: "+447768426754",
     email: "tech@originrepairs.co.uk",
     address: {
       "@type": "PostalAddress",

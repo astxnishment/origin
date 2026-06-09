@@ -368,5 +368,5 @@ export function buildWhatsAppUrl(
   const msg = encodeURIComponent(
     `Hi Origin Repairs, I'd like a quote for: ${repairLabel} on my ${deviceName}. Estimated: ${priceStr}`
   );
-  return `https://wa.me/447123456789?text=${msg}`;
+  return `https://wa.me/447768426754?text=${msg}`;
 }

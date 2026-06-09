@@ -2,8 +2,9 @@
 export const BUSINESS = {
   name: "Origin Repairs",
   email: "tech@originrepairs.co.uk",
-  phone: "07768426754",
-  phoneDisplay: "07768 426754",
+  phone: "+447768426754",
+  phoneDisplay: "07768 426 754",
+  phoneHref: "tel:+447768426754",
   address: "76 Cookridge Street, Leeds, LS2 8GL",
   coordinates: {
     lat: 53.8017,

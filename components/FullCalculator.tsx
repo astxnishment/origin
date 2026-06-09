@@ -141,7 +141,7 @@ export default function FullCalculator() {
     : "/book";
   const waUrl = model && repair
     ? buildWhatsAppUrl(model.name, repair.label, priceStr)
-    : "https://wa.me/447123456789";
+    : "https://wa.me/447768426754";
 
   return (
     <div className="max-w-2xl mx-auto">

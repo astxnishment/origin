@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
           <h3>Your message:</h3>
           <p>${device ? `<strong>Device:</strong> ${device}<br />` : ""}</p>
           <p><strong>Issue:</strong> ${issue}</p>
-          <p>If your issue is urgent, feel free to call us: <strong>07768426754</strong></p>
+          <p>If your issue is urgent, call us: <a href="tel:+447768426754"><strong>07768 426 754</strong></a></p>
           <p>Thanks,<br />Origin Repairs</p>
         `,
       }),
