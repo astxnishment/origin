@@ -23,9 +23,11 @@ export const metadata: Metadata = {
     "Expert repair for iPhones, Samsung, iPads, and MacBooks. Fast, reliable, and backed by a 12-month warranty. Based in Leeds.",
   metadataBase: new URL("https://originrepairs.co.uk"),
   icons: {
-    icon: [{ url: "/origin_repairs_logo.png", type: "image/png" }],
-    apple: [{ url: "/origin_repairs_logo.png" }],
-    shortcut: ["/origin_repairs_logo.png"],
+    icon: [
+      { url: "/logos/origin-icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    shortcut: ["/logos/origin-icon.png"],
   },
   openGraph: {
     title: "Origin Repairs — Premium Device Repair in Leeds",
@@ -36,10 +38,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/origin_repairs_logo.png",
-        width: 1536,
-        height: 1024,
-        alt: "Origin Repairs",
+        url: "/logos/origin-logo-light.png",
+        width: 2172,
+        height: 724,
+        alt: "Origin Repairs logo",
       },
     ],
   },
@@ -47,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Origin Repairs — Premium Device Repair in Leeds",
     description: "Expert device repair. Same-day service. 12-month warranty.",
-    images: ["/origin_repairs_logo.png"],
+    images: ["/logos/origin-logo-light.png"],
   },
 };
 

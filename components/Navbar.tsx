@@ -10,7 +10,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 
 const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
@@ -30,21 +30,13 @@ export default function Navbar() {
     <header className="glass fixed top-0 inset-x-0 z-50">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-6">
 
-        {/* Logo */}
+        {/* Logo — navbar is always near-black glass, use dark variant (white logo) */}
         <Link
           href="/"
           aria-label="Origin Repairs — home"
           className="shrink-0 transition-opacity duration-200 hover:opacity-75"
         >
-          <Image
-            src="/origin_repairs_logo.png"
-            alt="Origin Repairs"
-            width={1536}
-            height={1024}
-            priority
-            sizes="160px"
-            className="h-9 w-auto object-contain invert"
-          />
+          <Logo variant="dark" heightClass="h-9 sm:h-10" />
         </Link>
 
         {/* Desktop nav */}
@@ -102,16 +94,9 @@ export default function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="bg-card border-border w-80 p-0">
               <div className="flex flex-col h-full p-6">
-                {/* Brand */}
+                {/* Brand — mobile sheet is dark (bg-card), use dark variant */}
                 <div className="mb-8">
-                  <Image
-                    src="/origin_repairs_logo.png"
-                    alt="Origin Repairs"
-                    width={1536}
-                    height={1024}
-                    sizes="140px"
-                    className="h-8 w-auto object-contain dark:invert"
-                  />
+                  <Logo variant="dark" heightClass="h-8" />
                 </div>
 
                 {/* Nav links */}

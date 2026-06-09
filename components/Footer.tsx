@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import { BUSINESS } from "@/lib/constants";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
@@ -35,14 +35,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" aria-label="Origin Repairs — home" className="inline-block mb-6 transition-opacity duration-200 hover:opacity-70">
-              <Image
-                src="/origin_repairs_logo.png"
-                alt="Origin Repairs"
-                width={1536}
-                height={1024}
-                sizes="150px"
-                className="h-12 w-auto object-contain invert"
-              />
+              <Logo variant="dark" heightClass="h-10" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
               Professional device repair in Leeds. Every repair backed by a 12-month warranty.

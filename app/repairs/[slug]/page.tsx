@@ -49,7 +49,7 @@ export async function generateMetadata({
       siteName: "Origin Repairs",
       locale: "en_GB",
       type: "website",
-      images: ["/origin_repairs_logo.png"],
+      images: ["/logos/origin-logo-light.png"],
     },
   };
 }
