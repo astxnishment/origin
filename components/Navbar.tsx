@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -12,23 +12,29 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 
-const links = [
+const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/about", label: "About" },
+  { href: "/quote",   label: "Quote"   },
+  { href: "/about",   label: "About"   },
+  { href: "/contact", label: "Contact" },
 ];
+
+const PHONE = "07768 426 754";
+const PHONE_HREF = "tel:+447768426754";
 
 export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="glass fixed top-0 inset-x-0 z-50 border-b border-blue-500/10">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-24 flex items-center justify-between gap-8">
-        {/* Logo — actual approved Origin Repairs asset */}
+    <header className="glass fixed top-0 inset-x-0 z-50">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-6">
+
+        {/* Logo */}
         <Link
           href="/"
           aria-label="Origin Repairs — home"
-          className="shrink-0 mr-3 sm:mr-6 transition-opacity duration-200 hover:opacity-70"
+          className="shrink-0 transition-opacity duration-200 hover:opacity-75"
         >
           <Image
             src="/origin_repairs_logo.png"
@@ -36,43 +42,57 @@ export default function Navbar() {
             width={1536}
             height={1024}
             priority
-            sizes="200px"
-            className="h-[72px] w-auto object-contain dark:invert"
+            sizes="160px"
+            className="h-9 w-auto object-contain dark:invert"
           />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-10 flex-1">
-          {links.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`text-sm font-medium transition-colors duration-150 relative ${
-                pathname === href || pathname.startsWith(href + "/")
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {label}
-              {(pathname === href || pathname.startsWith(href + "/")) && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full" />
-              )}
-            </Link>
-          ))}
+        <nav className="hidden md:flex items-center gap-7 flex-1">
+          {NAV_LINKS.map(({ href, label }) => {
+            const active = pathname === href || pathname.startsWith(href + "/");
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`text-[13px] font-medium transition-colors duration-150 relative pb-0.5 ${
+                  active
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+                {active && (
+                  <span className="absolute bottom-0 left-0 right-0 h-px bg-blue-500 rounded-full" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Right side */}
-        <div className="hidden md:flex items-center gap-4">
-          <Button
-            asChild
-            className="btn-primary text-sm"
+        {/* Right side — phone + CTA */}
+        <div className="hidden md:flex items-center gap-3">
+          <a
+            href={PHONE_HREF}
+            className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
+            <Phone className="h-3.5 w-3.5" />
+            {PHONE}
+          </a>
+          <Button asChild className="btn-primary h-9 px-5 text-[13px]">
             <Link href="/book">Book Repair</Link>
           </Button>
         </div>
 
-        {/* Mobile */}
-        <div className="flex md:hidden items-center gap-2">
+        {/* Mobile — phone icon + hamburger */}
+        <div className="flex md:hidden items-center gap-1">
+          <a
+            href={PHONE_HREF}
+            aria-label="Call us"
+            className="h-10 w-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
+          >
+            <Phone className="h-4 w-4" />
+          </a>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-10 w-10">
@@ -83,20 +103,20 @@ export default function Navbar() {
             <SheetContent side="right" className="bg-card border-border w-80 p-0">
               <div className="flex flex-col h-full p-6">
                 {/* Brand */}
-                <div className="mb-10">
+                <div className="mb-8">
                   <Image
                     src="/origin_repairs_logo.png"
                     alt="Origin Repairs"
                     width={1536}
                     height={1024}
-                    sizes="160px"
-                    className="h-16 w-auto object-contain dark:invert"
+                    sizes="140px"
+                    className="h-8 w-auto object-contain dark:invert"
                   />
                 </div>
 
-                {/* Nav */}
-                <nav className="flex flex-col gap-1 flex-1">
-                  {[...links, { href: "/contact", label: "Contact" }, { href: "/faq", label: "FAQ" }].map(({ href, label }) => (
+                {/* Nav links */}
+                <nav className="flex flex-col gap-0.5 flex-1">
+                  {NAV_LINKS.map(({ href, label }) => (
                     <SheetClose asChild key={href}>
                       <Link
                         href={href}
@@ -108,18 +128,31 @@ export default function Navbar() {
                   ))}
                 </nav>
 
-                {/* Mobile CTA */}
-                <div className="pt-6 border-t border-border space-y-3">
+                {/* Mobile CTAs */}
+                <div className="pt-5 border-t border-border space-y-2.5">
                   <SheetClose asChild>
-                    <Button asChild className="w-full btn-primary">
+                    <Button asChild className="w-full btn-primary h-11">
                       <Link href="/book">Book a Repair</Link>
                     </Button>
                   </SheetClose>
+                  <SheetClose asChild>
+                    <Button asChild variant="outline" className="w-full h-11 border-border text-sm">
+                      <Link href="/quote">Get Instant Quote</Link>
+                    </Button>
+                  </SheetClose>
+                  <a
+                    href={PHONE_HREF}
+                    className="flex items-center justify-center gap-2 w-full h-10 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    {PHONE}
+                  </a>
                 </div>
               </div>
             </SheetContent>
           </Sheet>
         </div>
+
       </div>
     </header>
   );

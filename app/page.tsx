@@ -66,7 +66,7 @@ export default function Home() {
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center pt-40 pb-20 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-28 sm:pt-32 lg:pt-36 pb-20 overflow-hidden">
         {/* Background texture */}
         <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
 
@@ -75,8 +75,8 @@ export default function Home() {
         <div className="absolute bottom-32 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-16 items-center">
-          {/* Text */}
-          <div className="order-2 lg:order-1">
+          {/* Text — always first on mobile, left column on desktop */}
+          <div className="order-1 lg:order-1">
             {/* Badge */}
             <div className="badge-premium mb-6 w-fit">
               <MapPin className="h-3.5 w-3.5" />
@@ -139,8 +139,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Interactive Calculator — the star, first on mobile */}
-          <div className="order-1 lg:order-2 w-full">
+          {/* Interactive Calculator */}
+          <div className="order-2 lg:order-2 w-full">
             <HeroCalculator />
           </div>
         </div>
@@ -177,23 +177,26 @@ export default function Home() {
               <Link
                 key={label}
                 href={href}
-                className="p-7 sm:p-8 hover:bg-surface/80 transition-colors duration-300 group flex flex-col"
+                className="p-7 sm:p-8 hover:bg-surface transition-colors duration-300 group flex flex-col"
               >
-                {/* Device image or fallback icon */}
-                <div className="h-32 flex items-center justify-center mb-5">
+                {/* Device image — consistent 44px container with subtle tinted bg */}
+                <div
+                  className="h-44 flex items-center justify-center mb-6 rounded-2xl overflow-hidden transition-colors duration-300"
+                  style={{
+                    background: "linear-gradient(160deg, rgba(255,255,255,0.03) 0%, rgba(59,130,246,0.04) 100%)",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                  }}
+                >
                   {image ? (
-                    <div className="relative h-full w-full flex items-center justify-center">
-                      <div className="absolute inset-0 rounded-xl bg-blue-500/5 group-hover:bg-blue-500/8 transition-colors" />
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        width={image.width}
-                        height={image.height}
-                        className="relative object-contain max-h-28 w-auto drop-shadow-[0_8px_24px_rgba(59,130,246,0.15)] group-hover:drop-shadow-[0_8px_32px_rgba(59,130,246,0.25)] transition-all duration-300 group-hover:scale-105"
-                      />
-                    </div>
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      width={image.width}
+                      height={image.height}
+                      className="object-contain max-h-36 w-auto drop-shadow-[0_8px_24px_rgba(59,130,246,0.18)] group-hover:drop-shadow-[0_12px_36px_rgba(59,130,246,0.28)] transition-all duration-300 group-hover:scale-105"
+                    />
                   ) : (
-                    <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center group-hover:border-blue-500/30 transition-colors">
+                    <div className="w-16 h-16 rounded-2xl bg-surface-raised border border-border flex items-center justify-center group-hover:border-blue-500/30 transition-colors">
                       <Wrench className="h-7 w-7 text-muted-foreground group-hover:text-blue-500 transition-colors" />
                     </div>
                   )}

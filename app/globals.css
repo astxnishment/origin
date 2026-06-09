@@ -83,6 +83,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* keep section headings below the fixed 72px navbar when scrolled */
+    scroll-padding-top: 80px;
   }
 
   body {

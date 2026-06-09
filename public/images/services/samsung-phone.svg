@@ -1,40 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 600" fill="none">
-  <rect width="300" height="600" fill="#0a0a0a"/>
-  <!-- Phone body -->
-  <rect x="50" y="30" width="200" height="540" rx="28" fill="#161616" stroke="#252525" stroke-width="1.5"/>
-  <!-- Screen -->
-  <rect x="58" y="55" width="184" height="490" rx="22" fill="#0d0d0d"/>
-  <!-- Punch-hole camera -->
-  <circle cx="150" cy="78" r="6" fill="#0a0a0a"/>
-  <circle cx="150" cy="78" r="3.5" fill="#111" stroke="#1a1a1a" stroke-width="0.5"/>
-  <!-- Screen glow -->
-  <rect x="58" y="55" width="184" height="490" rx="22" fill="url(#phoneGlow)" opacity="0.5"/>
-  <!-- UI elements -->
-  <rect x="75" y="105" width="90" height="10" rx="5" fill="#1e3a5f" opacity="0.9"/>
-  <rect x="75" y="125" width="60" height="7" rx="3.5" fill="#1e3a5f" opacity="0.5"/>
-  <!-- App grid -->
-  <rect x="75" y="160" width="50" height="50" rx="10" fill="#0d2340" opacity="0.8"/>
-  <rect x="135" y="160" width="50" height="50" rx="10" fill="#0d2340" opacity="0.8"/>
-  <rect x="195" y="160" width="45" height="50" rx="10" fill="#0d2340" opacity="0.8"/>
-  <rect x="75" y="222" width="50" height="50" rx="10" fill="#0d2340" opacity="0.6"/>
-  <rect x="135" y="222" width="50" height="50" rx="10" fill="#0d2340" opacity="0.6"/>
-  <rect x="195" y="222" width="45" height="50" rx="10" fill="#0d2340" opacity="0.6"/>
-  <!-- Big card -->
-  <rect x="75" y="290" width="165" height="120" rx="14" fill="#0d2340" opacity="0.7"/>
-  <rect x="75" y="290" width="3" height="120" rx="1.5" fill="#3b82f6" opacity="0.9"/>
-  <!-- Bottom bar -->
-  <rect x="75" y="428" width="165" height="60" rx="12" fill="#0d2340" opacity="0.5"/>
-  <!-- Home indicator -->
-  <rect x="115" y="522" width="70" height="4" rx="2" fill="#222"/>
-  <!-- Side button -->
-  <rect x="248" y="180" width="4" height="55" rx="2" fill="#222"/>
-  <!-- Volume buttons -->
-  <rect x="48" y="165" width="4" height="40" rx="2" fill="#222"/>
-  <rect x="48" y="215" width="4" height="40" rx="2" fill="#222"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 480" fill="none">
   <defs>
-    <linearGradient id="phoneGlow" x1="58" y1="55" x2="242" y2="545" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"/>
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a2a2e"/>
+      <stop offset="100%" stop-color="#18181b"/>
     </linearGradient>
+    <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c2a3e"/>
+      <stop offset="60%" stop-color="#0d1520"/>
+      <stop offset="100%" stop-color="#0a1018"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="30%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
+
+  <!-- Phone body -->
+  <rect x="30" y="18" width="180" height="444" rx="26" fill="url(#bodyGrad)" stroke="#3a3a3f" stroke-width="1"/>
+
+  <!-- Body sheen / highlight -->
+  <rect x="30" y="18" width="180" height="444" rx="26" fill="url(#sheen)"/>
+
+  <!-- Screen bezel -->
+  <rect x="36" y="38" width="168" height="404" rx="20" fill="#0f0f12"/>
+
+  <!-- Screen -->
+  <rect x="38" y="40" width="164" height="400" rx="19" fill="url(#screenGrad)"/>
+
+  <!-- Screen top glow -->
+  <rect x="38" y="40" width="164" height="200" rx="19" fill="url(#glowGrad)"/>
+
+  <!-- Punch-hole camera -->
+  <circle cx="120" cy="62" r="5.5" fill="#0a0a10"/>
+  <circle cx="120" cy="62" r="3.5" fill="#111118" stroke="#2a2a32" stroke-width="0.5"/>
+
+  <!-- Status bar indicators -->
+  <rect x="60" y="56" width="24" height="3" rx="1.5" fill="#3b82f6" opacity="0.4"/>
+  <rect x="157" y="56" width="12" height="3" rx="1.5" fill="#3b82f6" opacity="0.25"/>
+
+  <!-- Screen content — time -->
+  <rect x="88" y="86" width="64" height="16" rx="4" fill="#ffffff" opacity="0.08"/>
+
+  <!-- Notification cards -->
+  <rect x="52" y="120" width="136" height="44" rx="10" fill="#ffffff" opacity="0.05" stroke="#3b82f6" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="62" y="130" width="8" height="8" rx="2" fill="#3b82f6" opacity="0.7"/>
+  <rect x="76" y="130" width="60" height="4" rx="2" fill="#ffffff" opacity="0.2"/>
+  <rect x="76" y="139" width="40" height="3" rx="1.5" fill="#ffffff" opacity="0.1"/>
+
+  <rect x="52" y="172" width="136" height="44" rx="10" fill="#ffffff" opacity="0.04"/>
+  <rect x="62" y="182" width="8" height="8" rx="2" fill="#22c55e" opacity="0.5"/>
+  <rect x="76" y="182" width="50" height="4" rx="2" fill="#ffffff" opacity="0.15"/>
+  <rect x="76" y="191" width="70" height="3" rx="1.5" fill="#ffffff" opacity="0.08"/>
+
+  <!-- App dock -->
+  <rect x="44" y="390" width="152" height="40" rx="12" fill="#ffffff" opacity="0.04" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.05"/>
+  <rect x="56" y="400" width="22" height="22" rx="6" fill="#3b82f6" opacity="0.5"/>
+  <rect x="86" y="400" width="22" height="22" rx="6" fill="#22c55e" opacity="0.35"/>
+  <rect x="116" y="400" width="22" height="22" rx="6" fill="#8b5cf6" opacity="0.35"/>
+  <rect x="146" y="400" width="22" height="22" rx="6" fill="#f59e0b" opacity="0.3"/>
+
+  <!-- Home indicator -->
+  <rect x="94" y="448" width="52" height="3.5" rx="1.75" fill="#ffffff" opacity="0.18"/>
+
+  <!-- Side buttons -->
+  <rect x="208" y="144" width="3.5" height="52" rx="1.75" fill="#3a3a3f"/>
+  <rect x="28.5" y="148" width="3.5" height="32" rx="1.75" fill="#3a3a3f"/>
+  <rect x="28.5" y="192" width="3.5" height="32" rx="1.75" fill="#3a3a3f"/>
+
+  <!-- Blue accent edge glow (bottom left — Samsung vibe) -->
+  <rect x="30" y="340" width="3" height="80" rx="1.5" fill="#3b82f6" opacity="0.35" filter="url(#glow)"/>
 </svg>
