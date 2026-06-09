@@ -43,7 +43,7 @@ export default function Navbar() {
             height={1024}
             priority
             sizes="160px"
-            className="h-9 w-auto object-contain dark:brightness-0 dark:invert"
+            className="h-9 w-auto object-contain invert"
           />
         </Link>
 
