@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <linearGradient id="drBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a2a2e"/>
+      <stop offset="100%" stop-color="#18181c"/>
+    </linearGradient>
+    <linearGradient id="drGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.05"/>
+    </linearGradient>
+    <radialGradient id="drCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="drGlowCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#3b82f6" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="drBlur">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="drBlurSoft">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- Background glow -->
+  <ellipse cx="200" cy="200" rx="140" ry="140" fill="url(#drCore)"/>
+
+  <!-- ── SSD DRIVE BODY ──────────────────────────────────────────── -->
+  <!-- Outer case -->
+  <rect x="72" y="120" width="256" height="160" rx="16" fill="url(#drBody)" stroke="#3a3a40" stroke-width="1"/>
+
+  <!-- Top label area -->
+  <rect x="84" y="132" width="232" height="72" rx="10" fill="#1a1a20" stroke="#252530" stroke-width="0.5"/>
+
+  <!-- Brand strip -->
+  <rect x="84" y="132" width="232" height="14" rx="10 10 0 0" fill="#0d1f38" opacity="0.8"/>
+  <rect x="96" y="136" width="48" height="6" rx="3" fill="#3b82f6" opacity="0.6"/>
+  <rect x="152" y="138" width="30" height="4" rx="2" fill="#ffffff" opacity="0.15"/>
+
+  <!-- Sticker / label area -->
+  <rect x="92" y="152" width="116" height="44" rx="6" fill="#0f0f14" opacity="0.6"/>
+  <rect x="100" y="158" width="60" height="5" rx="2.5" fill="#3b82f6" opacity="0.4"/>
+  <rect x="100" y="170" width="80" height="4" rx="2" fill="#ffffff" opacity="0.12"/>
+  <rect x="100" y="180" width="64" height="4" rx="2" fill="#ffffff" opacity="0.08"/>
+
+  <!-- Capacity badge -->
+  <rect x="218" y="154" width="82" height="40" rx="6" fill="#0d2340" opacity="0.8" stroke="#1a3060" stroke-width="0.5"/>
+  <rect x="226" y="161" width="40" height="10" rx="3" fill="#3b82f6" opacity="0.7"/>
+  <rect x="226" y="176" width="64" height="4" rx="2" fill="#ffffff" opacity="0.15"/>
+
+  <!-- Connector port area (bottom edge) -->
+  <rect x="84" y="210" width="232" height="58" rx="0 0 10 10" fill="#141418" opacity="0.6"/>
+
+  <!-- USB-C connector -->
+  <rect x="172" y="228" width="56" height="22" rx="6" fill="#0a0a0e" stroke="#3b82f6" stroke-width="1" stroke-opacity="0.5"/>
+  <rect x="178" y="234" width="44" height="10" rx="3" fill="#0d1f38"/>
+  <!-- Connector pins -->
+  <rect x="182" y="237" width="4" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+  <rect x="190" y="237" width="4" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+  <rect x="198" y="237" width="4" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+  <rect x="206" y="237" width="4" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+  <rect x="214" y="237" width="4" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+
+  <!-- Activity LED -->
+  <circle cx="118" cy="239" r="5" fill="#3b82f6" opacity="0.8" filter="url(#drBlur)"/>
+  <circle cx="118" cy="239" r="3" fill="#60a5fa"/>
+
+  <!-- Side screws -->
+  <circle cx="88" cy="136" r="4" fill="#222228" stroke="#333338" stroke-width="0.5"/>
+  <circle cx="312" cy="136" r="4" fill="#222228" stroke="#333338" stroke-width="0.5"/>
+  <circle cx="88" cy="264" r="4" fill="#222228" stroke="#333338" stroke-width="0.5"/>
+  <circle cx="312" cy="264" r="4" fill="#222228" stroke="#333338" stroke-width="0.5"/>
+
+  <!-- ── DATA STREAM EFFECTS ──────────────────────────────────────── -->
+  <!-- Rising data streams left -->
+  <rect x="120" y="60" width="3" height="52" rx="1.5" fill="url(#drGlow)" opacity="0.6"/>
+  <rect x="132" y="72" width="2" height="40" rx="1" fill="url(#drGlow)" opacity="0.4"/>
+  <rect x="108" y="50" width="2" height="62" rx="1" fill="url(#drGlow)" opacity="0.35"/>
+
+  <!-- Rising data streams right -->
+  <rect x="268" y="64" width="3" height="48" rx="1.5" fill="url(#drGlow)" opacity="0.6"/>
+  <rect x="280" y="74" width="2" height="38" rx="1" fill="url(#drGlow)" opacity="0.4"/>
+  <rect x="256" y="54" width="2" height="58" rx="1" fill="url(#drGlow)" opacity="0.35"/>
+
+  <!-- Descending data streams left -->
+  <rect x="120" y="288" width="3" height="52" rx="1.5" fill="url(#drGlow)" opacity="0.5"/>
+  <rect x="132" y="296" width="2" height="36" rx="1" fill="url(#drGlow)" opacity="0.35"/>
+  <rect x="108" y="290" width="2" height="58" rx="1" fill="url(#drGlow)" opacity="0.3"/>
+
+  <!-- Descending data streams right -->
+  <rect x="268" y="288" width="3" height="52" rx="1.5" fill="url(#drGlow)" opacity="0.5"/>
+  <rect x="280" y="296" width="2" height="36" rx="1" fill="url(#drGlow)" opacity="0.35"/>
+  <rect x="256" y="290" width="2" height="58" rx="1" fill="url(#drGlow)" opacity="0.3"/>
+
+  <!-- Floating data nodes (small glowing dots) -->
+  <circle cx="100" cy="90" r="4" fill="#3b82f6" opacity="0.6" filter="url(#drBlurSoft)"/>
+  <circle cx="100" cy="90" r="2" fill="#60a5fa"/>
+  <circle cx="148" cy="76" r="3" fill="#3b82f6" opacity="0.5" filter="url(#drBlurSoft)"/>
+  <circle cx="148" cy="76" r="1.5" fill="#60a5fa"/>
+
+  <circle cx="300" cy="86" r="4" fill="#3b82f6" opacity="0.6" filter="url(#drBlurSoft)"/>
+  <circle cx="300" cy="86" r="2" fill="#60a5fa"/>
+  <circle cx="252" cy="72" r="3" fill="#3b82f6" opacity="0.5" filter="url(#drBlurSoft)"/>
+  <circle cx="252" cy="72" r="1.5" fill="#60a5fa"/>
+
+  <circle cx="100" cy="314" r="4" fill="#3b82f6" opacity="0.5" filter="url(#drBlurSoft)"/>
+  <circle cx="100" cy="314" r="2" fill="#60a5fa"/>
+  <circle cx="300" cy="318" r="4" fill="#3b82f6" opacity="0.5" filter="url(#drBlurSoft)"/>
+  <circle cx="300" cy="318" r="2" fill="#60a5fa"/>
+
+  <!-- Horizontal data bus lines -->
+  <rect x="40" y="198" width="56" height="1.5" rx="0.75" fill="#3b82f6" opacity="0.25"/>
+  <rect x="40" y="204" width="40" height="1" rx="0.5" fill="#3b82f6" opacity="0.15"/>
+  <rect x="304" y="198" width="56" height="1.5" rx="0.75" fill="#3b82f6" opacity="0.25"/>
+  <rect x="320" y="204" width="40" height="1" rx="0.5" fill="#3b82f6" opacity="0.15"/>
+</svg>

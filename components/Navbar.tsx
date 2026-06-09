@@ -20,7 +20,7 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-const PHONE = "07768 426 754";
+const PHONE = "+44 7768 426 754";
 const PHONE_HREF = "tel:+447768426754";
 
 export default function Navbar() {
@@ -43,7 +43,7 @@ export default function Navbar() {
             height={1024}
             priority
             sizes="160px"
-            className="h-9 w-auto object-contain dark:invert"
+            className="h-9 w-auto object-contain dark:brightness-0 dark:invert"
           />
         </Link>
 

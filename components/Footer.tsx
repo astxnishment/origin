@@ -41,7 +41,7 @@ export default function Footer() {
                 width={1536}
                 height={1024}
                 sizes="150px"
-                className="h-12 w-auto object-contain dark:invert"
+                className="h-12 w-auto object-contain dark:brightness-0 dark:invert"
               />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">

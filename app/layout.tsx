@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingCTA from "@/components/FloatingCTA";
-import EmergencyBanner from "@/components/EmergencyBanner";
 import MobileCTABar from "@/components/MobileCTABar";
 
 const geistSans = Geist({
@@ -112,7 +111,6 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground pb-[60px] md:pb-0">
-        <EmergencyBanner />
         {children}
         <FloatingCTA />
         <MobileCTABar />
