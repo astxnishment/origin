@@ -33,6 +33,7 @@ export default function Logo({
       height={height}
       sizes="(max-width: 640px) 140px, 180px"
       className={`${heightClass} w-auto object-contain ${className}`}
+      unoptimized
       priority
     />
   );
