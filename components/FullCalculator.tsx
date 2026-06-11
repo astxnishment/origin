@@ -18,8 +18,9 @@ import { ArrowRight, ChevronRight, RotateCcw, Clock, Shield, MessageCircle } fro
 
 // ── Brand images ─────────────────────────────────────────────────
 const BRAND_META: Record<Brand, { label: string; sub: string }> = {
-  Apple:   { label: "Apple",   sub: "iPhone · iPad · MacBook" },
-  Samsung: { label: "Samsung", sub: "Galaxy S · A · Z · Tab · Book" },
+  Apple:          { label: "Apple",        sub: "iPhone · iPad · MacBook"      },
+  Samsung:        { label: "Samsung",      sub: "Galaxy S · A · Z · Tab · Book" },
+  "Google Pixel": { label: "Google Pixel", sub: "Pixel 6 · 7 · 8 · 9 · Fold"   },
 };
 
 // ── Step indicator ────────────────────────────────────────────────
@@ -159,7 +160,7 @@ export default function FullCalculator() {
           cols={2}
           selected={brand}
           onSelect={(id) => pickBrand(id as Brand)}
-          options={(["Apple", "Samsung"] as Brand[]).map((b) => ({
+          options={(["Apple", "Samsung", "Google Pixel"] as Brand[]).map((b) => ({
             id: b,
             label: BRAND_META[b].label,
             sub: BRAND_META[b].sub,

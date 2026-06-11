@@ -53,6 +53,14 @@ const services = [
     imageSize: 256,
   },
   {
+    label: "Google Pixel",
+    href: "/repairs/google-pixel",
+    tagline: "Pixel 6 • 7 • 8 • 9 • Screen • Battery",
+    imageSrc: "/GooglePixel/Pixel-9-repair-in-Leeds.png",
+    imageAlt: "Google Pixel 9",
+    imageSize: 256,
+  },
+  {
     label: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phone • Laptop • SSD • Hard drive",

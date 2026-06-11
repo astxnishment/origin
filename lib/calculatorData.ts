@@ -1,9 +1,11 @@
 import { REPAIR_PRICING } from "@/lib/repairPricing";
+import { GOOGLE_PIXEL_DEVICE_TYPES } from "@/lib/deviceData";
 
 // ── Brands ────────────────────────────────────────────────────────
 export const BRANDS = [
   "Apple",
   "Samsung",
+  "Google Pixel",
 ] as const;
 
 export type Brand = (typeof BRANDS)[number];
@@ -79,15 +81,59 @@ function modelsFromPricing(brandName: Brand): DeviceModel[] {
 export const APPLE_DEVICES: DeviceModel[] = modelsFromPricing("Apple");
 export const SAMSUNG_DEVICES: DeviceModel[] = modelsFromPricing("Samsung");
 
-export const ALL_DEVICES: DeviceModel[] = [...APPLE_DEVICES, ...SAMSUNG_DEVICES];
+// Build Pixel models from deviceData (not repairPricing — Pixel not in spreadsheet)
+export const PIXEL_DEVICES: DeviceModel[] = GOOGLE_PIXEL_DEVICE_TYPES.flatMap((dt) =>
+  dt.models.map((m) => ({
+    id: modelId(m.name),
+    name: m.name,
+    brand: "Google Pixel" as Brand,
+    tier: (m.name.includes("Pro") || m.name.includes("Fold")
+      ? "flagship"
+      : m.name.includes("a")
+      ? "mid"
+      : "mid") as DeviceModel["tier"],
+  }))
+);
+
+export const ALL_DEVICES: DeviceModel[] = [...APPLE_DEVICES, ...SAMSUNG_DEVICES, ...PIXEL_DEVICES];
 
 export function getModelsByBrand(brand: Brand): DeviceModel[] {
   return ALL_DEVICES.filter((d) => d.brand === brand);
 }
 
+// Map UI repair type → deviceData repair ID (for Pixel / Samsung lookup via deviceData)
+const REPAIR_ID_MAP: Record<RepairType, string> = {
+  "Screen replacement":      "screen",
+  "Battery replacement":     "battery",
+  "Back glass":              "back-glass",
+  "Charging port":           "charging-port",
+  "Camera repair":           "camera",
+  "Speaker / microphone":    "speaker",
+  "Water damage diagnostics":"water",
+  "Data recovery":           "data-recovery",
+};
+
 // ── Price lookup ──────────────────────────────────────────────────
 export function getRepairQuote(device: DeviceModel, repairType: RepairType): RepairPrice {
   const excelType = REPAIR_TYPE_MAP[repairType];
+
+  // Google Pixel: use pricing from deviceData.ts (not repairPricing spreadsheet)
+  if (device.brand === "Google Pixel") {
+    const repairId = REPAIR_ID_MAP[repairType];
+    const pixelModel = GOOGLE_PIXEL_DEVICE_TYPES
+      .flatMap((dt) => dt.models)
+      .find((m) => m.id === device.id || m.name === device.name);
+    const repair = pixelModel?.repairs.find((r) => r.id === repairId);
+    if (repair?.price) {
+      return {
+        minPrice: repair.price.from,
+        maxPrice: repair.price.to ?? repair.price.from,
+        estimatedTime: repair.time,
+        warranty: repair.warranty,
+      };
+    }
+    return { minPrice: 0, maxPrice: 0, estimatedTime: "Contact us", warranty: "12 months", inspectionRequired: true };
+  }
 
   // Find the cheapest non-inspection row for this model + repair type
   const rows = REPAIR_PRICING.filter(

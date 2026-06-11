@@ -10,7 +10,7 @@
 //   price: { from: 49, to: 89 } → shows "£49–£89"
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type Brand = "Apple" | "Samsung";
+export type Brand = "Apple" | "Samsung" | "Google Pixel";
 
 export type DeviceTypeName =
   // Apple
@@ -22,7 +22,10 @@ export type DeviceTypeName =
   | "Galaxy A Series"
   | "Galaxy Z Fold / Flip"
   | "Galaxy Tab"
-  | "Galaxy Book / Laptop";
+  | "Galaxy Book / Laptop"
+  // Google Pixel
+  | "Pixel Phone"
+  | "Pixel Fold";
 
 export type RepairCategory = "phone" | "tablet" | "laptop";
 
@@ -314,6 +317,38 @@ const SAMSUNG_BOOK: DeviceType = {
   ],
 };
 
+// ── Google Pixel ─────────────────────────────────────────────────────────────
+
+const GOOGLE_PIXEL_PHONES: DeviceType = {
+  id: "pixel-phone",
+  name: "Pixel Phone",
+  brand: "Google Pixel",
+  repairCategory: "phone",
+  models: [
+    // ── Pixel 9 series
+    m("Pixel 9 Pro Fold",  phoneRepairs({ screen: { from: 249 }, battery: { from: 89 }, "back-glass": { from: 99  } })),
+    m("Pixel 9 Pro XL",    phoneRepairs({ screen: { from: 219 }, battery: { from: 89 }, "back-glass": { from: 79  } })),
+    m("Pixel 9 Pro",       phoneRepairs({ screen: { from: 199 }, battery: { from: 89 }, "back-glass": { from: 79  } })),
+    m("Pixel 9",           phoneRepairs({ screen: { from: 179 }, battery: { from: 79 }, "back-glass": { from: 69  } })),
+    m("Pixel 9a",          phoneRepairs({ screen: { from: 169 }, battery: { from: 79 }, "back-glass": { from: 69  } })),
+    // ── Pixel 8 series
+    m("Pixel 8 Pro",       phoneRepairs({ screen: { from: 189 }, battery: { from: 79 }, "back-glass": { from: 69  } })),
+    m("Pixel 8",           phoneRepairs({ screen: { from: 159 }, battery: { from: 69 }, "back-glass": { from: 59  } })),
+    m("Pixel 8a",          phoneRepairs({ screen: { from: 149 }, battery: { from: 69 }, "back-glass": { from: 59  } })),
+    // ── Pixel 7 series
+    m("Pixel 7 Pro",       phoneRepairs({ screen: { from: 159 }, battery: { from: 69 }, "back-glass": { from: 59  } })),
+    m("Pixel 7",           phoneRepairs({ screen: { from: 139 }, battery: { from: 69 }, "back-glass": { from: 54  } })),
+    m("Pixel 7a",          phoneRepairs({ screen: { from: 129 }, battery: { from: 69 }, "back-glass": { from: 54  } })),
+    // ── Pixel 6 series
+    m("Pixel 6 Pro",       phoneRepairs({ screen: { from: 139 }, battery: { from: 69 }, "back-glass": { from: 54  } })),
+    m("Pixel 6",           phoneRepairs({ screen: { from: 129 }, battery: { from: 69 }, "back-glass": { from: 49  } })),
+    m("Pixel 6a",          phoneRepairs({ screen: { from: 119 }, battery: { from: 69 }, "back-glass": { from: 49  } })),
+    // ── Older Pixel
+    m("Pixel 5",           phoneRepairs({ screen: { from: 99  }, battery: { from: 59 }, "back-glass": { from: 44  } })),
+    m("Pixel 4a",          phoneRepairs({ screen: { from: 79  }, battery: { from: 49 }, "back-glass": { from: 39  } })),
+  ],
+};
+
 // ── Master device tree ───────────────────────────────────────────────────────
 
 export const DEVICE_TYPES: DeviceType[] = [
@@ -325,10 +360,12 @@ export const DEVICE_TYPES: DeviceType[] = [
   SAMSUNG_Z_SERIES,
   SAMSUNG_TAB,
   SAMSUNG_BOOK,
+  GOOGLE_PIXEL_PHONES,
 ];
 
 export const APPLE_DEVICE_TYPES = DEVICE_TYPES.filter((d) => d.brand === "Apple");
 export const SAMSUNG_DEVICE_TYPES = DEVICE_TYPES.filter((d) => d.brand === "Samsung");
+export const GOOGLE_PIXEL_DEVICE_TYPES = DEVICE_TYPES.filter((d) => d.brand === "Google Pixel");
 
 // ── Lookup helpers ───────────────────────────────────────────────────────────
 

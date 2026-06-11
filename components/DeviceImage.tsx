@@ -22,7 +22,7 @@ import { PixelDeviceIcon } from "@/components/PixelDeviceIcon";
 import { resolveDeviceImage } from "@/lib/deviceImages/deviceImageResolver";
 
 interface Props {
-  brand: "Apple" | "Samsung" | "Google";
+  brand: "Apple" | "Samsung" | "Google Pixel" | "Google";
   model: string;
   deviceTypeId?: string;
   category?: "phone" | "tablet" | "laptop";
@@ -44,12 +44,13 @@ export default function DeviceImage({
   imgClassName = "object-contain w-full h-full",
 }: Props) {
   const resolved = resolveDeviceImage({ brand, model, deviceTypeId, category });
-  const [cdnFailed, setCdnFailed] = useState(false);
+  // Both error states declared unconditionally (Rules of Hooks)
+  const [cdnFailed, setCdnFailed]     = useState(false);
+  const [photoFailed, setPhotoFailed] = useState(false);
 
   // ── Apple CDN photo ───────────────────────────────────────────────────────
   if (resolved.strategy === "apple-cdn") {
     if (cdnFailed) {
-      // CDN failed at runtime — fall back to SVG silhouette
       return (
         <div className={className}>
           <DeviceIcon
@@ -83,6 +84,30 @@ export default function DeviceImage({
     return (
       <div className={className}>
         <SamsungCategoryIcon variant={resolved.variant} size={size} />
+      </div>
+    );
+  }
+
+  // ── Google Pixel real photo ───────────────────────────────────────────────
+  if (resolved.strategy === "pixel-photo") {
+    if (photoFailed) {
+      return (
+        <div className={className}>
+          <PixelDeviceIcon variant={resolved.variant} size={size} />
+        </div>
+      );
+    }
+    return (
+      <div className={className}>
+        <Image
+          src={resolved.photoSrc}
+          alt={`${model} device`}
+          width={256}
+          height={256}
+          loading="lazy"
+          onError={() => setPhotoFailed(true)}
+          className={imgClassName}
+        />
       </div>
     );
   }

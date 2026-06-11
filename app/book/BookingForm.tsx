@@ -32,8 +32,9 @@ const TIME_SLOTS = [
 ];
 
 const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
-  Apple: "iphone",
-  Samsung: "samsung",
+  Apple:          "iphone",
+  Samsung:        "samsung",
+  "Google Pixel": "iphone",
 };
 
 interface Props {

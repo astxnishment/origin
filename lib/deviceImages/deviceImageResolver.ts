@@ -9,7 +9,7 @@
  */
 
 import { getAppleDeviceImage, appleImageUrl } from "@/lib/deviceImages/appleDeviceImages";
-import { getPixelVariant, type PixelVariant } from "@/lib/deviceImages/googlePixelDeviceImages";
+import { getPixelDeviceImage, type PixelVariant } from "@/lib/deviceImages/googlePixelDeviceImages";
 import { getSamsungVariant, type SamsungVariant } from "@/lib/deviceImages/samsungGenericImages";
 import type { DeviceType as DeviceIconType } from "@/components/DeviceIcon";
 
@@ -21,6 +21,13 @@ export type ResolvedImage =
       url256: string; // high-res for cards
       url64:  string; // small for dropdowns
       fallbackSrc: string; // local SVG if CDN fails
+    }
+  | {
+      strategy: "pixel-photo";
+      /** Public path to real photo, e.g. /GooglePixel/Pixel-9-repair-in-Leeds.png */
+      photoSrc: string;
+      /** SVG fallback if photo fails to load */
+      variant: PixelVariant;
     }
   | {
       strategy: "pixel-svg";
@@ -47,7 +54,7 @@ const APPLE_FALLBACKS: Record<string, string> = {
 // ── Main resolver ─────────────────────────────────────────────────────────────
 
 export interface ResolverInput {
-  brand: "Apple" | "Samsung" | "Google";
+  brand: "Apple" | "Samsung" | "Google Pixel" | "Google";
   /** Model name exactly as used in deviceData, e.g. "iPhone 15 Pro", "Galaxy S24" */
   model: string;
   /** Device type ID from deviceData, e.g. "apple_iphone", "galaxy-s" */
@@ -88,9 +95,12 @@ export function resolveDeviceImage({
   }
 
   // ── Google Pixel ───────────────────────────────────────────────────────────
-  if (brand === "Google") {
-    const variant = getPixelVariant(model);
-    return { strategy: "pixel-svg", variant };
+  if (brand === "Google Pixel" || brand === "Google") {
+    const img = getPixelDeviceImage(model);
+    if (img.photoSrc) {
+      return { strategy: "pixel-photo", photoSrc: img.photoSrc, variant: img.variant };
+    }
+    return { strategy: "pixel-svg", variant: img.variant };
   }
 
   // ── Generic fallback ───────────────────────────────────────────────────────

@@ -121,7 +121,7 @@ export default function HeroCalculator() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(["Apple", "Samsung"] as Brand[]).map((b) => (
+                  {(["Apple", "Samsung", "Google Pixel"] as Brand[]).map((b) => (
                     <SelectItem key={b} value={b}>{b}</SelectItem>
                   ))}
                 </SelectContent>
