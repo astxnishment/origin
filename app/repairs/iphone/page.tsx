@@ -8,6 +8,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { REPAIR_PRICING } from "@/lib/repairPricing";
 import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 import { serviceImages } from "@/lib/serviceImages";
+import { appleImageUrl, IPHONE_IMAGES } from "@/lib/appleDeviceImages";
 
 export const metadata: Metadata = {
   title: "iPhone Repair Leeds | All Models",
@@ -152,11 +153,13 @@ export default function IPhoneRepairsPage() {
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
                   <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
+                  {/* Real iPhone 16 Pro image from appledb.dev */}
                   <Image
-                    src={serviceImages.iphone.src}
-                    alt={serviceImages.iphone.alt}
-                    width={320}
-                    height={400}
+                    src={appleImageUrl(IPHONE_IMAGES["iPhone 16 Pro"], 256, false)}
+                    alt="iPhone 16 Pro — Origin Repairs"
+                    width={256}
+                    height={256}
+                    unoptimized
                     className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
                     priority
                   />

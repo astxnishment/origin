@@ -9,6 +9,7 @@ import { BUSINESS } from "@/lib/constants";
 import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 import { REPAIR_PRICING } from "@/lib/repairPricing";
 import { serviceImages } from "@/lib/serviceImages";
+import { appleImageUrl, IPAD_IMAGES } from "@/lib/appleDeviceImages";
 
 export const metadata: Metadata = {
   title: "iPad Repair Leeds — Screen, Battery & More | Origin Repairs",
@@ -120,11 +121,13 @@ export default function IPadRepairPage() {
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
                   <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
+                  {/* Real iPad Pro M4 image from appledb.dev */}
                   <Image
-                    src={serviceImages.ipad.src}
-                    alt={serviceImages.ipad.alt}
-                    width={340}
-                    height={430}
+                    src={appleImageUrl(IPAD_IMAGES['iPad Pro 11" M4'], 256, false)}
+                    alt="iPad Pro M4 — Origin Repairs"
+                    width={256}
+                    height={256}
+                    unoptimized
                     className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
                     priority
                   />

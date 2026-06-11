@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { APPLE_MACBOOKS } from "@/lib/repair-data";
 import { serviceImages } from "@/lib/serviceImages";
+import { appleImageUrl, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
 
 export const metadata: Metadata = {
   title: "MacBook & Laptop Repair Leeds",
@@ -83,11 +84,13 @@ export default function LaptopRepairsPage() {
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative w-full max-w-sm">
                   <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/6 blur-3xl pointer-events-none" />
+                  {/* Real MacBook Air M3 image from appledb.dev */}
                   <Image
-                    src={serviceImages.macbook.src}
-                    alt={serviceImages.macbook.alt}
-                    width={500}
-                    height={330}
+                    src={appleImageUrl(MACBOOK_IMAGES['MacBook Air 13" M3'], 256, false)}
+                    alt="MacBook Air M3 — Origin Repairs"
+                    width={256}
+                    height={256}
+                    unoptimized
                     className="relative object-contain w-full drop-shadow-[0_16px_48px_rgba(59,130,246,0.18)]"
                     priority
                   />

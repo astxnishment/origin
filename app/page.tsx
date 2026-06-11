@@ -13,43 +13,57 @@ import {
 import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, ExternalLink, Wrench } from "lucide-react";
 import { BUSINESS, REPAIR_PROCESS, FAQS } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
+import { appleImageUrl, IPHONE_IMAGES, IPAD_IMAGES, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
 
 const services = [
   {
     label: "iPhone",
     href: "/repairs/iphone",
     tagline: "All models • Screen • Battery • Camera",
-    image: serviceImages.iphone,
+    // Real iPhone 16 Pro image; fallback alt kept for accessibility
+    imageSrc: appleImageUrl(IPHONE_IMAGES["iPhone 16 Pro"], 256, false),
+    imageAlt: "iPhone 16 Pro",
+    imageSize: 256,
   },
   {
     label: "Samsung",
     href: "/repairs/samsung",
     tagline: "Galaxy S • A-series • Z-series",
-    image: serviceImages.samsung,
+    imageSrc: serviceImages.samsung.src,
+    imageAlt: serviceImages.samsung.alt,
+    imageSize: 240,
   },
   {
     label: "MacBook",
     href: "/repairs/laptops",
     tagline: "Air • Pro • Screen • Battery • Keyboard",
-    image: serviceImages.macbook,
+    imageSrc: appleImageUrl(MACBOOK_IMAGES['MacBook Air 13" M3'], 256, false),
+    imageAlt: "MacBook Air M3",
+    imageSize: 256,
   },
   {
     label: "iPad",
     href: "/repairs/ipad",
     tagline: "All models • Screen • Battery • Port",
-    image: serviceImages.ipad,
+    imageSrc: appleImageUrl(IPAD_IMAGES['iPad Pro 11" M4'], 256, false),
+    imageAlt: "iPad Pro M4",
+    imageSize: 256,
   },
   {
     label: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phone • Laptop • SSD • Hard drive",
-    image: serviceImages.dataRecovery,
+    imageSrc: serviceImages.dataRecovery.src,
+    imageAlt: serviceImages.dataRecovery.alt,
+    imageSize: 400,
   },
   {
     label: "All Repairs",
     href: "/repairs",
     tagline: "Don't see your device? We cover it.",
-    image: null,
+    imageSrc: null,
+    imageAlt: "",
+    imageSize: 0,
   },
 ];
 
@@ -173,13 +187,13 @@ export default function Home() {
           </div>
 
           <div className="grid-bordered grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map(({ label, href, tagline, image }) => (
+            {services.map(({ label, href, tagline, imageSrc, imageAlt, imageSize }) => (
               <Link
                 key={label}
                 href={href}
                 className="p-7 sm:p-8 hover:bg-surface transition-colors duration-300 group flex flex-col"
               >
-                {/* Device image — consistent 44px container with subtle tinted bg */}
+                {/* Device image — consistent container with subtle tinted bg */}
                 <div
                   className="h-44 flex items-center justify-center mb-6 rounded-2xl overflow-hidden transition-colors duration-300"
                   style={{
@@ -187,12 +201,14 @@ export default function Home() {
                     border: "1px solid rgba(255,255,255,0.05)",
                   }}
                 >
-                  {image ? (
+                  {imageSrc ? (
                     <Image
-                      src={image.src}
-                      alt={image.alt}
-                      width={image.width}
-                      height={image.height}
+                      src={imageSrc}
+                      alt={imageAlt}
+                      width={imageSize}
+                      height={imageSize}
+                      loading="lazy"
+                      unoptimized={imageSrc.startsWith("https://")}
                       className="object-contain max-h-36 w-auto drop-shadow-[0_8px_24px_rgba(59,130,246,0.18)] group-hover:drop-shadow-[0_12px_36px_rgba(59,130,246,0.28)] transition-all duration-300 group-hover:scale-105"
                     />
                   ) : (
