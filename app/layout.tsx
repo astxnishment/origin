@@ -39,8 +39,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logos/origin-logo-light.png",
-        width: 2172,
-        height: 724,
+        width: 1298,
+        height: 1001,
         alt: "Origin Repairs logo",
       },
     ],

@@ -13,9 +13,9 @@ interface LogoProps {
 
 const LOGOS = {
   /** White logo — use on dark backgrounds */
-  dark:  { src: "/logos/origin-logo-dark.png",  width: 2172, height: 724 },
-  /** Dark navy logo — use on light backgrounds */
-  light: { src: "/logos/origin-logo-light.png", width: 2172, height: 724 },
+  dark:  { src: "/logos/origin-logo-dark.png",  width: 1298, height: 1001 },
+  /** Dark charcoal logo — use on light backgrounds */
+  light: { src: "/logos/origin-logo-light.png", width: 1298, height: 1001 },
 } as const;
 
 export default function Logo({
