@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -17,35 +16,20 @@ import {
   buildBookingUrl,
   type Brand,
 } from "@/lib/deviceData";
-import { serviceImages } from "@/lib/serviceImages";
-import { getAppleDeviceImageUrl } from "@/lib/appleDeviceImages";
+import DeviceImage from "@/components/DeviceImage";
 import { ArrowRight, Clock, ShieldCheck, CalendarCheck } from "lucide-react";
 
-/** Fallback SVG key per Apple device type id */
-const TYPE_FALLBACK: Record<string, keyof typeof serviceImages> = {
-  apple_iphone:  "iphone",
-  apple_ipad:    "ipad",
-  apple_macbook: "macbook",
-};
-
-/** Static brand fallback images for Samsung / when no model is selected */
-const BRAND_FALLBACK: Record<Brand, (typeof serviceImages)[string]> = {
-  Apple:   serviceImages.iphone,
-  Samsung: serviceImages.samsung,
-};
-
 export default function HeroCalculator() {
-  const [brand, setBrand]         = useState<Brand>("Apple");
-  const [deviceTypeId, setTypeId] = useState<string>(() => {
-    return getDeviceTypesByBrand("Apple")[0]?.id ?? "";
-  });
-  const [modelId, setModelId]     = useState<string>(() => {
-    return getDeviceTypesByBrand("Apple")[0]?.models[0]?.id ?? "";
-  });
-  const [repairId, setRepairId]   = useState<string>(() => {
-    return getDeviceTypesByBrand("Apple")[0]?.models[0]?.repairs[0]?.id ?? "";
-  });
-  const [imgError, setImgError]   = useState(false);
+  const [brand, setBrand]       = useState<Brand>("Apple");
+  const [deviceTypeId, setTypeId] = useState<string>(() =>
+    getDeviceTypesByBrand("Apple")[0]?.id ?? ""
+  );
+  const [modelId, setModelId]   = useState<string>(() =>
+    getDeviceTypesByBrand("Apple")[0]?.models[0]?.id ?? ""
+  );
+  const [repairId, setRepairId] = useState<string>(() =>
+    getDeviceTypesByBrand("Apple")[0]?.models[0]?.repairs[0]?.id ?? ""
+  );
 
   const deviceTypes    = useMemo(() => getDeviceTypesByBrand(brand), [brand]);
   const deviceType     = useMemo(() => deviceTypes.find((d) => d.id === deviceTypeId) ?? null, [deviceTypes, deviceTypeId]);
@@ -54,21 +38,8 @@ export default function HeroCalculator() {
   const repairs        = selectedModel?.repairs ?? [];
   const selectedRepair = repairs.find((r) => r.id === repairId) ?? null;
 
-  // ── Device image resolution ───────────────────────────────────────────────
-  const fallbackSvgKey  = TYPE_FALLBACK[deviceTypeId] ?? "iphone";
-  const fallbackSvg     = serviceImages[fallbackSvgKey] ?? BRAND_FALLBACK[brand];
-
-  // For Apple, try to get a real CDN image for the selected model
-  const cdnUrl: string | null =
-    brand === "Apple" && selectedModel
-      ? getAppleDeviceImageUrl(selectedModel.name, 256, true)
-      : null;
-
-  const imageSrc = (!imgError && cdnUrl) ? cdnUrl : fallbackSvg.src;
-
   function changeBrand(b: Brand) {
     setBrand(b);
-    setImgError(false);
     const types = getDeviceTypesByBrand(b);
     const t = types[0];
     setTypeId(t?.id ?? "");
@@ -78,7 +49,6 @@ export default function HeroCalculator() {
 
   function changeType(id: string) {
     setTypeId(id);
-    setImgError(false);
     const dt = deviceTypes.find((d) => d.id === id);
     setModelId(dt?.models[0]?.id ?? "");
     setRepairId(dt?.models[0]?.repairs[0]?.id ?? "");
@@ -86,7 +56,6 @@ export default function HeroCalculator() {
 
   function changeModel(id: string) {
     setModelId(id);
-    setImgError(false);
     const mdl = deviceType?.models.find((m) => m.id === id);
     setRepairId(mdl?.repairs[0]?.id ?? "");
   }
@@ -94,6 +63,9 @@ export default function HeroCalculator() {
   const priceStr   = selectedRepair ? formatPrice(selectedRepair.price) : "—";
   const isQuoteReq = !selectedRepair?.price;
   const bookUrl    = buildBookingUrl(brand, deviceTypeId, modelId, repairId);
+
+  // Derive the repairCategory for sizing SVG icons
+  const repairCategory = deviceType?.repairCategory ?? "phone";
 
   const selectStyle = {
     background: "rgba(255,255,255,0.05)",
@@ -107,7 +79,7 @@ export default function HeroCalculator() {
       <div className="surface-glass relative rounded-3xl overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-        {/* Header */}
+        {/* Header — device image updates live as user picks model */}
         <div className="relative px-7 pt-6 pb-5 flex items-center justify-between gap-4 border-b border-white/[0.07]">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
@@ -125,18 +97,16 @@ export default function HeroCalculator() {
             <p className="text-xs text-zinc-400 mt-0.5">{selectedRepair?.label ?? ""}</p>
           </div>
 
-          {/* Device image — updates live as user selects model */}
-          <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center">
-            <Image
-              key={imageSrc}
-              src={imageSrc}
-              alt={selectedModel?.name ?? brand}
-              width={128}
-              height={128}
-              loading="lazy"
-              unoptimized={imageSrc.startsWith("https://")}
-              onError={() => setImgError(true)}
-              className="object-contain w-full h-full drop-shadow-[0_4px_12px_rgba(59,130,246,0.2)]"
+          {/* Device image — live update per model */}
+          <div className="flex-shrink-0 w-16 h-16">
+            <DeviceImage
+              brand={brand}
+              model={selectedModel?.name ?? ""}
+              deviceTypeId={deviceTypeId}
+              category={repairCategory as "phone" | "tablet" | "laptop"}
+              size={64}
+              className="w-full h-full flex items-center justify-center"
+              imgClassName="object-contain w-full h-full drop-shadow-[0_4px_12px_rgba(59,130,246,0.2)]"
             />
           </div>
         </div>

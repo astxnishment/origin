@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
@@ -14,6 +15,7 @@ import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, ExternalLink, Wren
 import { BUSINESS, REPAIR_PROCESS, FAQS } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
 import { appleImageUrl, IPHONE_IMAGES, IPAD_IMAGES, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
+import { SamsungCategoryIcon } from "@/components/SamsungCategoryIcon";
 
 const services = [
   {
@@ -29,9 +31,10 @@ const services = [
     label: "Samsung",
     href: "/repairs/samsung",
     tagline: "Galaxy S • A-series • Z-series",
-    imageSrc: serviceImages.samsung.src,
-    imageAlt: serviceImages.samsung.alt,
-    imageSize: 240,
+    imageSrc: null,
+    imageAlt: "Samsung Galaxy",
+    imageSize: 0,
+    customImage: <SamsungCategoryIcon variant="galaxy-s" size={140} className="drop-shadow-[0_8px_24px_rgba(59,130,246,0.18)]" />,
   },
   {
     label: "MacBook",
@@ -187,7 +190,7 @@ export default function Home() {
           </div>
 
           <div className="grid-bordered grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map(({ label, href, tagline, imageSrc, imageAlt, imageSize }) => (
+            {services.map(({ label, href, tagline, imageSrc, imageAlt, imageSize, customImage }: { label: string; href: string; tagline: string; imageSrc: string | null; imageAlt: string; imageSize: number; customImage?: React.ReactNode }) => (
               <Link
                 key={label}
                 href={href}
@@ -201,7 +204,7 @@ export default function Home() {
                     border: "1px solid rgba(255,255,255,0.05)",
                   }}
                 >
-                  {imageSrc ? (
+                  {customImage ? customImage : imageSrc ? (
                     <Image
                       src={imageSrc}
                       alt={imageAlt}

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { REPAIR_PRICING } from "@/lib/repairPricing";
 import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
-import { serviceImages } from "@/lib/serviceImages";
+import { SamsungCategoryIcon } from "@/components/SamsungCategoryIcon";
 
 export const metadata: Metadata = {
   title: "Samsung Repair Leeds | Galaxy S, A Series",
@@ -135,13 +134,10 @@ export default function SamsungRepairsPage() {
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
                   <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
-                  <Image
-                    src={serviceImages.samsung.src}
-                    alt={serviceImages.samsung.alt}
-                    width={300}
-                    height={400}
-                    className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
-                    priority
+                  <SamsungCategoryIcon
+                    variant="galaxy-s"
+                    size={180}
+                    className="relative drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
                   />
                 </div>
               </div>
