@@ -21,37 +21,37 @@ const categories = [
     label: "iPhone",
     href: "/repairs/iphone",
     tagline: "Screen · Battery · Camera · Charging",
-    image: "/images/cat-iphone.png",
+    image: "/images/services/iphone.png",
   },
   {
     label: "Samsung",
     href: "/repairs/samsung",
     tagline: "Galaxy S · A-series · Z-series",
-    image: "/images/cat-samsung.png",
+    image: "/images/services/samsung.avif",
   },
   {
     label: "MacBook",
     href: "/repairs/laptops",
     tagline: "Air · Pro · Screen · Battery · Keyboard",
-    image: "/images/cat-macbook.png",
+    image: "/images/services/macbook.png",
   },
   {
     label: "iPad",
     href: "/repairs/ipad",
     tagline: "All models · Screen · Battery · Port",
-    image: "/images/cat-ipad.png",
+    image: "/images/services/ipad.png",
   },
   {
     label: "Google Pixel",
     href: "/repairs/google-pixel",
     tagline: "Pixel 6 · 7 · 8 · 9 · Screen · Battery",
-    image: "/images/cat-pixel.png",
+    image: "/GooglePixel/Pixel-9-pro-repair-in-Leeds.png",
   },
   {
     label: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phone · Laptop · SSD · Hard drive",
-    image: "/images/cat-data-recovery.png",
+    image: "/Data-Recovery.png",
   },
 ];
 
@@ -163,14 +163,14 @@ export default function Home() {
                 className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-300 hover:border-primary/40"
               >
                 {/* Consistent device image area */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  <Image
-                    src={image}
-                    alt={`${label} repair`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                  />
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-background/40">
+            <Image
+              src={image}
+              alt={`${label} repair`}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+            />
                 </div>
                 {/* Label */}
                 <div className="flex items-start justify-between gap-3 p-5 sm:p-6">
