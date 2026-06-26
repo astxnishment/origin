@@ -33,13 +33,13 @@ const categories = [
     label: "MacBook",
     href: "/repairs/laptops",
     tagline: "Air · Pro · Screen · Battery · Keyboard",
-    image: "/images/services/macbook.png",
+    image: "/images/cat-macbook.png",
   },
   {
     label: "iPad",
     href: "/repairs/ipad",
     tagline: "All models · Screen · Battery · Port",
-    image: "/images/services/ipad.png",
+    image: "/images/cat-ipad.png",
   },
   {
     label: "Google Pixel",
@@ -51,7 +51,7 @@ const categories = [
     label: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phone · Laptop · SSD · Hard drive",
-    image: "/Data-Recovery.png",
+    image: "/images/cat-data-recovery.png",
   },
 ];
 
