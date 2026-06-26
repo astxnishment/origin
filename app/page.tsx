@@ -16,6 +16,8 @@ import { BUSINESS, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
 import { appleImageUrl, IPHONE_IMAGES, IPAD_IMAGES, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
 import { SamsungCategoryIcon } from "@/components/SamsungCategoryIcon";
+import SamsungDeviceImage from "@/components/SamsungDeviceImage";
+import DataRecoveryImage from "@/components/DataRecoveryImage";
 
 const services = [
   {
@@ -32,9 +34,9 @@ const services = [
     href: "/repairs/samsung",
     tagline: "Galaxy S • A-series • Z-series",
     imageSrc: null,
-    imageAlt: "Samsung Galaxy",
+    imageAlt: "Samsung Galaxy S24 Ultra",
     imageSize: 0,
-    customImage: <SamsungCategoryIcon variant="galaxy-s" size={140} className="drop-shadow-[0_8px_24px_rgba(59,130,246,0.18)]" />,
+    customImage: <SamsungDeviceImage size={220} className="drop-shadow-[0_12px_32px_rgba(0,0,0,0.5)]" />,
   },
   {
     label: "MacBook",
@@ -64,9 +66,10 @@ const services = [
     label: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phone • Laptop • SSD • Hard drive",
-    imageSrc: serviceImages.dataRecovery.src,
-    imageAlt: serviceImages.dataRecovery.alt,
-    imageSize: 400,
+    imageSrc: null,
+    imageAlt: "Data recovery service",
+    imageSize: 0,
+    customImage: <DataRecoveryImage size={260} className="drop-shadow-[0_8px_24px_rgba(0,0,0,0.4)]" />,
   },
   {
     label: "All Repairs",
