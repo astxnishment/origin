@@ -99,15 +99,11 @@ export default function FloatingCTA() {
         aria-label={expanded ? "Close contact panel" : "Get help or quote"}
         className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl"
         style={{
-          background: expanded
-            ? "rgba(30,30,30,0.95)"
-            : "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
+          background: expanded ? "rgba(24,26,31,0.96)" : "#3b82f6",
           border: expanded
             ? "1px solid rgba(255,255,255,0.12)"
-            : "1px solid rgba(255,255,255,0.2)",
-          boxShadow: expanded
-            ? "0 4px 24px rgba(0,0,0,0.4)"
-            : "0 4px 24px rgba(59,130,246,0.4), 0 0 0 1px rgba(59,130,246,0.3)",
+            : "1px solid rgba(255,255,255,0.18)",
+          boxShadow: "0 8px 28px rgba(0,0,0,0.45)",
         }}
       >
         {expanded ? (

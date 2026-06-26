@@ -41,7 +41,7 @@ export default function MobileCTABar() {
         >
           <CalendarCheck className="h-5 w-5 text-blue-400" />
           <span className="text-[11px] font-semibold text-blue-300 leading-none">Book Repair</span>
-          <span className="text-[10px] text-white/40 leading-none">Same day</span>
+          <span className="text-[10px] text-white/40 leading-none">Reserve online</span>
         </Link>
       </div>
       {/* Safe area spacer for iOS home indicator */}

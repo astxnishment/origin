@@ -1,153 +1,114 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { BUSINESS } from "@/lib/constants";
-import { MapPin, Mail, Phone, Clock } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 
-const services = [
-  { href: "/repairs/iphone", label: "iPhone Repair" },
-  { href: "/repairs/samsung", label: "Samsung Repair" },
-  { href: "/repairs/ipad", label: "iPad Repair" },
-  { href: "/repairs/laptops", label: "Laptop & MacBook" },
-  { href: "/repairs/data-recovery", label: "Data Recovery" },
+const navLinks = [
+  { href: "/repairs", label: "Repairs" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/quote", label: "Get a Quote" },
-];
-
-const company = [
+  { href: "/quote", label: "Quote" },
+  { href: "/book", label: "Book Repair" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/book", label: "Book Repair" },
 ];
 
 const legal = [
-  { href: "/warranty", label: "Warranty Terms" },
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/terms", label: "Terms of Service" },
+  { href: "/warranty", label: "Warranty" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="section-border bg-surface/50">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
-        {/* Top grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
+    <footer className="section-border bg-surface/40">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-14">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
           {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" aria-label="Origin Repairs — home" className="inline-block mb-6 transition-opacity duration-200 hover:opacity-70">
-              <Logo variant="dark" heightClass="h-10" />
+          <div className="max-w-xs">
+            <Link
+              href="/"
+              aria-label="Origin Repairs — home"
+              className="inline-block mb-5 transition-opacity duration-200 hover:opacity-70"
+            >
+              <Logo variant="dark" heightClass="h-9" />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              Professional device repair in Leeds. Every repair backed by a 12-month warranty.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Premium device repair in Leeds. Every repair carried out with care and backed by our warranty.
             </p>
-            <div className="flex items-center gap-3">
-              <a
-                href={BUSINESS.googleReviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Google ↗
-              </a>
-              <span className="text-border">·</span>
-              <a
-                href={BUSINESS.trustpilotUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Trustpilot ↗
-              </a>
+          </div>
+
+          {/* Links + contact */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-10 sm:gap-16">
+            <nav aria-label="Footer">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-[0.2em] mb-4">
+                Explore
+              </p>
+              <ul className="space-y-3">
+                {navLinks.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div>
+              <p className="text-xs font-semibold text-foreground uppercase tracking-[0.2em] mb-4">
+                Visit &amp; contact
+              </p>
+              <ul className="space-y-3.5">
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                  <address className="not-italic text-sm text-muted-foreground">
+                    76 Cookridge Street
+                    <br />
+                    Leeds, LS2 8GL
+                  </address>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Phone className="h-4 w-4 text-primary flex-shrink-0" />
+                  <a
+                    href={BUSINESS.phoneHref}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {BUSINESS.phoneDisplay}
+                  </a>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 text-primary flex-shrink-0" />
+                  <a
+                    href={`mailto:${BUSINESS.email}`}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {BUSINESS.email}
+                  </a>
+                </li>
+              </ul>
             </div>
-          </div>
-
-          {/* Services */}
-          <div>
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-5">Services</p>
-            <ul className="space-y-3">
-              {services.map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-5">Company</p>
-            <ul className="space-y-3">
-              {company.map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-5">Contact</p>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-2">
-                <Phone className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <a
-                  href={`tel:${BUSINESS.phone}`}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {BUSINESS.phoneDisplay}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <Mail className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <a
-                  href={`mailto:${BUSINESS.email}`}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {BUSINESS.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <address className="not-italic text-sm text-muted-foreground">
-                  76 Cookridge Street<br />
-                  Leeds, LS2 8GL
-                </address>
-              </li>
-              <li className="flex items-start gap-2">
-                <Clock className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-muted-foreground space-y-0.5">
-                  <p>Mon–Fri: 9am–6pm</p>
-                  <p>Sat: 10am–4pm</p>
-                </div>
-              </li>
-            </ul>
           </div>
         </div>
 
-        {/* Legal links */}
-        <div className="pt-8 border-t border-border">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Origin Repairs. All rights reserved.</p>
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {legal.map(({ href, label }) => (
-                <Link key={href} href={href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                  {label}
-                </Link>
-              ))}
-            </div>
+        {/* Bottom bar */}
+        <div className="mt-12 pt-7 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Origin Repairs. All rights reserved.
+          </p>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            {legal.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-2">76 Cookridge Street, Leeds, LS2 8GL, UK</p>
         </div>
       </div>
     </footer>

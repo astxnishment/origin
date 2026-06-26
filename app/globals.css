@@ -30,8 +30,9 @@
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* ─── SINGLE THEME · TRUE BLACK (DARK-MODE FIRST) ─────────
@@ -40,33 +41,35 @@
    `dark:` variant (e.g. the inverted logo) still resolves. */
 :root,
 .dark {
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  --background: #030303;
-  --foreground: #ffffff;
-  --card: #0a0a0a;
-  --card-foreground: #ffffff;
-  --popover: #0f0f0f;
-  --popover-foreground: #ffffff;
+  /* Graphite / near-black base — matches the studio device renders */
+  --background: #0a0b0d;
+  --foreground: #f3f2ef;
+  --card: #111316;
+  --card-foreground: #f3f2ef;
+  --popover: #14161a;
+  --popover-foreground: #f3f2ef;
 
-  --surface: #0f0f0f;
-  --surface-raised: #161616;
+  --surface: #111316;
+  --surface-raised: #181a1f;
 
+  /* Restrained electric blue — primary actions, active states, focus */
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
 
-  --secondary: #0f0f0f;
-  --secondary-foreground: #a1a1aa;
+  --secondary: #111316;
+  --secondary-foreground: #a3a3ab;
 
-  --muted: #1a1a1a;
-  --muted-foreground: #a1a1aa;
+  --muted: #1a1c20;
+  --muted-foreground: #9a9ba2;
 
-  --accent: #22c55e;
-  --accent-foreground: #000000;
+  --accent: #3b82f6;
+  --accent-foreground: #ffffff;
 
   --destructive: #ef4444;
   --border: rgba(255, 255, 255, 0.08);
-  --input: #0f0f0f;
+  --input: #14161a;
   --ring: #3b82f6;
 
   color-scheme: dark;
@@ -97,7 +100,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold;
+    font-family: var(--font-display);
+    @apply font-semibold tracking-tight;
   }
 }
 
@@ -191,23 +195,22 @@
     box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), 0 8px 32px rgba(59, 130, 246, 0.08);
   }
 
-  /* Button base */
+  /* Button base — restrained solid electric blue, no gradients */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-all duration-200;
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2);
+    @apply inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-medium text-sm transition-colors duration-200;
   }
 
   .btn-primary:hover {
-    @apply shadow-lg from-blue-700 to-blue-600;
-    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3), 0 4px 20px rgba(59, 130, 246, 0.2);
+    background: #2f76f0;
   }
 
   .btn-secondary {
-    @apply bg-transparent border border-current text-foreground px-6 py-2.5 rounded-xl font-medium text-sm transition-all duration-200;
+    @apply inline-flex items-center justify-center bg-transparent border border-border text-foreground px-6 py-2.5 rounded-xl font-medium text-sm transition-colors duration-200;
   }
 
   .btn-secondary:hover {
-    @apply bg-surface border-muted-foreground;
+    @apply bg-surface-raised;
+    border-color: rgba(255, 255, 255, 0.18);
   }
 
   /* Section separator */
