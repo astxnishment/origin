@@ -24,9 +24,8 @@ const services = [
     label: "iPhone",
     href: "/repairs/iphone",
     tagline: "All models • Screen • Battery • Camera",
-    // Real iPhone 16 Pro image; fallback alt kept for accessibility
-    imageSrc: appleImageUrl(IPHONE_IMAGES["iPhone 16 Pro"], 256, false),
-    imageAlt: "iPhone 16 Pro",
+    imageSrc: appleImageUrl(IPHONE_IMAGES["iPhone 17 Pro Max"], 256, false),
+    imageAlt: "iPhone 17 Pro Max",
     imageSize: 256,
   },
   {
