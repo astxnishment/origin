@@ -12,7 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ArrowRight, Check, MapPin, Clock, Shield, Star, Zap, ExternalLink, Wrench } from "lucide-react";
-import { BUSINESS, REPAIR_PROCESS, FAQS } from "@/lib/constants";
+import { BUSINESS, REPAIR_PROCESS, FAQS, TESTIMONIALS } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
 import { appleImageUrl, IPHONE_IMAGES, IPAD_IMAGES, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
 import { SamsungCategoryIcon } from "@/components/SamsungCategoryIcon";
@@ -175,7 +175,7 @@ export default function Home() {
       <section className="relative border-y border-blue-500/10 bg-gradient-to-r from-blue-500/5 via-transparent to-blue-500/5 py-12 sm:py-16">
         <div className="absolute inset-0 dot-grid opacity-30 pointer-events-none" />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             {trustPoints.map(({ icon: Icon, label, desc }) => (
               <div key={label} className="text-center sm:text-left">
                 <Icon className="h-5 w-5 text-blue-500 mb-3 mx-auto sm:mx-0" />
@@ -472,6 +472,26 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* Testimonials */}
+          {TESTIMONIALS.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+              {TESTIMONIALS.map(({ author, role, content, rating, device }) => (
+                <div key={author} className="card-premium p-6 flex flex-col gap-4">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: rating }).map((_, i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed flex-1">&ldquo;{content}&rdquo;</p>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{author}</p>
+                    <p className="text-xs text-muted-foreground">{role} · {device}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Google reviews CTA */}
           <div className="rounded-2xl border border-border bg-card p-8 flex flex-col sm:flex-row items-center gap-6 justify-between">

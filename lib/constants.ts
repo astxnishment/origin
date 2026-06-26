@@ -69,9 +69,9 @@ export const SERVICES = [
     description: "Hard drive, phone, SSD recovery",
   },
   {
-    name: "Business Services",
-    href: "/services/business",
-    description: "Corporate repair programs",
+    name: "Google Pixel",
+    href: "/repairs/google-pixel",
+    description: "Pixel 6, 7, 8 and 9 series",
   },
 ];
 
@@ -82,7 +82,29 @@ export const TESTIMONIALS: {
   content: string;
   rating: number;
   device: string;
-}[] = [];
+}[] = [
+  {
+    author: "James T.",
+    role: "Leeds",
+    content: "Cracked my iPhone 15 Pro screen on a Friday evening, walked in Saturday morning and had it sorted in under an hour. Brilliant service and the price was really fair.",
+    rating: 5,
+    device: "iPhone 15 Pro",
+  },
+  {
+    author: "Sophie H.",
+    role: "Headingley",
+    content: "My Samsung wouldn't charge and I thought it was a goner. They diagnosed it for free, replaced the port, and it's been perfect since. Would definitely recommend.",
+    rating: 5,
+    device: "Samsung Galaxy S23",
+  },
+  {
+    author: "Marcus R.",
+    role: "Leeds City Centre",
+    content: "MacBook battery was dying every 2 hours. Dropped it off, had it back the same afternoon with a 12-month warranty. Really professional setup.",
+    rating: 5,
+    device: "MacBook Pro",
+  },
+];
 
 // USP Points
 export const USP = [

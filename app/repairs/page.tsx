@@ -69,6 +69,34 @@ const categories = [
       { name: "RAM Upgrade", time: "60 min", from: "£69" },
     ],
   },
+  {
+    device: "Google Pixel",
+    href: "/repairs/google-pixel",
+    tagline: "Pixel 6, 7, 8 and 9 series",
+    image: { src: "/GooglePixel/Pixel-9-repair-in-Leeds.png", alt: "Google Pixel 9", width: 300, height: 300 },
+    repairs: [
+      { name: "Screen Replacement", time: "60–90 min", from: "£119" },
+      { name: "Battery Replacement", time: "45–60 min", from: "£69" },
+      { name: "Charging Port", time: "60 min", from: "£69" },
+      { name: "Back Glass", time: "60–90 min", from: "£49" },
+      { name: "Water Damage", time: "24–48 hrs", from: "£29" },
+      { name: "Camera Repair", time: "60 min", from: "£55" },
+    ],
+  },
+  {
+    device: "Data Recovery",
+    href: "/repairs/data-recovery",
+    tagline: "Phone, laptop, SSD & hard drive",
+    image: serviceImages.dataRecovery,
+    repairs: [
+      { name: "Phone Data Recovery", time: "24–48 hrs", from: "£49" },
+      { name: "Hard Drive Recovery", time: "24–72 hrs", from: "£79" },
+      { name: "SSD Recovery", time: "24–48 hrs", from: "£99" },
+      { name: "RAID Recovery", time: "48–72 hrs", from: "£149" },
+      { name: "Water Damage", time: "24–48 hrs", from: "£65" },
+      { name: "Deleted Files", time: "24–48 hrs", from: "£49" },
+    ],
+  },
 ];
 
 const repairTypes = [

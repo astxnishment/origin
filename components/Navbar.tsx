@@ -11,6 +11,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import Logo from "@/components/Logo";
+import { BUSINESS } from "@/lib/constants";
 
 const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
@@ -20,8 +21,8 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-const PHONE = "+44 7768 426 754";
-const PHONE_HREF = "tel:+447768426754";
+const PHONE = BUSINESS.phoneDisplay;
+const PHONE_HREF = BUSINESS.phoneHref;
 
 export default function Navbar() {
   const pathname = usePathname();
