@@ -8,7 +8,6 @@ import { Check, Clock, Shield, ArrowRight, MapPin } from "lucide-react";
 import { BUSINESS } from "@/lib/constants";
 import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 import { REPAIR_PRICING } from "@/lib/repairPricing";
-import { serviceImages } from "@/lib/serviceImages";
 import { appleImageUrl, IPAD_IMAGES } from "@/lib/appleDeviceImages";
 
 export const metadata: Metadata = {
@@ -106,12 +105,12 @@ export default function IPadRepairPage() {
                 models. Walk-ins welcome at 76 Cookridge Street.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
                   <Link href="/book" className="flex items-center gap-2">
                     Book iPad Repair <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border">
+                <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border">
                   <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>
                 </Button>
               </div>
@@ -120,7 +119,6 @@ export default function IPadRepairPage() {
               {/* iPad hero image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
                   {/* Real iPad Pro M4 image from appledb.dev */}
                   <Image
                     src={appleImageUrl(IPAD_IMAGES['iPad Pro 11" M4'], 256, false)}
@@ -128,7 +126,7 @@ export default function IPadRepairPage() {
                     width={256}
                     height={256}
                     unoptimized
-                    className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                     priority
                   />
                 </div>
@@ -141,7 +139,7 @@ export default function IPadRepairPage() {
                 { icon: MapPin, title: "Leeds City Centre", desc: "76 Cookridge Street" },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="rounded-xl border border-border bg-card p-5">
-                  <Icon className="h-4 w-4 text-blue-500 mb-2" />
+                  <Icon className="h-4 w-4 text-[color:var(--icon-fg)] mb-2" />
                   <p className="text-[13px] font-semibold text-foreground mb-0.5">{title}</p>
                   <p className="text-[12px] text-muted-foreground">{desc}</p>
                 </div>
@@ -257,12 +255,12 @@ export default function IPadRepairPage() {
             Walk in or book online. Free assessment, transparent pricing.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-            <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+            <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
               <Link href="/book" className="flex items-center gap-2">
                 Book iPad Repair <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border">
+            <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border">
               <a href={`tel:${BUSINESS.phone}`}>Call {BUSINESS.phoneDisplay}</a>
             </Button>
           </div>

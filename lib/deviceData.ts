@@ -68,6 +68,10 @@ function phoneRepairs(overrides: Partial<Record<string, PriceRange | null>> = {}
     { id: "camera",        label: "Camera repair",            price: null,          time: "60 min",     warranty: "6 months"  },
     { id: "speaker",       label: "Speaker repair",           price: null,          time: "45 min",     warranty: "6 months"  },
     { id: "water",         label: "Water damage diagnostic",  price: { from: 29, to: 39 }, time: "Same day", warranty: "No fix no fee" },
+    { id: "liquid-repair", label: "Liquid damage repair",     price: { from: 79, to: 249 }, time: "1–5 days", warranty: "3 months" },
+    { id: "motherboard",   label: "Motherboard repair",       price: { from: 79, to: 249 }, time: "1–5 days", warranty: "3 months" },
+    { id: "no-power",      label: "No power repair",          price: { from: 79, to: 249 }, time: "1–5 days", warranty: "3 months" },
+    { id: "data-recovery", label: "Data recovery",            price: { from: 79, to: 299 }, time: "2–7 days", warranty: "N/A" },
     { id: "software",      label: "Software issue",           price: { from: 29 },  time: "30–60 min",  warranty: "1 month"   },
   ];
   return base.map((r) => (r.id in overrides ? { ...r, price: overrides[r.id]! } : r));
@@ -82,6 +86,10 @@ function tabletRepairs(overrides: Partial<Record<string, PriceRange | null>> = {
     { id: "camera",        label: "Camera repair",            price: null,          time: "60 min",     warranty: "6 months"  },
     { id: "software",      label: "Software issue",           price: { from: 39 },  time: "30–60 min",  warranty: "1 month"   },
     { id: "water",         label: "Water damage diagnostic",  price: { from: 29, to: 39 }, time: "Same day", warranty: "No fix no fee" },
+    { id: "liquid-repair", label: "Liquid damage repair",     price: { from: 89, to: 279 }, time: "1–5 days", warranty: "3 months" },
+    { id: "motherboard",   label: "Motherboard repair",       price: { from: 99, to: 299 }, time: "1–5 days", warranty: "3 months" },
+    { id: "no-power",      label: "No power repair",          price: { from: 99, to: 299 }, time: "1–5 days", warranty: "3 months" },
+    { id: "data-recovery", label: "Data recovery",            price: { from: 99, to: 299 }, time: "2–7 days", warranty: "N/A" },
   ];
   return base.map((r) => (r.id in overrides ? { ...r, price: overrides[r.id]! } : r));
 }
@@ -94,8 +102,11 @@ function laptopRepairs(overrides: Partial<Record<string, PriceRange | null>> = {
     { id: "trackpad",      label: "Trackpad repair",          price: null,          time: "60 min",     warranty: "6 months"  },
     { id: "charging-port", label: "Charging / USB-C port repair", price: null,      time: "60–90 min",  warranty: "6 months"  },
     { id: "liquid",        label: "Liquid damage diagnostic", price: { from: 49 },  time: "Same day",   warranty: "No fix no fee" },
+    { id: "liquid-repair", label: "Liquid damage repair",     price: { from: 129, to: 399 }, time: "2–7 days", warranty: "3 months" },
+    { id: "motherboard",   label: "Logic board repair",       price: { from: 129, to: 399 }, time: "2–7 days", warranty: "3 months" },
+    { id: "no-power",      label: "No power repair",          price: { from: 129, to: 399 }, time: "2–7 days", warranty: "3 months" },
     { id: "software",      label: "Software / OS issue",      price: { from: 39 },  time: "60 min",     warranty: "1 month"   },
-    { id: "data-recovery", label: "Data recovery",            price: { from: 49, to: 149 }, time: "24–48 hrs", warranty: "N/A" },
+    { id: "data-recovery", label: "Data recovery",            price: { from: 99, to: 499 }, time: "3–10 days", warranty: "N/A" },
   ];
   return base.map((r) => (r.id in overrides ? { ...r, price: overrides[r.id]! } : r));
 }

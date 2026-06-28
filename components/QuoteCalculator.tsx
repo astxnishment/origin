@@ -15,6 +15,9 @@ import {
   getModelsByBrand,
   getRepairInfo,
   DEVICE_CATEGORIES,
+  REPAIR_TYPES,
+  type DeviceCategory,
+  type RepairType,
 } from "@/lib/repair-data";
 import { ArrowRight, Check, Clock, Shield } from "lucide-react";
 
@@ -26,19 +29,19 @@ const steps = [
 ];
 
 export default function QuoteCalculator() {
-  const [category, setCategory] = useState<string>("");
+  const [category, setCategory] = useState<DeviceCategory | "">("");
   const [brand, setBrand] = useState<string>("");
   const [modelId, setModelId] = useState<string>("");
-  const [repairType, setRepairType] = useState<string>("");
+  const [repairType, setRepairType] = useState<RepairType | "">("");
 
   const availableBrands = useMemo(() => {
     if (!category) return [];
-    return getBrandsByCategory(category as any);
+    return getBrandsByCategory(category);
   }, [category]);
 
   const availableModels = useMemo(() => {
     if (!brand || !category) return [];
-    return getModelsByBrand(brand, category as any);
+    return getModelsByBrand(brand, category);
   }, [brand, category]);
 
   const selectedDevice = useMemo(() => {
@@ -53,7 +56,7 @@ export default function QuoteCalculator() {
 
   const quote = useMemo(() => {
     if (!selectedDevice || !repairType) return null;
-    return getRepairInfo(selectedDevice, repairType as any);
+    return getRepairInfo(selectedDevice, repairType);
   }, [selectedDevice, repairType]);
 
   const currentStep = !category ? 0 : !brand ? 1 : !modelId ? 2 : 3;
@@ -64,6 +67,19 @@ export default function QuoteCalculator() {
     else if (step <= 1) { setBrand(""); setModelId(""); setRepairType(""); }
     else if (step <= 2) { setModelId(""); setRepairType(""); }
     else { setRepairType(""); }
+  };
+
+  const selectCategory = (value: string) => {
+    if (DEVICE_CATEGORIES.includes(value as DeviceCategory)) {
+      setCategory(value as DeviceCategory);
+      resetFrom(1);
+    }
+  };
+
+  const selectRepairType = (value: string) => {
+    if (REPAIR_TYPES.includes(value as RepairType)) {
+      setRepairType(value as RepairType);
+    }
   };
 
   return (
@@ -77,8 +93,8 @@ export default function QuoteCalculator() {
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
                 i < currentStep
                   ? "bg-green-500/20 text-green-500"
-                  : i === currentStep
-                  ? "bg-blue-500/20 text-blue-500"
+                : i === currentStep
+                  ? "bg-white/10 text-foreground"
                   : "bg-surface text-muted-foreground"
               }`}>
                 {i < currentStep ? (
@@ -104,7 +120,7 @@ export default function QuoteCalculator() {
             <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Device category
             </label>
-            <Select value={category} onValueChange={(v) => { setCategory(v); resetFrom(1); }}>
+            <Select value={category} onValueChange={selectCategory}>
               <SelectTrigger className="bg-card border-border h-11 rounded-lg text-sm">
                 <SelectValue placeholder="Select device type…" />
               </SelectTrigger>
@@ -155,7 +171,7 @@ export default function QuoteCalculator() {
             <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Repair type
             </label>
-            <Select value={repairType} onValueChange={setRepairType} disabled={!selectedDevice}>
+            <Select value={repairType} onValueChange={selectRepairType} disabled={!selectedDevice}>
               <SelectTrigger className="bg-card border-border h-11 rounded-lg text-sm disabled:opacity-50">
                 <SelectValue placeholder={selectedDevice ? "Select repair…" : "Select model first"} />
               </SelectTrigger>
@@ -176,7 +192,7 @@ export default function QuoteCalculator() {
       {/* ── Result ── */}
       <div className="lg:col-span-2">
         {isComplete && quote ? (
-          <div className="h-full rounded-2xl border border-border bg-card p-7 flex flex-col gap-6 card-premium">
+          <div className="h-full rounded-lg border border-border bg-card p-7 flex flex-col gap-6 card-premium">
             {/* Price */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
@@ -235,7 +251,7 @@ export default function QuoteCalculator() {
             </Button>
           </div>
         ) : (
-          <div className="h-full min-h-[320px] rounded-2xl border border-dashed border-border bg-surface/50 flex items-center justify-center p-8">
+          <div className="h-full min-h-[320px] rounded-lg border border-dashed border-border bg-surface/50 flex items-center justify-center p-8">
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center mx-auto mb-4">
                 <span className="text-lg">→</span>

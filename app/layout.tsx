@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingCTA from "@/components/FloatingCTA";
 import MobileCTABar from "@/components/MobileCTABar";
+import { BUSINESS, SEO, SERVICES } from "@/lib/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +21,21 @@ export const metadata: Metadata = {
     template: "%s | Origin Repairs",
   },
   description:
-    "Expert repair for iPhones, Samsung, iPads, and MacBooks. Fast, reliable, and backed by a 12-month warranty. Based in Leeds.",
-  metadataBase: new URL("https://originrepairs.co.uk"),
+    "Expert repair for phones, tablets, laptops, consoles, custom PCs and liquid-damaged devices. Based in Leeds.",
+  metadataBase: new URL(SEO.siteUrl),
+  keywords: [
+    "device repair Leeds",
+    "iPhone repair Leeds",
+    "Samsung repair Leeds",
+    "MacBook repair Leeds",
+    "iPad repair Leeds",
+    "data recovery Leeds",
+    "console repair Leeds",
+    "custom PC builds Leeds",
+    "PC upgrades Leeds",
+    "liquid damage repair Leeds",
+  ],
+  category: "Device repair",
   icons: {
     icon: [
       { url: "/logos/origin-icon.png", type: "image/png", sizes: "512x512" },
@@ -32,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Origin Repairs — Premium Device Repair in Leeds",
     description: "Expert device repair. Same-day service. 12-month warranty.",
-    url: "https://originrepairs.co.uk",
+    url: SEO.siteUrl,
     siteName: "Origin Repairs",
     locale: "en_GB",
     type: "website",
@@ -58,62 +72,120 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeScript = `
+    (() => {
+      try {
+        const stored = localStorage.getItem("origin-theme");
+        const theme = stored === "light" || stored === "dark" ? stored : "dark";
+        const root = document.documentElement;
+        root.classList.toggle("dark", theme === "dark");
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+      } catch {
+        document.documentElement.classList.add("dark");
+        document.documentElement.dataset.theme = "dark";
+        document.documentElement.style.colorScheme = "dark";
+      }
+    })();
+  `;
+
   const schemaData = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: "Origin Repairs",
-    description:
-      "Premium device repair service in Leeds. Expert iPhone, Samsung, MacBook, and iPad repairs with same-day service.",
-    url: "https://originrepairs.co.uk",
-    telephone: "+447768426754",
-    email: "tech@originrepairs.co.uk",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "76 Cookridge Street",
-      addressLocality: "Leeds",
-      postalCode: "LS2 8GL",
-      addressCountry: "GB",
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: 53.8017,
-      longitude: -1.5543,
-    },
-    openingHoursSpecification: [
+    "@graph": [
       {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
+        "@type": "LocalBusiness",
+        "@id": `${SEO.siteUrl}/#business`,
+        name: BUSINESS.name,
+        description:
+          "Device repair service in Leeds city centre. Expert phone, tablet, laptop, console, custom PC, liquid damage and data recovery repairs.",
+        url: SEO.siteUrl,
+        telephone: BUSINESS.phone,
+        email: BUSINESS.email,
+        image: `${SEO.siteUrl}/logos/origin-logo-light.png`,
+        logo: `${SEO.siteUrl}/logos/origin-icon.png`,
+        priceRange: "£39-£599",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "76 Cookridge Street",
+          addressLocality: "Leeds",
+          postalCode: BUSINESS.postcode,
+          addressCountry: "GB",
+        },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: BUSINESS.coordinates.lat,
+          longitude: BUSINESS.coordinates.lng,
+        },
+        hasMap: BUSINESS.googleMapsUrl,
+        areaServed: [
+          "Leeds City Centre",
+          "Headingley",
+          "Hyde Park",
+          "Chapel Allerton",
+          "Roundhay",
+          "Horsforth",
+        ],
+        openingHoursSpecification: [
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            opens: "09:00",
+            closes: "18:00",
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: "Saturday",
+            opens: "10:00",
+            closes: "16:00",
+          },
+        ],
+        makesOffer: SERVICES.map((service) => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: service.name,
+            description: service.description,
+            areaServed: "Leeds",
+            provider: { "@id": `${SEO.siteUrl}/#business` },
+          },
+          url: `${SEO.siteUrl}${service.href}`,
+        })),
+        sameAs: [BUSINESS.googleReviewUrl, BUSINESS.trustpilotUrl],
       },
       {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "10:00",
-        closes: "16:00",
+        "@type": "WebSite",
+        "@id": `${SEO.siteUrl}/#website`,
+        url: SEO.siteUrl,
+        name: SEO.siteName,
+        publisher: { "@id": `${SEO.siteUrl}/#business` },
+        inLanguage: "en-GB",
       },
-    ],
-    priceRange: "£39-£599",
-    sameAs: [
-      "https://www.google.com/search?q=Origin+Repairs+Leeds",
-      "https://www.trustpilot.com",
     ],
   };
 
   return (
     <html
       lang="en"
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      style={{ colorScheme: "dark" }}
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground pb-[60px] md:pb-0">
-        {children}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+        >
+          Skip to main content
+        </a>
+        <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
+          {children}
+        </div>
         <FloatingCTA />
         <MobileCTABar />
       </body>

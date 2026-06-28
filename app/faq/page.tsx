@@ -209,7 +209,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 asChild
-                className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]"
+                className="btn-primary h-10 rounded-lg px-6 text-[13px]"
               >
                 <Link href="/contact">Send a message</Link>
               </Button>

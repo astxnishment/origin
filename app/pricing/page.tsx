@@ -3,13 +3,13 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, Cpu, Droplets, HardDrive, Zap } from "lucide-react";
 import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Repair Pricing Leeds | Transparent Fixed Quotes",
   description:
-    "Clear, upfront repair pricing with no hidden fees. iPhone, Samsung, MacBook, iPad repairs. Fixed quote before we start. Use our instant quote calculator.",
+    "Clear repair pricing for screens, batteries, charging ports, liquid damage, data recovery and board-level repairs in Leeds. Fixed quote before work starts.",
 };
 
 function price(brand: string, model: string, repairType: string): string {
@@ -86,26 +86,78 @@ const repairs = [
     time: "90 min",
   },
   {
+    device: "Phone / tablet",
+    service: "Motherboard repair",
+    price: "£79–£299",
+    time: "1–5 days",
+  },
+  {
+    device: "MacBook",
+    service: "Logic board repair",
+    price: "£129–£399",
+    time: "2–7 days",
+  },
+  {
+    device: "Game console",
+    service: "HDMI / no power repair",
+    price: "£59–£249",
+    time: "1–5 days",
+  },
+  {
+    device: "Custom PC",
+    service: "Builds & upgrades",
+    price: "£29–£199",
+    time: "30 min–3 days",
+  },
+  {
     device: "Any device",
-    service: "Water damage assessment",
-    price: "Inspection required",
+    service: "Liquid damage diagnostic",
+    price: "£29–£79",
     time: "Same day",
   },
   {
     device: "Any device",
-    service: "Data recovery assessment",
-    price: "Inspection required",
-    time: "24–48 hrs",
+    service: "Data recovery",
+    price: "£79–£499",
+    time: "2–10 days",
   },
 ];
 
 const included = [
   "Fixed price quote before we start",
-  "No diagnostic charge",
-  "OEM-grade replacement parts",
+  "Free basic assessment",
+  "Board-level repairs available",
+  "OEM-grade and compatible part options",
   "12-month warranty on eligible repairs",
-  "Free post-repair quality check",
+  "Microscope diagnostics for complex faults",
   "Data always protected",
+];
+
+const advancedRepairs = [
+  {
+    icon: Cpu,
+    title: "Motherboard, logic board and PCs",
+    price: "from £79",
+    detail: "No power, short circuits, charging IC, custom PC builds, upgrades and board-level faults.",
+  },
+  {
+    icon: Zap,
+    title: "Ports, consoles and no-power faults",
+    price: "from £59",
+    detail: "USB-C, charging, HDMI, console ports and power faults diagnosed before parts are ordered.",
+  },
+  {
+    icon: Droplets,
+    title: "Liquid damage",
+    price: "diagnostic from £29",
+    detail: "Assessment first, then a fixed quote for cleaning, parts or board work.",
+  },
+  {
+    icon: HardDrive,
+    title: "Data recovery",
+    price: "from £79",
+    detail: "Phones, SSDs, hard drives and liquid-damaged devices. No recovery cases quoted first.",
+  },
 ];
 
 const faqs = [
@@ -115,15 +167,15 @@ const faqs = [
   },
   {
     q: "Is the assessment free?",
-    a: "Yes. We assess your device for free and tell you exactly what needs fixing before you commit.",
+    a: "Basic checks are free. Liquid damage, data recovery and board-level faults may need a paid deep diagnostic, which is confirmed before we start.",
   },
   {
     q: "What if I don't proceed with the repair?",
     a: "No charge. You're never obligated to go ahead after a quote.",
   },
   {
-    q: "Why cheaper than Apple or Samsung?",
-    a: "We use OEM-grade parts at a fraction of manufacturer prices. Same quality, honest margins.",
+    q: "Do you do motherboard repairs?",
+    a: "Yes. We handle board-level faults such as no power, charging IC issues, liquid damage, short circuits and selected Face ID or biometric faults.",
   },
 ];
 
@@ -147,8 +199,8 @@ export default function PricingPage() {
                   No surprises.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md">
-                  Every repair comes with a fixed quote before we start. No diagnostic fees, no
-                  hidden charges, no upselling.
+                  Every repair gets a clear quote before work starts. Common repairs can be priced
+                  quickly; complex board-level work is diagnosed first.
                 </p>
               </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -159,6 +211,30 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+
+          <div className="py-16 border-b border-border">
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Advanced repairs</h2>
+                <p className="text-[13px] text-muted-foreground max-w-2xl">
+                  Board-level faults need proper inspection, but they should still be easy to understand. These are the advanced repairs we can assess and quote in-store.
+                </p>
+              </div>
+              <Button asChild className="btn-secondary h-10 w-fit px-5 text-[13px]">
+                <Link href="/contact">Discuss complex repair</Link>
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+              {advancedRepairs.map(({ icon: Icon, title, price, detail }) => (
+                <div key={title} className="bg-card p-5">
+                  <Icon className="mb-6 h-5 w-5 text-[color:var(--icon-fg)]" />
+                  <p className="text-[14px] font-semibold text-foreground">{title}</p>
+                  <p className="mt-2 text-[18px] font-bold text-foreground">{price}</p>
+                  <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground">{detail}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -213,7 +289,7 @@ export default function PricingPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 asChild
-                className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]"
+                className="btn-primary h-10 rounded-lg px-6 text-[13px]"
               >
                 <Link href="/quote" className="flex items-center gap-2">
                   Quote calculator <ArrowRight className="h-3.5 w-3.5" />

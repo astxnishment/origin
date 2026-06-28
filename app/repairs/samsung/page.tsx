@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { REPAIR_PRICING } from "@/lib/repairPricing";
-import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 import { SamsungCategoryIcon } from "@/components/SamsungCategoryIcon";
 
 export const metadata: Metadata = {
@@ -13,12 +12,6 @@ export const metadata: Metadata = {
   description:
     "Professional Samsung repairs in Leeds. Galaxy S and A-series. Screen, battery, charging port and more. Same-day service, 12-month warranty on eligible repairs.",
 };
-
-function livePrice(model: string, repairType: string): string {
-  const row = getRepairPrice("Samsung", model, repairType);
-  if (!row) return "POA";
-  return formatPriceRange(row.minPrice, row.maxPrice);
-}
 
 function cheapestSamsungPrice(repairType: string): number {
   const prices = REPAIR_PRICING.filter(
@@ -50,8 +43,18 @@ const repairTypes = [
   },
   {
     name: "Water damage",
-    price: livePrice("Galaxy S24", "Water Damage Diagnostic"),
-    time: "24–48 hrs",
+    price: "diagnostic from £29",
+    time: "Same day",
+  },
+  {
+    name: "Motherboard repair",
+    price: "from £79",
+    time: "1–5 days",
+  },
+  {
+    name: "No power repair",
+    price: "from £79",
+    time: "1–5 days",
   },
 ];
 
@@ -115,15 +118,11 @@ export default function SamsungRepairsPage() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     asChild
-                    className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]"
+                    className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
                     <Link href="/book">Book Samsung Repair</Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted"
-                  >
+                  <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
                       Get a quote <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
@@ -133,11 +132,10 @@ export default function SamsungRepairsPage() {
               {/* Hero device image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
                   <SamsungCategoryIcon
                     variant="galaxy-s"
                     size={180}
-                    className="relative drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    className="relative drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                   />
                 </div>
               </div>
@@ -205,7 +203,7 @@ export default function SamsungRepairsPage() {
             </p>
             <Button
               asChild
-              className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-8 text-[13px]"
+              className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
               <Link href="/book">Book a Repair</Link>
             </Button>

@@ -93,7 +93,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                   href={`tel:${BUSINESS.phone}`}
                   className="flex items-start gap-3 group"
                 >
-                  <Phone className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <Phone className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[12px] text-muted-foreground">Phone</p>
                     <p className="text-[14px] font-medium text-foreground group-hover:text-primary transition-colors">
@@ -106,7 +106,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                   href={`mailto:${BUSINESS.email}`}
                   className="flex items-start gap-3 group"
                 >
-                  <Mail className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <Mail className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[12px] text-muted-foreground">Email</p>
                     <p className="text-[14px] font-medium text-foreground group-hover:text-primary transition-colors">
@@ -115,20 +115,25 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                   </div>
                 </a>
 
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <a
+                  href={BUSINESS.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start gap-3"
+                >
+                  <MapPin className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[12px] text-muted-foreground">Address</p>
-                    <address className="not-italic text-[14px] font-medium text-foreground">
+                    <address className="not-italic text-[14px] font-medium text-foreground transition-colors group-hover:text-primary">
                       76 Cookridge Street
                       <br />
                       Leeds, LS2 8GL
                     </address>
                   </div>
-                </div>
+                </a>
 
                 <div className="flex items-start gap-3">
-                  <Clock className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <Clock className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[12px] text-muted-foreground">Opening hours</p>
                     <p className="text-[14px] font-medium text-foreground">Mon–Fri: 9am–6pm</p>

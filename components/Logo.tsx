@@ -1,21 +1,17 @@
-import Image from "next/image";
-
 interface LogoProps {
   /**
-   * "dark"  → white logo, designed for dark/navy backgrounds (navbar, footer, dark sections)
-   * "light" → dark navy logo, designed for white/light backgrounds (OG images, light modals)
+   * "dark"  -> warm white logo for dark backgrounds
+   * "light" -> graphite logo for light backgrounds
    */
   variant?: "dark" | "light";
-  /** Tailwind height class, e.g. "h-9" or "h-10". Width is always auto. */
+  /** Tailwind height class, e.g. "h-9" or "h-10". Width follows the SVG viewBox. */
   heightClass?: string;
   className?: string;
 }
 
-const LOGOS = {
-  /** White logo — use on dark backgrounds */
-  dark:  { src: "/logos/origin-logo-dark.png",  width: 1438, height: 798 },
-  /** Dark charcoal logo — use on light backgrounds */
-  light: { src: "/logos/origin-logo-light.png", width: 1438, height: 798 },
+const LOGO_COLOR = {
+  dark: "#f4f1ea",
+  light: "#151412",
 } as const;
 
 export default function Logo({
@@ -23,18 +19,51 @@ export default function Logo({
   heightClass = "h-9",
   className = "",
 }: LogoProps) {
-  const { src, width, height } = LOGOS[variant];
-
   return (
-    <Image
-      src={src}
-      alt="Origin Repairs logo"
-      width={width}
-      height={height}
-      sizes="(max-width: 640px) 140px, 180px"
-      className={`${heightClass} w-auto object-contain ${className}`}
-      unoptimized
-      priority
-    />
+    <svg
+      viewBox="0 0 342 86"
+      role="img"
+      aria-label="Origin Repairs"
+      className={`${heightClass} w-auto ${className}`}
+      style={{ color: LOGO_COLOR[variant] }}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="34"
+        cy="39"
+        r="24"
+        stroke="currentColor"
+        strokeWidth="7"
+      />
+      <path
+        d="M34 9V29"
+        stroke="currentColor"
+        strokeWidth="8"
+        strokeLinecap="round"
+      />
+      <text
+        x="78"
+        y="45"
+        fill="currentColor"
+        fontFamily="var(--font-geist-sans), Arial, sans-serif"
+        fontSize="35"
+        fontWeight="650"
+        letterSpacing="0"
+      >
+        ORIGIN
+      </text>
+      <text
+        x="80"
+        y="68"
+        fill="currentColor"
+        fontFamily="var(--font-geist-sans), Arial, sans-serif"
+        fontSize="12"
+        fontWeight="700"
+        letterSpacing="0"
+      >
+        REPAIRS
+      </text>
+    </svg>
   );
 }

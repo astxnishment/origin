@@ -9,39 +9,39 @@ export default function MobileCTABar() {
     <div
       className="fixed bottom-0 inset-x-0 z-40 md:hidden"
       style={{
-        background: "rgba(8,8,8,0.96)",
-        borderTop: "1px solid rgba(255,255,255,0.1)",
+        background: "var(--chrome-bg)",
+        borderTop: "1px solid var(--chrome-border)",
         backdropFilter: "blur(16px)",
       }}
     >
-      <div className="flex divide-x divide-white/10">
+      <div className="flex divide-x divide-border">
         <a
           href={`tel:${BUSINESS.phone}`}
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-white/5 transition-colors"
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
           aria-label={`Call Origin Repairs on ${BUSINESS.phoneDisplay}`}
         >
-          <Phone className="h-5 w-5 text-blue-400" />
-          <span className="text-[11px] font-semibold text-white/80 leading-none">Call</span>
-          <span className="text-[10px] text-white/40 leading-none">{BUSINESS.phoneDisplay}</span>
+          <Phone className="h-5 w-5 text-[color:var(--icon-fg)]" />
+          <span className="text-[11px] font-semibold text-foreground leading-none">Call</span>
+          <span className="text-[10px] text-muted-foreground leading-none">{BUSINESS.phoneDisplay}</span>
         </a>
 
         <Link
           href="/quote"
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-white/5 transition-colors"
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
         >
-          <Calculator className="h-5 w-5 text-white/70" />
-          <span className="text-[11px] font-semibold text-white/80 leading-none">Get Quote</span>
-          <span className="text-[10px] text-white/40 leading-none">Instant price</span>
+          <Calculator className="h-5 w-5 text-[color:var(--icon-fg)]" />
+          <span className="text-[11px] font-semibold text-foreground leading-none">Get Quote</span>
+          <span className="text-[10px] text-muted-foreground leading-none">Instant price</span>
         </Link>
 
         <Link
           href="/book"
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-white/5 transition-colors"
-          style={{ background: "rgba(37,99,235,0.2)" }}
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
+          style={{ background: "var(--soft-bg-strong)" }}
         >
-          <CalendarCheck className="h-5 w-5 text-blue-400" />
-          <span className="text-[11px] font-semibold text-blue-300 leading-none">Book Repair</span>
-          <span className="text-[10px] text-white/40 leading-none">Same day</span>
+          <CalendarCheck className="h-5 w-5 text-[color:var(--icon-fg)]" />
+          <span className="text-[11px] font-semibold text-foreground leading-none">Book Repair</span>
+          <span className="text-[10px] text-muted-foreground leading-none">Same day</span>
         </Link>
       </div>
       {/* Safe area spacer for iOS home indicator */}

@@ -81,10 +81,11 @@ export function resolveDeviceImage({
         fallbackSrc: APPLE_FALLBACKS[deviceTypeId] ?? "/images/services/iphone-device.svg",
       };
     }
-    // Apple device found in pricing but not in image map → generic SVG
+    // Apple device found in pricing but not in image map → generic SVG.
+    // Key off the broad category (reliable) rather than deviceTypeId strings.
     const iconType: DeviceIconType =
-      deviceTypeId === "apple_ipad"    ? "ipad"    :
-      deviceTypeId === "apple_macbook" ? "macbook" : "iphone";
+      category === "tablet" || deviceTypeId === "ipad"    ? "ipad"    :
+      category === "laptop" || deviceTypeId === "macbook" ? "macbook" : "iphone";
     return { strategy: "generic-svg", iconType };
   }
 

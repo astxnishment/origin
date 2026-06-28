@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InteractiveMap from "@/components/InteractiveMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -114,20 +115,22 @@ export default function ContactPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                   Address
                 </p>
-                <address className="not-italic text-[15px] text-foreground">
-                  76 Cookridge Street
-                  <br />
-                  Leeds, LS2 8GL
-                </address>
                 <a
-                  href="https://maps.google.com/?q=76+Cookridge+Street+Leeds+LS2+8GL"
+                  href={BUSINESS.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline mt-2"
+                  className="group inline-flex flex-col gap-2 text-[15px] text-foreground"
                 >
-                  <MapPin className="h-3.5 w-3.5" />
-                  View on Google Maps
-                  <ExternalLink className="h-3 w-3" />
+                  <address className="not-italic transition-colors group-hover:text-primary">
+                    76 Cookridge Street
+                    <br />
+                    Leeds, LS2 8GL
+                  </address>
+                  <span className="inline-flex items-center gap-1.5 text-[13px] text-primary group-hover:underline">
+                    <MapPin className="h-3.5 w-3.5" />
+                    View on Google Maps
+                    <ExternalLink className="h-3 w-3" />
+                  </span>
                 </a>
               </div>
 
@@ -144,7 +147,7 @@ export default function ContactPage() {
 
               <div className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-start gap-2 mb-2">
-                  <Clock className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <Clock className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
                   <p className="text-[13px] font-semibold text-foreground">Walk-ins welcome</p>
                 </div>
                 <p className="text-[13px] text-muted-foreground leading-relaxed">
@@ -263,7 +266,7 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     disabled={status === "sending"}
-                    className="w-full bg-primary hover:bg-primary/90 text-white h-11 rounded-xl text-[13px] font-semibold disabled:opacity-50"
+                    className="btn-primary w-full h-11 rounded-lg text-[13px] font-semibold disabled:opacity-50"
                   >
                     {status === "sending" ? "Sending…" : "Send Message"}
                   </Button>
@@ -275,6 +278,38 @@ export default function ContactPage() {
               )}
             </div>
           </div>
+
+          <section className="border-t border-border py-14">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-stretch">
+              <div className="flex flex-col justify-between gap-8">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-primary mb-3">
+                    Visit
+                  </p>
+                  <h2 className="text-3xl font-semibold tracking-tight mb-4">
+                    Find us on Google.
+                  </h2>
+                  <p className="text-[15px] text-muted-foreground leading-relaxed max-w-sm">
+                    We&apos;re on Cookridge Street in Leeds city centre, a short walk from the
+                    station and The Light.
+                  </p>
+                </div>
+                <Button asChild className="btn-secondary h-11 w-fit px-5 text-[13px]">
+                  <a
+                    href={BUSINESS.googleDirectionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    Get directions
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </Button>
+              </div>
+
+              <InteractiveMap />
+            </div>
+          </section>
         </div>
       </main>
 

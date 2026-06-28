@@ -8,21 +8,22 @@ import { ArrowRight, Check } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
-  title: "Data Recovery Leeds | Phone, Laptop, SSD",
-  description: "Professional data recovery in Leeds. Recover lost files from phones, laptops, SSDs and hard drives. Free diagnostic. No data, no fee. 76 Cookridge Street.",
+  title: "Liquid Damage & Data Recovery Leeds | Phones, Laptops, Consoles",
+  description: "Liquid damage repair and data recovery in Leeds for phones, tablets, laptops, consoles, SSDs and hard drives. Assessment first, fixed quote before work.",
 };
 
 const recoveryTypes = [
-  { name: "Phone data recovery", price: "£149–£299", time: "24–48 hrs", desc: "Deleted files, broken screen, water damage" },
-  { name: "Laptop / SSD recovery", price: "£199–£399", time: "48–72 hrs", desc: "Corrupted drive, accidental deletion, OS failure" },
-  { name: "Hard drive recovery", price: "£249–£499", time: "3–7 days", desc: "Mechanical failure, logical corruption, file system errors" },
+  { name: "Phone data recovery", price: "£79–£299", time: "2–7 days", desc: "Deleted files, broken screen, water damage" },
+  { name: "Liquid damage diagnostic", price: "£29–£79", time: "Same day", desc: "Phones, tablets, laptops, consoles and board-level inspection" },
+  { name: "Board-level recovery", price: "£129–£399", time: "2–7 days", desc: "No power, damaged charging circuits, failed components" },
+  { name: "Console liquid damage", price: "£79–£249", time: "1–5 days", desc: "PlayStation, Xbox, Nintendo Switch and handheld consoles" },
+  { name: "Laptop / SSD recovery", price: "£99–£499", time: "3–10 days", desc: "Corrupted drive, accidental deletion, OS failure" },
+  { name: "Hard drive recovery", price: "£99–£499", time: "3–10 days", desc: "Mechanical failure, logical corruption, file system errors" },
   { name: "RAID recovery", price: "£299–£599", time: "5–10 days", desc: "RAID 0/1/5 arrays, NAS devices, server storage" },
-  { name: "Memory card recovery", price: "£99–£199", time: "24–48 hrs", desc: "SD cards, microSD, CF cards" },
-  { name: "Emergency recovery", price: "POA", time: "Same day", desc: "Critical business data, urgent deadlines" },
 ];
 
 const process = [
-  { step: "1", title: "Free assessment", desc: "We evaluate the damage and give you a fixed quote. No charge if we can't recover." },
+  { step: "1", title: "Assessment first", desc: "We evaluate the damage and give you a fixed quote before recovery work starts." },
   { step: "2", title: "Recovery attempt", desc: "Our technicians work with specialist tools to extract and reconstruct your data." },
   { step: "3", title: "Verification", desc: "You review the recovered files before we charge anything." },
   { step: "4", title: "Secure transfer", desc: "Data returned on encrypted storage device. Your privacy protected." },
@@ -47,15 +48,15 @@ export default function DataRecoveryPage() {
           {/* Header */}
           <div className="pt-10 pb-16 border-b border-border">
             <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Data Recovery · Leeds
+              Liquid Damage & Data Recovery · Leeds
             </p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
-                  Lost data doesn&apos;t have to mean lost forever.
+                  Liquid damage is not one kind of repair.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  Professional data recovery from phones, laptops, hard drives, and SSDs. Free initial assessment. No recovery means no charge.
+                  We inspect phones, tablets, laptops, consoles, SSDs and hard drives after liquid exposure. Some jobs need cleaning, some need parts, some need board-level recovery.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {guarantees.map((g) => (
@@ -66,10 +67,10 @@ export default function DataRecoveryPage() {
                   ))}
                 </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+                  <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
                     <Link href="/contact">Get Free Assessment</Link>
                   </Button>
-                  <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+                  <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/book" className="flex items-center gap-2">
                       Book appointment <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
@@ -79,13 +80,12 @@ export default function DataRecoveryPage() {
               {/* Hero image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/6 blur-3xl pointer-events-none" />
                   <Image
-                    src={serviceImages.dataRecovery.src}
-                    alt={serviceImages.dataRecovery.alt}
+                    src={serviceImages.dataRecoveryLiquidDamage.src}
+                    alt={serviceImages.dataRecoveryLiquidDamage.alt}
                     width={360}
                     height={360}
-                    className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                     priority
                   />
                 </div>
@@ -144,10 +144,10 @@ export default function DataRecoveryPage() {
               Free assessment. No recovery, no fee. Call us or book online.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+              <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
                 <Link href="/contact">Start Free Assessment</Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
+              <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <a href="tel:+447768426754">07768 426 754</a>
               </Button>
             </div>

@@ -6,102 +6,117 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
+import DeviceImage from "@/components/DeviceImage";
+import { DeviceIcon, type DeviceType as DeviceIconType } from "@/components/DeviceIcon";
 
-export const metadata: Metadata = {
-  title: "Device Repairs Leeds | iPhone, Samsung, MacBook",
-  description: "Expert repairs for iPhone, Samsung, iPad, MacBook and more. Same-day service, OEM parts, 12-month warranty. Walk in or book online. Leeds LS2 8GL.",
+type Choice = {
+  name: string;
+  note: string;
+  href: string;
+  /** When set, render a real DeviceImage (brand/model). */
+  brand?: "Apple" | "Samsung" | "Google Pixel";
+  model?: string;
+  deviceTypeId?: string;
+  /** Fallback inline icon when there's no brand-specific photo. */
+  icon?: DeviceIconType;
 };
 
-const categories = [
+export const metadata: Metadata = {
+  title: "Device Repairs Leeds | Phones, Laptops, Consoles, PCs",
+  description: "Expert repairs for phones, tablets, all kinds of laptops, consoles, custom PC builds, upgrades, liquid damage and data recovery. Walk in or book online. Leeds LS2 8GL.",
+};
+
+const categories: Array<{
+  device: string;
+  href: string;
+  tagline: string;
+  image: (typeof serviceImages)[keyof typeof serviceImages];
+  prompt?: string;
+  choices?: Choice[];
+  repairs?: { name: string; time: string; from: string }[];
+}> = [
   {
-    device: "iPhone",
-    href: "/repairs/iphone",
-    tagline: "All models from iPhone 11 to 16 Pro Max",
-    image: serviceImages.iphone,
-    repairs: [
-      { name: "Screen Replacement", time: "45 min", from: "£49" },
-      { name: "Battery Replacement", time: "30 min", from: "£39" },
-      { name: "Charging Port", time: "60 min", from: "£45" },
-      { name: "Camera Repair", time: "60 min", from: "£55" },
-      { name: "Water Damage", time: "24 hrs", from: "£65" },
-      { name: "Back Glass", time: "45 min", from: "£40" },
+    device: "Phone Repairs",
+    href: "/repairs/phones",
+    tagline: "iPhone, Samsung Galaxy, Google Pixel and more",
+    image: serviceImages.phones,
+    prompt: "Which phone do you have? Pick your brand to see models & pricing.",
+    choices: [
+      { name: "iPhone", note: "iPhone 6 through 16 Pro Max", href: "/repairs/iphone", brand: "Apple", model: "iPhone 16 Pro", deviceTypeId: "iphone" },
+      { name: "Samsung Galaxy", note: "Galaxy S, A, Z Fold & Flip", href: "/repairs/samsung", brand: "Samsung", model: "Galaxy S24 Ultra", deviceTypeId: "galaxy-s" },
+      { name: "Google Pixel", note: "Pixel 6 through 9 Pro", href: "/repairs/google-pixel", brand: "Google Pixel", model: "Pixel 9 Pro", deviceTypeId: "google-pixel" },
+      { name: "Other Android", note: "OnePlus, Xiaomi, Sony & more", href: "/repairs/phones", brand: "Samsung", model: "Galaxy A55", deviceTypeId: "galaxy-a" },
     ],
   },
   {
-    device: "Samsung",
-    href: "/repairs/samsung",
-    tagline: "Galaxy S, A-series, Z-series, Tab",
-    image: serviceImages.samsung,
-    repairs: [
-      { name: "Screen Replacement", time: "60 min", from: "£59" },
-      { name: "Battery Replacement", time: "45 min", from: "£45" },
-      { name: "Charging Port", time: "60 min", from: "£50" },
-      { name: "Camera Lens", time: "45 min", from: "£35" },
-      { name: "Water Damage", time: "24 hrs", from: "£65" },
-      { name: "Back Glass", time: "90 min", from: "£55" },
-    ],
-  },
-  {
-    device: "iPad",
+    device: "Tablets",
     href: "/repairs/ipad",
-    tagline: "All iPad models including Pro and mini",
-    image: serviceImages.ipad,
-    repairs: [
-      { name: "Screen Replacement", time: "90 min", from: "£79" },
-      { name: "Battery Replacement", time: "60 min", from: "£55" },
-      { name: "Charging Port", time: "60 min", from: "£50" },
-      { name: "Home Button", time: "45 min", from: "£40" },
-      { name: "Camera Repair", time: "60 min", from: "£55" },
-      { name: "Software Issues", time: "60 min", from: "£35" },
+    tagline: "iPad, Samsung Galaxy Tab and Android tablets",
+    image: serviceImages.tablets,
+    prompt: "Which tablet do you have? Pick yours for an instant price.",
+    choices: [
+      { name: "iPad", note: "Pro, Air, mini & standard", href: "/quote?device=ipad", brand: "Apple", model: 'iPad Pro 11" M4', deviceTypeId: "ipad" },
+      { name: "Samsung Galaxy Tab", note: "Tab S, Tab A series", href: "/quote?device=galaxy-tab", brand: "Samsung", model: "Galaxy Tab S9", deviceTypeId: "galaxy-tab" },
+      { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/book", icon: "ipad" },
     ],
   },
   {
-    device: "MacBook & Laptop",
+    device: "Laptops",
     href: "/repairs/laptops",
-    tagline: "MacBook Air/Pro, Dell, HP, Lenovo",
+    tagline: "MacBook, Windows, gaming and business laptops",
     image: serviceImages.macbook,
-    repairs: [
-      { name: "Screen Replacement", time: "2–3 hrs", from: "£149" },
-      { name: "Battery Replacement", time: "90 min", from: "£99" },
-      { name: "Keyboard Replacement", time: "2 hrs", from: "£129" },
-      { name: "Liquid Damage", time: "24–48 hrs", from: "£95" },
-      { name: "SSD Upgrade", time: "60 min", from: "£79" },
-      { name: "RAM Upgrade", time: "60 min", from: "£69" },
+    prompt: "Which laptop do you have? Pick yours to get started.",
+    choices: [
+      { name: "MacBook", note: "Air & Pro, all years", href: "/quote?device=macbook", brand: "Apple", model: 'MacBook Pro 14" M3', deviceTypeId: "macbook" },
+      { name: "Samsung Galaxy Book", note: "Galaxy Book series", href: "/quote?device=galaxy-book", brand: "Samsung", model: "Galaxy Book4 Pro", deviceTypeId: "galaxy-book" },
+      { name: "Windows / Gaming laptop", note: "Dell, HP, Lenovo, ASUS, Acer & more", href: "/repairs/laptops", icon: "laptop" },
     ],
   },
   {
-    device: "Google Pixel",
-    href: "/repairs/google-pixel",
-    tagline: "Pixel 6, 7, 8 and 9 series",
-    image: { src: "/GooglePixel/Pixel-9-repair-in-Leeds.png", alt: "Google Pixel 9", width: 300, height: 300 },
-    repairs: [
-      { name: "Screen Replacement", time: "60–90 min", from: "£119" },
-      { name: "Battery Replacement", time: "45–60 min", from: "£69" },
-      { name: "Charging Port", time: "60 min", from: "£69" },
-      { name: "Back Glass", time: "60–90 min", from: "£49" },
-      { name: "Water Damage", time: "24–48 hrs", from: "£29" },
-      { name: "Camera Repair", time: "60 min", from: "£55" },
+    device: "Game Consoles",
+    href: "/repairs/consoles",
+    tagline: "PlayStation, Xbox, Nintendo Switch and handhelds",
+    image: serviceImages.console,
+    prompt: "Which console do you have? Pick yours to see what we fix.",
+    choices: [
+      { name: "PlayStation", note: "PS5 & PS4 — HDMI, power, overheating", href: "/repairs/consoles", icon: "console" },
+      { name: "Xbox", note: "Series X/S & Xbox One", href: "/repairs/consoles", icon: "console" },
+      { name: "Nintendo Switch", note: "Switch, OLED, Lite & handhelds", href: "/repairs/consoles", icon: "console" },
     ],
   },
   {
-    device: "Data Recovery",
+    device: "Custom PC Builds & Upgrades",
+    href: "/repairs/custom-pc",
+    tagline: "Gaming PCs, workstation builds and performance upgrades",
+    image: serviceImages.customPc,
+    repairs: [
+      { name: "Custom PC Build", time: "1–3 days", from: "£99" },
+      { name: "GPU Upgrade", time: "Same day", from: "£39" },
+      { name: "SSD / NVMe Upgrade", time: "60 min", from: "£49" },
+      { name: "RAM Upgrade", time: "30 min", from: "£29" },
+      { name: "Cooling Upgrade", time: "1–2 hrs", from: "£49" },
+      { name: "Cable Management", time: "1–2 hrs", from: "£49" },
+    ],
+  },
+  {
+    device: "Data Recovery & Liquid Damage",
     href: "/repairs/data-recovery",
-    tagline: "Phone, laptop, SSD & hard drive",
-    image: serviceImages.dataRecovery,
+    tagline: "All liquid-damaged devices, SSDs, hard drives & lost files",
+    image: serviceImages.dataRecoveryLiquidDamage,
     repairs: [
-      { name: "Phone Data Recovery", time: "24–48 hrs", from: "£49" },
-      { name: "Hard Drive Recovery", time: "24–72 hrs", from: "£79" },
+      { name: "Phone Data Recovery", time: "2–7 days", from: "£79" },
+      { name: "Liquid Damage Assessment", time: "Same day", from: "£29" },
+      { name: "Hard Drive Recovery", time: "3–10 days", from: "£99" },
       { name: "SSD Recovery", time: "24–48 hrs", from: "£99" },
       { name: "RAID Recovery", time: "48–72 hrs", from: "£149" },
-      { name: "Water Damage", time: "24–48 hrs", from: "£65" },
-      { name: "Deleted Files", time: "24–48 hrs", from: "£49" },
+      { name: "Board-Level Recovery", time: "2–7 days", from: "£129" },
     ],
   },
 ];
 
 const repairTypes = [
-  "Screen replacement", "Battery", "Water damage", "Camera",
-  "Charging port", "Speaker & mic", "Software issues", "Data recovery",
+  "Screen replacement", "Battery", "Charging port", "Motherboard",
+  "No power", "Liquid damage", "Data recovery", "Consoles", "Custom PCs", "Face ID / biometric",
 ];
 
 export default function RepairsPage() {
@@ -120,7 +135,7 @@ export default function RepairsPage() {
               Every device.<br />Every repair.
             </h1>
             <p className="text-[15px] text-muted-foreground max-w-md leading-relaxed">
-              OEM-grade parts. Same-day service on most repairs. 12-month warranty included.
+              Phones, tablets, all kinds of laptops, consoles, custom PCs, liquid damage and board-level repairs.
             </p>
           </div>
 
@@ -136,9 +151,9 @@ export default function RepairsPage() {
             ))}
           </div>
 
-          {/* Device categories */}
+          {/* Device categories — pick your device first, pricing follows */}
           <div className="space-y-14">
-            {categories.map(({ device, href, tagline, image, repairs }) => (
+            {categories.map(({ device, href, tagline, image, prompt, choices, repairs }) => (
               <div key={device} className="section-border pt-10 first:border-0 first:pt-0">
                 <div className="flex items-center justify-between gap-4 mb-6">
                   <div className="flex items-center gap-5">
@@ -154,7 +169,7 @@ export default function RepairsPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-foreground">{device}</h2>
-                      <p className="text-[13px] text-muted-foreground mt-0.5">{tagline}</p>
+                      <p className="text-[13px] text-muted-foreground mt-0.5">{prompt ?? tagline}</p>
                     </div>
                   </div>
                   <Link
@@ -164,22 +179,60 @@ export default function RepairsPage() {
                     View all <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
-                  {repairs.map(({ name, time, from }) => (
-                    <div
-                      key={name}
-                      className="bg-card p-5 flex justify-between items-center hover:bg-surface transition-colors"
-                    >
-                      <div>
-                        <p className="text-[13px] font-medium text-foreground">{name}</p>
-                        <p className="text-[12px] text-muted-foreground mt-0.5">{time}</p>
+
+                {choices ? (
+                  <div
+                    className={`grid grid-cols-1 sm:grid-cols-2 ${
+                      choices.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
+                    } gap-px bg-border rounded-xl overflow-hidden`}
+                  >
+                    {choices.map((c) => (
+                      <Link
+                        key={c.name}
+                        href={c.href}
+                        className="group bg-card p-5 flex items-center gap-4 hover:bg-surface transition-colors"
+                      >
+                        <div className="w-11 h-11 flex-shrink-0 flex items-center justify-center">
+                          {c.brand ? (
+                            <DeviceImage
+                              brand={c.brand}
+                              model={c.model ?? ""}
+                              deviceTypeId={c.deviceTypeId}
+                              category="phone"
+                              size={44}
+                              className="w-full h-full flex items-center justify-center"
+                              imgClassName="object-contain w-full h-full"
+                            />
+                          ) : (
+                            <DeviceIcon device={c.icon ?? "iphone"} size={40} />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[14px] font-semibold text-foreground">{c.name}</p>
+                          <p className="text-[12px] text-muted-foreground mt-0.5 leading-snug">{c.note}</p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+                    {repairs?.map(({ name, time, from }) => (
+                      <div
+                        key={name}
+                        className="bg-card p-5 flex justify-between items-center hover:bg-surface transition-colors"
+                      >
+                        <div>
+                          <p className="text-[13px] font-medium text-foreground">{name}</p>
+                          <p className="text-[12px] text-muted-foreground mt-0.5">{time}</p>
+                        </div>
+                        <p className="text-[13px] font-semibold text-foreground whitespace-nowrap">
+                          {from}
+                        </p>
                       </div>
-                      <p className="text-[13px] font-semibold text-foreground whitespace-nowrap">
-                        {from}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -193,7 +246,7 @@ export default function RepairsPage() {
               Walk in — we diagnose for free with no obligation.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+              <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
                 <Link href="/book">Book a Repair</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">

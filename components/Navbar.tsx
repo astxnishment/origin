@@ -11,6 +11,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import { BUSINESS } from "@/lib/constants";
 
 const NAV_LINKS = [
@@ -29,19 +30,19 @@ export default function Navbar() {
 
   return (
     <header className="glass fixed top-0 inset-x-0 z-50">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-6">
+      <div className="max-w-6xl mx-auto grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-6 px-5 sm:px-8">
 
-        {/* Logo — navbar is always near-black glass, use dark variant (white logo) */}
         <Link
           href="/"
           aria-label="Origin Repairs — home"
           className="shrink-0 transition-opacity duration-200 hover:opacity-75"
         >
-          <Logo variant="dark" heightClass="h-9 sm:h-10" />
+          <Logo variant="light" heightClass="h-9 sm:h-10" className="block dark:hidden" />
+          <Logo variant="dark" heightClass="h-9 sm:h-10" className="hidden dark:block" />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-7 flex-1">
+        <nav className="hidden md:flex items-center justify-center gap-7">
           {NAV_LINKS.map(({ href, label }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
@@ -56,7 +57,7 @@ export default function Navbar() {
               >
                 {label}
                 {active && (
-                  <span className="absolute bottom-0 left-0 right-0 h-px bg-blue-500 rounded-full" />
+                  <span className="absolute bottom-0 left-0 right-0 h-px rounded-full bg-foreground/70" />
                 )}
               </Link>
             );
@@ -72,6 +73,7 @@ export default function Navbar() {
             <Phone className="h-3.5 w-3.5" />
             {PHONE}
           </a>
+          <ThemeToggle />
           <Button asChild className="btn-primary h-9 px-5 text-[13px]">
             <Link href="/book">Book Repair</Link>
           </Button>
@@ -86,6 +88,7 @@ export default function Navbar() {
           >
             <Phone className="h-4 w-4" />
           </a>
+          <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-10 w-10">
@@ -95,9 +98,9 @@ export default function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="bg-card border-border w-80 p-0">
               <div className="flex flex-col h-full p-6">
-                {/* Brand — mobile sheet is dark (bg-card), use dark variant */}
                 <div className="mb-8">
-                  <Logo variant="dark" heightClass="h-8" />
+                  <Logo variant="light" heightClass="h-8" className="block dark:hidden" />
+                  <Logo variant="dark" heightClass="h-8" className="hidden dark:block" />
                 </div>
 
                 {/* Nav links */}

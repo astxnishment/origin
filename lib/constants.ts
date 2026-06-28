@@ -21,6 +21,12 @@ export const BUSINESS = {
   },
   googleReviewUrl:
     "https://www.google.com/search?q=Origin+Repairs+Leeds",
+  googleMapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=Origin%20Repairs%2C%2076%20Cookridge%20Street%2C%20Leeds%20LS2%208GL",
+  googleDirectionsUrl:
+    "https://www.google.com/maps/dir/?api=1&destination=Origin%20Repairs%2C%2076%20Cookridge%20Street%2C%20Leeds%20LS2%208GL",
+  googleMapsEmbedUrl:
+    "https://www.google.com/maps?q=Origin%20Repairs%2C%2076%20Cookridge%20Street%2C%20Leeds%20LS2%208GL&output=embed",
   trustpilotUrl: "https://www.trustpilot.com/review/originrepairs.co.uk",
   location: "Leeds, UK",
   postcode: "LS2 8GL",
@@ -32,9 +38,9 @@ export const SEO = {
   siteName: "Origin Repairs",
   siteUrl: "https://originrepairs.co.uk",
   description:
-    "Expert device repair in Leeds. iPhone, Samsung, laptops & more. Same-day service, 12-month warranty, honest prices.",
+    "Expert device repair in Leeds. Phones, tablets, laptops, consoles, custom PCs, liquid damage and data recovery. Honest prices.",
   keywords:
-    "device repair Leeds, iPhone repair Leeds, Samsung repair Leeds, laptop repair Leeds",
+    "device repair Leeds, iPhone repair Leeds, Samsung repair Leeds, laptop repair Leeds, console repair Leeds, custom PC builds Leeds, PC upgrades Leeds, liquid damage repair Leeds",
   twitterHandle: "@originrepairs",
 };
 
@@ -49,29 +55,29 @@ export const REVIEWS = {
 // Services
 export const SERVICES = [
   {
-    name: "iPhone Repairs",
-    href: "/repairs/iphone",
-    description: "iPhone 11–16, SE, and older models",
-  },
-  {
-    name: "Samsung Repairs",
-    href: "/repairs/samsung",
-    description: "Galaxy S, A-series, Z-series, Tab",
+    name: "Phone Repairs",
+    href: "/repairs/phones",
+    description: "iPhone, Samsung Galaxy, Google Pixel and other phone repairs",
   },
   {
     name: "Laptop Repairs",
     href: "/repairs/laptops",
-    description: "MacBook, Dell, HP, Lenovo, and more",
+    description: "MacBook, Windows laptops, gaming laptops, business laptops, and more",
   },
   {
-    name: "Data Recovery",
+    name: "Console Repairs",
+    href: "/repairs/consoles",
+    description: "PlayStation, Xbox, Nintendo Switch, HDMI, power, storage and overheating",
+  },
+  {
+    name: "Custom PC Builds & Upgrades",
+    href: "/repairs/custom-pc",
+    description: "Gaming PCs, workstation builds, GPU, RAM, SSD, cooling and clean cable management",
+  },
+  {
+    name: "Data Recovery & Liquid Damage",
     href: "/repairs/data-recovery",
-    description: "Hard drive, phone, SSD recovery",
-  },
-  {
-    name: "Google Pixel",
-    href: "/repairs/google-pixel",
-    description: "Pixel 6, 7, 8 and 9 series",
+    description: "Phones, laptops, consoles, SSDs, hard drives and board-level recovery",
   },
 ];
 

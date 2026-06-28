@@ -90,10 +90,17 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Location</p>
-                <address className="not-italic text-[14px] text-foreground">
-                  76 Cookridge Street<br />
-                  Leeds, LS2 8GL
-                </address>
+                <a
+                  href={BUSINESS.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-[14px] text-foreground transition-colors hover:text-primary"
+                >
+                  <address className="not-italic">
+                    76 Cookridge Street<br />
+                    Leeds, LS2 8GL
+                  </address>
+                </a>
               </div>
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Hours</p>
@@ -124,7 +131,7 @@ export default function AboutPage() {
               Walk-ins welcome. Or book a time that suits you.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+              <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
                 <Link href="/book">Book a Repair</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">

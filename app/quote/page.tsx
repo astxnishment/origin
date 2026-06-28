@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FullCalculator from "@/components/FullCalculator";
@@ -15,18 +16,13 @@ export default function QuotePage() {
       <Navbar />
 
       <main className="relative min-h-screen pt-28 pb-24 overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 dot-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-32 left-1/4 w-96 h-96 bg-blue-500/6 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-32 right-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-3xl pointer-events-none" />
-
         <div className="relative max-w-5xl mx-auto px-5 sm:px-8">
           {/* Header */}
           <div className="text-center mb-14">
             <div className="badge-premium mx-auto mb-5 w-fit">
               Instant Quote
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-5">
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-5 text-foreground">
               What does your repair cost?
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
@@ -36,7 +32,9 @@ export default function QuotePage() {
           </div>
 
           {/* Full calculator */}
-          <FullCalculator />
+          <Suspense fallback={null}>
+            <FullCalculator />
+          </Suspense>
         </div>
       </main>
 

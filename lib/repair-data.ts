@@ -8,21 +8,33 @@ export const REPAIR_TYPES = [
   "Speaker repair",
   "Microphone repair",
   "Water damage diagnostic",
+  "Liquid damage repair",
   "Data recovery",
+  "Motherboard repair",
+  "No power repair",
+  "Face ID / biometric repair",
   "Software repair",
   "Keyboard replacement",
   "Trackpad replacement",
   "SSD upgrade",
   "RAM upgrade",
   "HDMI port repair",
+  "USB-C / charging port",
+  "Board-level repair",
+  "Overheating service",
   "Fan cleaning",
   "Thermal paste replacement",
+  "Custom PC build",
+  "GPU upgrade",
+  "Cooling upgrade",
+  "Cable management",
+  "Windows install & setup",
 ] as const;
 
 export type RepairType = (typeof REPAIR_TYPES)[number];
 
 // Device categories
-export const DEVICE_CATEGORIES = ["Phone", "Tablet", "Laptop"] as const;
+export const DEVICE_CATEGORIES = ["Phone", "Tablet", "Laptop", "Console"] as const;
 export type DeviceCategory = (typeof DEVICE_CATEGORIES)[number];
 
 // Repair pricing info per device
@@ -66,57 +78,67 @@ function createRepair(
 // ============================================================================
 
 const applePhoneRepairs = {
-  screen: createRepair("Screen replacement", 79, 149, "45 min", "12 months"),
-  battery: createRepair("Battery replacement", 49, 69, "30 min", "12 months"),
-  charging: createRepair("Charging port", 59, 89, "60 min", "12 months"),
-  backGlass: createRepair("Back glass", 69, 129, "45 min", "12 months"),
-  camera: createRepair("Camera replacement", 69, 149, "60 min", "12 months"),
+  screen: createRepair("Screen replacement", 39, 224, "45-90 min", "12 months"),
+  battery: createRepair("Battery replacement", 24, 79, "30-60 min", "12 months"),
+  charging: createRepair("Charging port", 59, 109, "1-2 hrs", "6 months"),
+  backGlass: createRepair("Back glass", 49, 149, "1-2 hrs", "6 months"),
+  camera: createRepair("Camera replacement", 59, 169, "60 min", "6 months"),
   speaker: createRepair("Speaker repair", 49, 79, "45 min", "12 months"),
   microphone: createRepair("Microphone repair", 39, 69, "45 min", "12 months"),
   waterDamage: createRepair(
     "Water damage diagnostic",
+    29,
     49,
-    149,
-    "24-48 hrs",
-    "12 months"
+    "Same day",
+    "Diagnostic only"
   ),
-  dataRecovery: createRepair("Data recovery", 79, 199, "2-7 days", "N/A"),
-  softwareRepair: createRepair("Software repair", 39, 79, "30-60 min", "6 months"),
+  liquidRepair: createRepair("Liquid damage repair", 79, 249, "1-5 days", "3 months"),
+  dataRecovery: createRepair("Data recovery", 79, 299, "2-7 days", "N/A"),
+  motherboard: createRepair("Motherboard repair", 79, 249, "1-5 days", "3 months"),
+  noPower: createRepair("No power repair", 79, 249, "1-5 days", "3 months"),
+  faceId: createRepair("Face ID / biometric repair", 79, 199, "1-3 days", "3 months"),
+  softwareRepair: createRepair("Software repair", 29, 79, "30-60 min", "1 month"),
 };
 
 const appleIpadRepairs = {
-  screen: createRepair("Screen replacement", 79, 179, "90 min", "12 months"),
-  battery: createRepair("Battery replacement", 69, 99, "60 min", "12 months"),
-  charging: createRepair("Charging port", 59, 89, "60 min", "12 months"),
-  backGlass: createRepair("Back glass", 69, 119, "45 min", "12 months"),
-  camera: createRepair("Camera replacement", 59, 119, "60 min", "12 months"),
+  screen: createRepair("Screen replacement", 79, 299, "1-2 days", "6 months"),
+  battery: createRepair("Battery replacement", 69, 139, "1-2 days", "6 months"),
+  charging: createRepair("Charging port", 59, 129, "1-2 days", "6 months"),
+  backGlass: createRepair("Back glass", 69, 149, "1-2 days", "6 months"),
+  camera: createRepair("Camera replacement", 59, 129, "60 min", "6 months"),
   speaker: createRepair("Speaker repair", 49, 79, "45 min", "12 months"),
   waterDamage: createRepair(
     "Water damage diagnostic",
+    29,
     49,
-    149,
-    "24-48 hrs",
-    "12 months"
+    "Same day",
+    "Diagnostic only"
   ),
-  dataRecovery: createRepair("Data recovery", 79, 199, "2-7 days", "N/A"),
+  liquidRepair: createRepair("Liquid damage repair", 89, 279, "1-5 days", "3 months"),
+  dataRecovery: createRepair("Data recovery", 99, 299, "2-7 days", "N/A"),
+  motherboard: createRepair("Motherboard repair", 99, 299, "1-5 days", "3 months"),
+  noPower: createRepair("No power repair", 99, 299, "1-5 days", "3 months"),
   softwareRepair: createRepair("Software repair", 39, 79, "30-60 min", "6 months"),
 };
 
 const appleMacbookRepairs = {
-  screen: createRepair("Screen replacement", 149, 299, "2-3 hrs", "12 months"),
-  battery: createRepair("Battery replacement", 99, 149, "90 min", "12 months"),
-  keyboard: createRepair("Keyboard replacement", 129, 199, "2 hrs", "12 months"),
-  trackpad: createRepair("Trackpad replacement", 99, 179, "90 min", "12 months"),
-  ssdUpgrade: createRepair("SSD upgrade", 79, 199, "60 min", "12 months"),
+  screen: createRepair("Screen replacement", 199, 449, "1-3 days", "6 months"),
+  battery: createRepair("Battery replacement", 99, 179, "1-2 days", "6 months"),
+  keyboard: createRepair("Keyboard replacement", 129, 249, "1-3 days", "6 months"),
+  trackpad: createRepair("Trackpad replacement", 99, 199, "1-2 days", "6 months"),
+  ssdUpgrade: createRepair("SSD upgrade", 79, 249, "60 min", "12 months"),
   ramUpgrade: createRepair("RAM upgrade", 69, 129, "60 min", "12 months"),
   waterDamage: createRepair(
     "Water damage diagnostic",
+    49,
     79,
-    199,
-    "24-48 hrs",
-    "12 months"
+    "Same day",
+    "Diagnostic only"
   ),
-  dataRecovery: createRepair("Data recovery", 99, 299, "3-7 days", "N/A"),
+  liquidRepair: createRepair("Liquid damage repair", 129, 399, "2-7 days", "3 months"),
+  dataRecovery: createRepair("Data recovery", 99, 499, "3-10 days", "N/A"),
+  motherboard: createRepair("Motherboard repair", 129, 399, "2-7 days", "3 months"),
+  noPower: createRepair("No power repair", 129, 399, "2-7 days", "3 months"),
   softwareRepair: createRepair("Software repair", 49, 99, "60 min", "6 months"),
   fanCleaning: createRepair("Fan cleaning", 49, 79, "30 min", "3 months"),
   thermalPaste: createRepair(
@@ -558,41 +580,162 @@ export const APPLE_MACBOOKS: Device[] = [
 // ============================================================================
 
 const samsungPhoneRepairs = {
-  screen: createRepair("Screen replacement", 69, 139, "60 min", "12 months"),
-  battery: createRepair("Battery replacement", 45, 65, "45 min", "12 months"),
-  charging: createRepair("Charging port", 59, 89, "60 min", "12 months"),
-  backGlass: createRepair("Back glass", 59, 119, "45 min", "12 months"),
-  camera: createRepair("Camera replacement", 59, 129, "60 min", "12 months"),
+  screen: createRepair("Screen replacement", 44, 329, "1-3 hrs", "6-12 months"),
+  battery: createRepair("Battery replacement", 39, 104, "45-90 min", "6 months"),
+  charging: createRepair("Charging port", 54, 99, "1-2 hrs", "6 months"),
+  backGlass: createRepair("Back glass", 44, 119, "1-2 hrs", "6 months"),
+  camera: createRepair("Camera replacement", 59, 149, "60 min", "6 months"),
   speaker: createRepair("Speaker repair", 39, 69, "45 min", "12 months"),
   microphone: createRepair("Microphone repair", 35, 65, "45 min", "12 months"),
   waterDamage: createRepair(
     "Water damage diagnostic",
+    29,
     49,
-    149,
-    "24-48 hrs",
-    "12 months"
+    "Same day",
+    "Diagnostic only"
   ),
-  dataRecovery: createRepair("Data recovery", 79, 199, "2-7 days", "N/A"),
-  softwareRepair: createRepair("Software repair", 39, 79, "30-60 min", "6 months"),
+  liquidRepair: createRepair("Liquid damage repair", 79, 249, "1-5 days", "3 months"),
+  dataRecovery: createRepair("Data recovery", 79, 299, "2-7 days", "N/A"),
+  motherboard: createRepair("Motherboard repair", 79, 249, "1-5 days", "3 months"),
+  noPower: createRepair("No power repair", 79, 249, "1-5 days", "3 months"),
+  biometric: createRepair("Face ID / biometric repair", 59, 179, "1-3 days", "3 months"),
+  softwareRepair: createRepair("Software repair", 29, 79, "30-60 min", "1 month"),
 };
 
 const samsungTabletRepairs = {
-  screen: createRepair("Screen replacement", 69, 159, "90 min", "12 months"),
-  battery: createRepair("Battery replacement", 59, 89, "60 min", "12 months"),
-  charging: createRepair("Charging port", 49, 79, "60 min", "12 months"),
-  backGlass: createRepair("Back glass", 49, 99, "45 min", "12 months"),
-  camera: createRepair("Camera replacement", 49, 99, "60 min", "12 months"),
+  screen: createRepair("Screen replacement", 89, 329, "1-2 days", "6 months"),
+  battery: createRepair("Battery replacement", 59, 129, "1-2 days", "6 months"),
+  charging: createRepair("Charging port", 59, 129, "1-2 days", "6 months"),
+  backGlass: createRepair("Back glass", 49, 129, "1-2 days", "6 months"),
+  camera: createRepair("Camera replacement", 49, 119, "60 min", "6 months"),
   speaker: createRepair("Speaker repair", 39, 69, "45 min", "12 months"),
   waterDamage: createRepair(
     "Water damage diagnostic",
+    29,
     49,
-    149,
-    "24-48 hrs",
-    "12 months"
+    "Same day",
+    "Diagnostic only"
   ),
-  dataRecovery: createRepair("Data recovery", 79, 199, "2-7 days", "N/A"),
+  liquidRepair: createRepair("Liquid damage repair", 89, 279, "1-5 days", "3 months"),
+  dataRecovery: createRepair("Data recovery", 99, 299, "2-7 days", "N/A"),
+  motherboard: createRepair("Motherboard repair", 99, 299, "1-5 days", "3 months"),
+  noPower: createRepair("No power repair", 99, 299, "1-5 days", "3 months"),
   softwareRepair: createRepair("Software repair", 39, 79, "30-60 min", "6 months"),
 };
+
+const consoleRepairs = {
+  hdmi: createRepair("HDMI port repair", 59, 119, "1-3 days", "6 months"),
+  usbC: createRepair("USB-C / charging port", 59, 119, "1-3 days", "6 months"),
+  noPower: createRepair("No power repair", 79, 249, "1-5 days", "3 months"),
+  board: createRepair("Board-level repair", 89, 299, "1-5 days", "3 months"),
+  overheating: createRepair("Overheating service", 49, 89, "Same day", "3 months"),
+  liquid: createRepair("Liquid damage repair", 79, 249, "1-5 days", "3 months"),
+  storage: createRepair("SSD upgrade", 79, 199, "60 min", "12 months"),
+  software: createRepair("Software repair", 39, 79, "60 min", "1 month"),
+};
+
+const customPcRepairs = {
+  build: createRepair("Custom PC build", 99, 199, "1-3 days", "12 months labour"),
+  gpu: createRepair("GPU upgrade", 39, 79, "Same day", "3 months labour"),
+  ram: createRepair("RAM upgrade", 29, 59, "30 min", "3 months labour"),
+  ssd: createRepair("SSD upgrade", 49, 129, "60 min", "3 months labour"),
+  cooling: createRepair("Cooling upgrade", 49, 149, "1-2 hrs", "3 months labour"),
+  cable: createRepair("Cable management", 49, 99, "1-2 hrs", "3 months labour"),
+  windows: createRepair("Windows install & setup", 39, 79, "60 min", "1 month"),
+  thermal: createRepair("Thermal paste replacement", 39, 79, "45 min", "3 months"),
+  diagnostic: createRepair("Software repair", 39, 99, "60 min", "1 month"),
+};
+
+const GAME_CONSOLES: Device[] = [
+  {
+    id: "sony-playstation-5",
+    brand: "Sony",
+    category: "Console",
+    model: "PlayStation 5",
+    displayName: "PlayStation 5",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "sony-playstation-4",
+    brand: "Sony",
+    category: "Console",
+    model: "PlayStation 4",
+    displayName: "PlayStation 4",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "microsoft-xbox-series-x",
+    brand: "Microsoft",
+    category: "Console",
+    model: "Xbox Series X",
+    displayName: "Xbox Series X",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "microsoft-xbox-series-s",
+    brand: "Microsoft",
+    category: "Console",
+    model: "Xbox Series S",
+    displayName: "Xbox Series S",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "microsoft-xbox-one",
+    brand: "Microsoft",
+    category: "Console",
+    model: "Xbox One",
+    displayName: "Xbox One",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "nintendo-switch",
+    brand: "Nintendo",
+    category: "Console",
+    model: "Nintendo Switch",
+    displayName: "Nintendo Switch",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "nintendo-switch-oled",
+    brand: "Nintendo",
+    category: "Console",
+    model: "Nintendo Switch OLED",
+    displayName: "Nintendo Switch OLED",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "valve-steam-deck",
+    brand: "Valve",
+    category: "Console",
+    model: "Steam Deck",
+    displayName: "Steam Deck",
+    repairs: Object.values(consoleRepairs),
+  },
+  {
+    id: "custom-gaming-pc",
+    brand: "Custom PC",
+    category: "Console",
+    model: "Gaming PC",
+    displayName: "Gaming PC",
+    repairs: Object.values(customPcRepairs),
+  },
+  {
+    id: "custom-workstation-pc",
+    brand: "Custom PC",
+    category: "Console",
+    model: "Workstation PC",
+    displayName: "Workstation PC",
+    repairs: Object.values(customPcRepairs),
+  },
+  {
+    id: "custom-office-pc",
+    brand: "Custom PC",
+    category: "Console",
+    model: "Office / Home PC",
+    displayName: "Office / Home PC",
+    repairs: Object.values(customPcRepairs),
+  },
+];
 
 // Samsung Galaxy S series
 export const SAMSUNG_GALAXY_S: Device[] = [
@@ -963,6 +1106,7 @@ export const ALL_DEVICES: Device[] = [
   ...SAMSUNG_GALAXY_A,
   ...SAMSUNG_GALAXY_Z,
   ...SAMSUNG_GALAXY_TAB,
+  ...GAME_CONSOLES,
 ];
 
 // ============================================================================

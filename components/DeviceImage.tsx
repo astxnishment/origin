@@ -55,8 +55,8 @@ export default function DeviceImage({
         <div className={className}>
           <DeviceIcon
             device={
-              deviceTypeId === "apple_ipad"    ? "ipad"    :
-              deviceTypeId === "apple_macbook" ? "macbook" : "iphone"
+              category === "tablet" || deviceTypeId === "ipad"    ? "ipad"    :
+              category === "laptop" || deviceTypeId === "macbook" ? "macbook" : "iphone"
             }
             size={size}
           />

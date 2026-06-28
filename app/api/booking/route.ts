@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
       name,
       email,
       phone,
+      deviceType,
       brand,
       model,
       repair,
@@ -17,15 +18,17 @@ export async function POST(req: NextRequest) {
       issue,
     } = await req.json();
 
-    // Validate required fields
-    if (!name || !email || !phone || !brand || !model || !repair || !date || !time) {
+    // Validate required fields. Brand is optional (consoles/PCs are free-text),
+    // but we always need a device (model) and a device type or brand.
+    if (!name || !email || !phone || !model || !repair || !date || !time || (!brand && !deviceType)) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const deviceLine = `${brand} ${model}`;
+    // Prefer "Brand Model" for catalog devices; fall back to "DeviceType — Model".
+    const deviceLine = brand ? `${brand} ${model}` : `${deviceType} — ${model}`;
     const repairLine = repair + (estimatedPrice ? ` — ${estimatedPrice}` : "");
 
     // Format the booking details for email

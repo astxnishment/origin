@@ -32,24 +32,23 @@ export default function FloatingCTA() {
       {/* Expanded panel */}
       {expanded && (
         <div
-          className="rounded-2xl overflow-hidden"
+          className="overflow-hidden rounded-lg"
           style={{
-            background: "rgba(10,10,10,0.95)",
-            border: "1px solid rgba(59,130,246,0.25)",
-            boxShadow:
-              "0 0 0 1px rgba(59,130,246,0.1), 0 20px 60px rgba(0,0,0,0.5)",
+            background: "var(--panel-bg)",
+            border: "1px solid var(--panel-border)",
+            boxShadow: "var(--panel-shadow)",
             backdropFilter: "blur(16px)",
             width: "240px",
           }}
         >
           <div className="px-5 pt-5 pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-blue-500 mb-1">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
               Need help?
             </p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-foreground">
               Origin Repairs Leeds
             </p>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Mon–Fri 9am–6pm · Sat 10am–4pm
             </p>
           </div>
@@ -57,36 +56,36 @@ export default function FloatingCTA() {
           <div className="p-3 space-y-2">
             <a
               href={`tel:${BUSINESS.phone}`}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-150 hover:scale-[1.02]"
-              style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.25)" }}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 hover:bg-surface"
+              style={{ background: "var(--soft-bg-strong)", border: "1px solid var(--control-border)" }}
             >
-              <Phone className="h-4 w-4 text-blue-400 flex-shrink-0" />
+              <Phone className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-white leading-tight">
+                <p className="text-xs font-semibold text-foreground leading-tight">
                   Call Now
                 </p>
-                <p className="text-[11px] text-blue-400">{BUSINESS.phoneDisplay}</p>
+                <p className="text-[11px] text-[color:var(--icon-fg)]">{BUSINESS.phoneDisplay}</p>
               </div>
             </a>
 
             <Link
               href="/quote"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-150 hover:scale-[1.02]"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-150 hover:bg-surface"
+              style={{ background: "var(--control-bg)", border: "1px solid var(--control-border)" }}
               onClick={() => setExpanded(false)}
             >
-              <ArrowRight className="h-4 w-4 text-zinc-400 flex-shrink-0" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-white leading-tight">
+                <p className="text-xs font-semibold text-foreground leading-tight">
                   Get Instant Quote
                 </p>
-                <p className="text-[11px] text-zinc-400">Free, no obligation</p>
+                <p className="text-[11px] text-muted-foreground">Free, no obligation</p>
               </div>
             </Link>
           </div>
 
           <div className="px-5 pb-4">
-            <p className="text-[11px] text-zinc-500 text-center">
+            <p className="text-[11px] text-muted-foreground text-center">
               76 Cookridge Street, Leeds LS2 8GL
             </p>
           </div>
@@ -99,21 +98,15 @@ export default function FloatingCTA() {
         aria-label={expanded ? "Close contact panel" : "Get help or quote"}
         className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-2xl"
         style={{
-          background: expanded
-            ? "rgba(30,30,30,0.95)"
-            : "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
-          border: expanded
-            ? "1px solid rgba(255,255,255,0.12)"
-            : "1px solid rgba(255,255,255,0.2)",
-          boxShadow: expanded
-            ? "0 4px 24px rgba(0,0,0,0.4)"
-            : "0 4px 24px rgba(59,130,246,0.4), 0 0 0 1px rgba(59,130,246,0.3)",
+          background: expanded ? "var(--surface-raised)" : "var(--button-primary-bg)",
+          border: expanded ? "1px solid var(--control-border)" : "1px solid var(--button-primary-border)",
+          boxShadow: expanded ? "var(--panel-shadow)" : "0 14px 34px -18px var(--shadow-soft)",
         }}
       >
         {expanded ? (
-          <X className="h-5 w-5 text-white" />
+          <X className="h-5 w-5 text-foreground" />
         ) : (
-          <MessageCircle className="h-5 w-5 text-white" />
+          <MessageCircle className="h-5 w-5 text-[color:var(--button-primary-fg)]" />
         )}
       </button>
     </div>

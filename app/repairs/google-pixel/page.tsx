@@ -75,15 +75,11 @@ export default function GooglePixelRepairsPage() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     asChild
-                    className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]"
+                    className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
                     <Link href="/book">Book Pixel Repair</Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted"
-                  >
+                  <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
                       Get a quote <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
@@ -93,13 +89,12 @@ export default function GooglePixelRepairsPage() {
               {/* Hero device image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
                   <Image
                     src="/GooglePixel/Pixel-9-repair-in-Leeds.png"
                     alt="Google Pixel 9"
                     width={220}
                     height={440}
-                    className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                     priority
                   />
                 </div>
@@ -168,7 +163,7 @@ export default function GooglePixelRepairsPage() {
             </p>
             <Button
               asChild
-              className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-8 text-[13px]"
+              className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
               <Link href="/book">Book a Repair</Link>
             </Button>

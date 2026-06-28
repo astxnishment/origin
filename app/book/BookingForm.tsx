@@ -19,8 +19,10 @@ import {
   getModelsByBrand,
   getRepairQuote,
   getDeviceById,
+  deviceCategory,
   type Brand,
   type RepairType,
+  type DeviceCategory,
 } from "@/lib/calculatorData";
 import { BUSINESS } from "@/lib/constants";
 import { Check, Clock, Shield, ArrowRight, AlertCircle } from "lucide-react";
@@ -37,6 +39,26 @@ const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
   "Google Pixel": "iphone",
 };
 
+// ── Device types the shop repairs ─────────────────────────────────
+// "catalog" types (phone/tablet/laptop) have a model database we can
+// filter by brand + model. The rest are booked with a free-text make/model.
+type DeviceTypeOption = {
+  id: string;
+  label: string;
+  category: DeviceCategory | null; // null → free-text (no model catalog)
+  icon: DeviceType;
+  placeholder?: string;
+};
+
+const DEVICE_TYPE_OPTIONS: DeviceTypeOption[] = [
+  { id: "phone",   label: "Phone",               category: "phone",  icon: "iphone"  },
+  { id: "tablet",  label: "Tablet",              category: "tablet", icon: "ipad"    },
+  { id: "laptop",  label: "Laptop",              category: "laptop", icon: "laptop"  },
+  { id: "console", label: "Game console",        category: null,     icon: "console", placeholder: "e.g. PlayStation 5, Xbox Series X, Switch OLED" },
+  { id: "desktop", label: "Desktop / Custom PC", category: null,     icon: "laptop",  placeholder: "e.g. Custom gaming PC, Dell OptiPlex" },
+  { id: "other",   label: "Other device",        category: null,     icon: "iphone",  placeholder: "Tell us the make & model" },
+];
+
 interface Props {
   prefillBrand?: Brand;
   prefillModelId?: string;
@@ -46,7 +68,9 @@ interface Props {
 // ── Validation ────────────────────────────────────────────────────
 function validateForm(data: {
   name: string; email: string; phone: string;
-  brand: Brand | ""; modelId: string; repairType: RepairType | "";
+  deviceType: string; isCatalog: boolean;
+  brand: Brand | ""; modelId: string; deviceName: string;
+  repairType: RepairType | "";
   date: string; time: string;
 }): Record<string, string> {
   const errors: Record<string, string> = {};
@@ -54,8 +78,13 @@ function validateForm(data: {
   if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
     errors.email = "Please enter a valid email address.";
   if (!data.phone.trim()) errors.phone = "Please enter your phone number.";
-  if (!data.brand) errors.brand = "Please select a brand.";
-  if (!data.modelId) errors.model = "Please select a model.";
+  if (!data.deviceType) errors.deviceType = "Please choose a device type.";
+  if (data.isCatalog) {
+    if (!data.brand) errors.brand = "Please select a brand.";
+    if (!data.modelId) errors.model = "Please select a model.";
+  } else if (data.deviceType && !data.deviceName.trim()) {
+    errors.deviceName = "Please tell us the make & model.";
+  }
   if (!data.repairType) errors.repair = "Please select a repair type.";
   if (!data.date) errors.date = "Please select a preferred date.";
   if (!data.time) errors.time = "Please select a preferred time.";
@@ -66,10 +95,27 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Device selection
+  // Device selection. Infer the device type from a prefilled model if present,
+  // otherwise default to "phone" when a brand was prefilled, else force a choice.
+  const prefillCategory = prefillModelId
+    ? deviceCategory(getDeviceById(prefillModelId) ?? { id: "", name: "", brand: "Apple", tier: "mid" })
+    : null;
+  const [deviceType, setDeviceType] = useState<string>(
+    prefillCategory ?? (prefillBrand ? "phone" : "")
+  );
   const [brand, setBrand] = useState<Brand | "">(prefillBrand ?? "");
   const [modelId, setModelId] = useState<string>(prefillModelId ?? "");
+  const [deviceName, setDeviceName] = useState<string>("");
   const [repairType, setRepairType] = useState<RepairType | "">(prefillRepair ?? "");
+
+  const deviceTypeOption = DEVICE_TYPE_OPTIONS.find((d) => d.id === deviceType);
+  const selectedCategory = deviceTypeOption?.category ?? null;
+  const isCatalog = selectedCategory !== null;
+
+  // Brands that actually have a model in the chosen category.
+  const availableBrands: Brand[] = isCatalog
+    ? BRANDS.filter((b) => getModelsByBrand(b).some((m) => deviceCategory(m) === selectedCategory))
+    : [];
 
   // Customer details
   const [name, setName] = useState("");
@@ -79,8 +125,10 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
   const [time, setTime] = useState("");
   const [issue, setIssue] = useState("");
 
-  const models = brand ? getModelsByBrand(brand) : [];
-  const selectedModel = modelId ? getDeviceById(modelId) : undefined;
+  const models = brand && isCatalog
+    ? getModelsByBrand(brand).filter((m) => deviceCategory(m) === selectedCategory)
+    : [];
+  const selectedModel = modelId && isCatalog ? getDeviceById(modelId) : undefined;
   const quote =
     selectedModel && repairType
       ? getRepairQuote(selectedModel, repairType as RepairType)
@@ -96,7 +144,12 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateForm({ name, email, phone, brand, modelId, repairType, date, time });
+    const validationErrors = validateForm({
+      name, email, phone,
+      deviceType, isCatalog,
+      brand, modelId, deviceName,
+      repairType, date, time,
+    });
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       // Scroll to first error
@@ -114,9 +167,10 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name, email, phone, issue, date, time,
-          brand,
-          model: selectedModel?.name ?? "",
-          modelId,
+          deviceType: deviceTypeOption?.label ?? "",
+          brand: isCatalog ? brand : "",
+          model: isCatalog ? (selectedModel?.name ?? "") : deviceName,
+          modelId: isCatalog ? modelId : "",
           repair: repairType,
           estimatedPrice: quote && !quote.inspectionRequired ? `£${quote.minPrice}–£${quote.maxPrice}` : "TBC after assessment",
           estimatedTime: quote?.estimatedTime ?? "",
@@ -169,7 +223,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]">
+          <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
             <Link href="/">Back to home</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border">
@@ -187,10 +241,10 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
       {/* ── Quote summary banner (when prefilled from calculator) ── */}
       {quote && selectedModel && (
         <div
-          className="rounded-2xl overflow-hidden"
+          className="overflow-hidden rounded-lg"
           style={{
-            background: "linear-gradient(160deg, rgba(59,130,246,0.12) 0%, rgba(59,130,246,0.04) 100%)",
-            border: "1px solid rgba(59,130,246,0.22)",
+            background: "var(--soft-bg)",
+            border: "1px solid var(--control-border)",
           }}
         >
           <div className="flex items-center justify-between gap-4 px-5 py-4">
@@ -199,7 +253,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
                 <DeviceIcon device={BRAND_ICON_TYPE[selectedModel.brand]} size={44} />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-300/70">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Your quote
                 </p>
                 <p className="font-semibold text-foreground truncate text-[14px]">
@@ -220,9 +274,9 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
               <p className="text-[11px] text-muted-foreground mt-1">est. incl. parts &amp; labour</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 divide-x divide-blue-500/10 border-t border-blue-500/10 text-[12px]">
+          <div className="grid grid-cols-3 divide-x divide-border border-t border-border text-[12px]">
             <div className="px-3 py-2 flex items-center justify-center gap-1.5">
-              <Clock className="h-3 w-3 text-blue-400 flex-shrink-0" />
+              <Clock className="h-3 w-3 text-[color:var(--icon-fg)] flex-shrink-0" />
               <span className="font-medium text-foreground">{quote.estimatedTime}</span>
             </div>
             <div className="px-3 py-2 flex items-center justify-center gap-1.5">
@@ -230,7 +284,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
               <span className="font-medium text-green-400">12-month warranty</span>
             </div>
             <div className="px-3 py-2 flex items-center justify-center gap-1.5">
-              <Check className="h-3 w-3 text-blue-400 flex-shrink-0" />
+              <Check className="h-3 w-3 text-[color:var(--icon-fg)] flex-shrink-0" />
               <span className="font-medium text-foreground">Free assess.</span>
             </div>
           </div>
@@ -316,93 +370,174 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
         </h2>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Brand */}
-            <Field label="Brand" id="brand" required error={errors.brand}>
-              <Select
-                value={brand}
-                onValueChange={(v) => {
-                  setBrand(v as Brand);
-                  setModelId("");
-                  setRepairType("");
-                  setErrors((prev) => ({ ...prev, brand: "", model: "", repair: "" }));
-                }}
+          {/* Device type — the first thing we ask, drives the rest */}
+          <Field label="Device type" id="deviceType" required error={errors.deviceType}>
+            <Select
+              value={deviceType}
+              onValueChange={(v) => {
+                setDeviceType(v);
+                setBrand("");
+                setModelId("");
+                setDeviceName("");
+                setRepairType("");
+                setErrors((prev) => ({
+                  ...prev, deviceType: "", brand: "", model: "", deviceName: "", repair: "",
+                }));
+              }}
+            >
+              <SelectTrigger
+                id="deviceType"
+                className="bg-card border-border h-10 rounded-xl text-[13px] sm:max-w-xs"
+                aria-describedby={errors.deviceType ? "deviceType-error" : undefined}
               >
-                <SelectTrigger
-                  id="brand"
+                <SelectValue placeholder="What are you bringing in?" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border rounded-xl">
+                {DEVICE_TYPE_OPTIONS.map((d) => (
+                  <SelectItem key={d.id} value={d.id} className="text-[13px]">
+                    {d.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+
+          {/* Catalog device (phone / tablet / laptop): brand + model + repair */}
+          {isCatalog ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Brand */}
+              <Field label="Brand" id="brand" required error={errors.brand}>
+                <Select
+                  value={brand}
+                  onValueChange={(v) => {
+                    setBrand(v as Brand);
+                    setModelId("");
+                    setRepairType("");
+                    setErrors((prev) => ({ ...prev, brand: "", model: "", repair: "" }));
+                  }}
+                >
+                  <SelectTrigger
+                    id="brand"
+                    className="bg-card border-border h-10 rounded-xl text-[13px]"
+                    aria-describedby={errors.brand ? "brand-error" : undefined}
+                  >
+                    <SelectValue placeholder="Select a brand" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border rounded-xl">
+                    {availableBrands.map((b) => (
+                      <SelectItem key={b} value={b} className="text-[13px]">
+                        {b}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Model */}
+              <Field label="Model" id="model" required error={errors.model}>
+                <Select
+                  value={modelId}
+                  onValueChange={(v) => {
+                    setModelId(v);
+                    setErrors((prev) => ({ ...prev, model: "" }));
+                  }}
+                  disabled={!brand}
+                >
+                  <SelectTrigger
+                    id="model"
+                    className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
+                    aria-describedby={errors.model ? "model-error" : undefined}
+                  >
+                    <SelectValue
+                      placeholder={brand ? "Select a model" : "Select a brand first"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border rounded-xl">
+                    {models.map((m) => (
+                      <SelectItem key={m.id} value={m.id} className="text-[13px]">
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* Repair type */}
+              <Field label="Repair type" id="repair" required error={errors.repair}>
+                <Select
+                  value={repairType}
+                  onValueChange={(v) => {
+                    setRepairType(v as RepairType);
+                    setErrors((prev) => ({ ...prev, repair: "" }));
+                  }}
+                  disabled={!modelId}
+                >
+                  <SelectTrigger
+                    id="repair"
+                    className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
+                    aria-describedby={errors.repair ? "repair-error" : undefined}
+                  >
+                    <SelectValue
+                      placeholder={modelId ? "Select a repair" : "Select a model first"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border rounded-xl">
+                    {REPAIR_TYPES.map((type) => (
+                      <SelectItem key={type} value={type} className="text-[13px]">
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+          ) : deviceType ? (
+            /* Console / desktop / other: free-text make & model + repair */
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Make & model" id="deviceName" required error={errors.deviceName}>
+                <Input
+                  id="deviceName"
+                  name="deviceName"
+                  value={deviceName}
+                  onChange={(e) => {
+                    setDeviceName(e.target.value);
+                    setErrors((prev) => ({ ...prev, deviceName: "" }));
+                  }}
+                  placeholder={deviceTypeOption?.placeholder ?? "Tell us the make & model"}
                   className="bg-card border-border h-10 rounded-xl text-[13px]"
-                  aria-describedby={errors.brand ? "brand-error" : undefined}
-                >
-                  <SelectValue placeholder="Select a brand" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border rounded-xl">
-                  {BRANDS.map((b) => (
-                    <SelectItem key={b} value={b} className="text-[13px]">
-                      {b}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
+                  aria-describedby={errors.deviceName ? "deviceName-error" : undefined}
+                />
+              </Field>
 
-            {/* Model */}
-            <Field label="Model" id="model" required error={errors.model}>
-              <Select
-                value={modelId}
-                onValueChange={(v) => {
-                  setModelId(v);
-                  setErrors((prev) => ({ ...prev, model: "" }));
-                }}
-                disabled={!brand}
-              >
-                <SelectTrigger
-                  id="model"
-                  className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
-                  aria-describedby={errors.model ? "model-error" : undefined}
+              <Field label="Repair / issue" id="repair" required error={errors.repair}>
+                <Select
+                  value={repairType}
+                  onValueChange={(v) => {
+                    setRepairType(v as RepairType);
+                    setErrors((prev) => ({ ...prev, repair: "" }));
+                  }}
+                  disabled={!deviceName}
                 >
-                  <SelectValue
-                    placeholder={brand ? "Select a model" : "Select a brand first"}
-                  />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border rounded-xl">
-                  {models.map((m) => (
-                    <SelectItem key={m.id} value={m.id} className="text-[13px]">
-                      {m.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-
-            {/* Repair type */}
-            <Field label="Repair type" id="repair" required error={errors.repair}>
-              <Select
-                value={repairType}
-                onValueChange={(v) => {
-                  setRepairType(v as RepairType);
-                  setErrors((prev) => ({ ...prev, repair: "" }));
-                }}
-                disabled={!modelId}
-              >
-                <SelectTrigger
-                  id="repair"
-                  className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
-                  aria-describedby={errors.repair ? "repair-error" : undefined}
-                >
-                  <SelectValue
-                    placeholder={modelId ? "Select a repair" : "Select a model first"}
-                  />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border rounded-xl">
-                  {REPAIR_TYPES.map((type) => (
-                    <SelectItem key={type} value={type} className="text-[13px]">
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
+                  <SelectTrigger
+                    id="repair"
+                    className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
+                    aria-describedby={errors.repair ? "repair-error" : undefined}
+                  >
+                    <SelectValue
+                      placeholder={deviceName ? "Select a repair" : "Enter your device first"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border rounded-xl">
+                    {REPAIR_TYPES.map((type) => (
+                      <SelectItem key={type} value={type} className="text-[13px]">
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+          ) : null}
 
           {/* Live price preview */}
           {quote ? (
@@ -497,7 +632,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
                   aria-pressed={time === slot}
                   className={`px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors ${
                     time === slot
-                      ? "bg-primary text-white border-primary"
+                      ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card border-border text-foreground hover:border-primary/60"
                   }`}
                 >
@@ -530,7 +665,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
       <Button
         type="submit"
         disabled={status === "sending"}
-        className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl h-12 text-[14px] font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+        className="btn-primary w-full h-12 rounded-lg text-[14px] font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {status === "sending" ? (
           "Sending…"

@@ -122,8 +122,7 @@ export default async function RepairPage({
 
       {/* ── Hero ────────────────────────────────────────────── */}
       <section className="relative pt-36 pb-20 overflow-hidden">
-        <div className="absolute inset-0 dot-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-32 left-1/4 w-96 h-96 bg-blue-500/6 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 dot-grid opacity-20 pointer-events-none" />
 
         <div className="relative max-w-4xl mx-auto px-5 sm:px-8">
           {/* Breadcrumb */}
@@ -153,7 +152,7 @@ export default async function RepairPage({
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
                 {device.name}
                 <br />
-                <span className="text-blue-500">{repairType}</span>
+                <span className="text-[color:var(--icon-fg)]">{repairType}</span>
               </h1>
 
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
@@ -193,17 +192,15 @@ export default async function RepairPage({
 
             {/* Right: Quote card */}
             <div
-              className="rounded-2xl overflow-hidden"
+              className="overflow-hidden rounded-lg"
               style={{
-                background:
-                  "linear-gradient(145deg, rgba(18,18,18,0.95) 0%, rgba(10,10,10,0.98) 100%)",
-                border: "1px solid rgba(59,130,246,0.25)",
-                boxShadow:
-                  "0 0 0 1px rgba(59,130,246,0.1), 0 24px 60px rgba(59,130,246,0.1)",
+                background: "var(--panel-bg)",
+                border: "1px solid var(--panel-border)",
+                boxShadow: "var(--panel-shadow)",
               }}
             >
-              <div className="px-7 pt-7 pb-5 border-b border-white/[0.06]">
-                <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.14em]">
+              <div className="px-7 pt-7 pb-5 border-b border-border">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.14em]">
                   Repair Quote
                 </span>
                 <h2 className="text-xl font-bold text-foreground mt-2">
@@ -236,10 +233,10 @@ export default async function RepairPage({
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-3">
                   <div
-                    className="p-4 rounded-xl"
+                    className="p-4 rounded-lg"
                     style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      background: "var(--control-bg)",
+                      border: "1px solid var(--control-border)",
                     }}
                   >
                     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
@@ -249,10 +246,10 @@ export default async function RepairPage({
                     <p className="text-sm font-semibold">{quote.estimatedTime}</p>
                   </div>
                   <div
-                    className="p-4 rounded-xl"
+                    className="p-4 rounded-lg"
                     style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      background: "var(--control-bg)",
+                      border: "1px solid var(--control-border)",
                     }}
                   >
                     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
@@ -268,14 +265,14 @@ export default async function RepairPage({
                 {/* Stars */}
                 <div className="flex items-center gap-1.5 pt-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-blue-500 text-blue-500" />
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                   ))}
                   <span className="text-xs text-muted-foreground ml-1">
                     Trusted by Leeds customers
                   </span>
                 </div>
 
-                <Button asChild className="w-full btn-primary h-11 rounded-xl">
+                <Button asChild className="w-full btn-primary h-11 rounded-lg">
                   <Link href="/book" className="flex items-center justify-center gap-2">
                     Book Repair Online
                     <ArrowRight className="h-4 w-4" />
@@ -294,7 +291,7 @@ export default async function RepairPage({
       {/* ── Related Repairs ─────────────────────────────────── */}
       <section className="section-border">
         <div className="max-w-4xl mx-auto px-5 sm:px-8 py-16">
-          <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">
+          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3">
             Also Available
           </p>
           <h2 className="text-3xl font-bold tracking-tight mb-8">
@@ -309,14 +306,14 @@ export default async function RepairPage({
                 className="group card-premium p-5 flex items-center justify-between"
               >
                 <div>
-                  <p className="font-semibold text-sm text-foreground group-hover:text-blue-500 transition-colors">
+                  <p className="font-semibold text-sm text-foreground group-hover:text-[color:var(--icon-fg)] transition-colors">
                     {rt}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {q.inspectionRequired ? "Inspection required" : `From £${q.minPrice}`} · {q.estimatedTime}
                   </p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-[color:var(--icon-fg)] transition-colors" />
               </Link>
             ))}
           </div>
@@ -326,7 +323,7 @@ export default async function RepairPage({
       {/* ── Address / Contact ───────────────────────────────── */}
       <section className="section-border bg-surface/30">
         <div className="max-w-4xl mx-auto px-5 sm:px-8 py-16 text-center">
-          <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest mb-3">
+          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3">
             Find Us
           </p>
           <h2 className="text-3xl font-bold tracking-tight mb-4">

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DEVICE_TYPES,
   getDeviceTypesByBrand,
+  getDeviceTypeById,
   formatPrice,
   buildBookingUrl,
   buildWhatsAppUrl,
@@ -38,16 +40,16 @@ function StepBar({ current }: { current: number }) {
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-all"
                 style={{
-                  background: done ? "#3b82f6" : active ? "rgba(59,130,246,0.2)" : "rgba(255,255,255,0.06)",
-                  border: active ? "1.5px solid #3b82f6" : done ? "none" : "1.5px solid rgba(255,255,255,0.12)",
-                  color: done ? "#fff" : active ? "#60a5fa" : "rgba(255,255,255,0.3)",
+                  background: done ? "var(--primary)" : active ? "var(--selection-bg)" : "var(--control-bg)",
+                  border: done ? "1.5px solid var(--primary)" : active ? "1.5px solid var(--control-border-hover)" : "1.5px solid var(--control-border)",
+                  color: done ? "var(--primary-foreground)" : active ? "var(--foreground)" : "var(--muted-foreground)",
                 }}
               >
                 {done ? "✓" : i + 1}
               </div>
               <span
                 className="text-[9px] uppercase tracking-wide mt-1 hidden sm:block truncate w-full text-center"
-                style={{ color: active ? "#60a5fa" : done ? "#3b82f6" : "rgba(255,255,255,0.25)" }}
+                style={{ color: active ? "var(--foreground)" : done ? "var(--icon-fg)" : "var(--muted-foreground)" }}
               >
                 {label}
               </span>
@@ -55,7 +57,7 @@ function StepBar({ current }: { current: number }) {
             {i < STEPS.length - 1 && (
               <div
                 className="h-px flex-1 mx-1 mb-3 sm:mb-5 transition-all"
-                style={{ background: done ? "#3b82f6" : "rgba(255,255,255,0.08)" }}
+                style={{ background: done ? "var(--icon-fg)" : "var(--border)" }}
               />
             )}
           </div>
@@ -88,20 +90,20 @@ function OptionGrid({
           <button
             key={opt.id}
             onClick={() => onSelect(opt.id)}
-            className="text-left px-4 py-3 rounded-xl transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]"
+            className="text-left px-4 py-3 rounded-lg transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]"
             style={{
-              background: active ? "rgba(59,130,246,0.14)" : "rgba(255,255,255,0.03)",
-              border: `1.5px solid ${active ? "rgba(59,130,246,0.5)" : "rgba(255,255,255,0.07)"}`,
+              background: active ? "var(--selection-bg)" : "var(--control-bg)",
+              border: `1.5px solid ${active ? "var(--control-border-hover)" : "var(--control-border)"}`,
             }}
           >
             <span
               className="text-sm font-medium block"
-              style={{ color: active ? "#93c5fd" : "rgba(255,255,255,0.75)" }}
+              style={{ color: active ? "var(--foreground)" : "var(--muted-foreground)" }}
             >
               {opt.label}
             </span>
             {opt.sub && (
-              <span className="text-[11px] text-zinc-500 mt-0.5 block">{opt.sub}</span>
+              <span className="text-[11px] text-muted-foreground mt-0.5 block">{opt.sub}</span>
             )}
           </button>
         );
@@ -116,6 +118,17 @@ export default function FullCalculator() {
   const [deviceType, setDeviceType] = useState<DeviceType | null>(null);
   const [model, setModel]           = useState<DeviceModel | null>(null);
   const [repair, setRepair]         = useState<RepairOption | null>(null);
+
+  // Prefill from URL: /quote?device=<deviceTypeId> jumps straight to model picking.
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const id = searchParams.get("device");
+    if (!id) return;
+    const dt = getDeviceTypeById(id);
+    if (dt) { setBrand(dt.brand); setDeviceType(dt); }
+    // run once on mount with the initial query string
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Step index: 0=brand 1=type 2=model 3=repair 4=quote
   const step = brand === null ? 0 : deviceType === null ? 1 : model === null ? 2 : repair === null ? 3 : 4;
@@ -220,24 +233,24 @@ export default function FullCalculator() {
                 <button
                   key={r.id}
                   onClick={() => setRepair(r)}
-                  className="w-full text-left px-4 py-3 rounded-xl transition-all duration-150 flex items-center justify-between gap-4"
+                  className="w-full text-left px-4 py-3 rounded-lg transition-all duration-150 flex items-center justify-between gap-4"
                   style={{
-                    background: active ? "rgba(59,130,246,0.14)" : "rgba(255,255,255,0.03)",
-                    border: `1.5px solid ${active ? "rgba(59,130,246,0.5)" : "rgba(255,255,255,0.07)"}`,
+                    background: active ? "var(--selection-bg)" : "var(--control-bg)",
+                    border: `1.5px solid ${active ? "var(--control-border-hover)" : "var(--control-border)"}`,
                   }}
                 >
                   <div>
                     <span
                       className="text-sm font-medium block"
-                      style={{ color: active ? "#93c5fd" : "rgba(255,255,255,0.8)" }}
+                      style={{ color: active ? "var(--foreground)" : "var(--muted-foreground)" }}
                     >
                       {r.label}
                     </span>
-                    <span className="text-[11px] text-zinc-500">{r.time}</span>
+                    <span className="text-[11px] text-muted-foreground">{r.time}</span>
                   </div>
                   <span
                     className="text-sm font-bold flex-shrink-0 tabular-nums"
-                    style={{ color: active ? "#60a5fa" : r.price ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.3)" }}
+                    style={{ color: active ? "var(--foreground)" : r.price ? "var(--icon-fg)" : "var(--muted-foreground)" }}
                   >
                     {formatPrice(r.price)}
                   </span>
@@ -251,54 +264,54 @@ export default function FullCalculator() {
       {/* ── STEP 4: Quote result ───────────────────────────── */}
       {repair && brand && deviceType && model && (
         <div
-          className="mt-4 rounded-2xl overflow-hidden"
+          className="mt-4 overflow-hidden rounded-lg"
           style={{
-            background: "linear-gradient(145deg, rgba(18,18,22,0.98) 0%, rgba(10,10,14,0.99) 100%)",
-            border: "1.5px solid rgba(59,130,246,0.3)",
-            boxShadow: "0 0 0 1px rgba(59,130,246,0.08), 0 20px 60px rgba(59,130,246,0.1)",
+            background: "var(--panel-bg)",
+            border: "1.5px solid var(--panel-border)",
+            boxShadow: "var(--panel-shadow)",
           }}
         >
           {/* Header */}
-          <div className="px-6 pt-5 pb-4 border-b border-white/[0.06]">
-            <p className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.14em] mb-1">
+          <div className="px-6 pt-5 pb-4 border-b border-border">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.14em] mb-1">
               Your Quote
             </p>
-            <p className="text-xl font-bold text-white">{model.name}</p>
-            <p className="text-sm text-zinc-400 mt-0.5">{repair.label}</p>
+            <p className="text-xl font-bold text-foreground">{model.name}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{repair.label}</p>
           </div>
 
           {/* Breadcrumb trail */}
-          <div className="px-6 py-3 flex items-center gap-1.5 flex-wrap border-b border-white/[0.04]">
+          <div className="px-6 py-3 flex items-center gap-1.5 flex-wrap border-b border-border">
             {[brand, deviceType.name, model.name, repair.label].map((item, i, arr) => (
               <span key={i} className="flex items-center gap-1.5">
-                <span className="text-[12px] text-zinc-400">{item}</span>
-                {i < arr.length - 1 && <ChevronRight className="h-3 w-3 text-zinc-600 flex-shrink-0" />}
+                <span className="text-[12px] text-muted-foreground">{item}</span>
+                {i < arr.length - 1 && <ChevronRight className="h-3 w-3 text-muted-foreground/60 flex-shrink-0" />}
               </span>
             ))}
           </div>
 
           {/* Price */}
-          <div className="px-6 pt-5 pb-4 border-b border-white/[0.06]">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Estimated price</p>
-            <p className="text-4xl font-bold text-white">{priceStr}</p>
-            <p className="text-[11px] text-zinc-500 mt-2 leading-relaxed">
+          <div className="px-6 pt-5 pb-4 border-b border-border">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Estimated price</p>
+            <p className="text-4xl font-bold text-foreground">{priceStr}</p>
+            <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
               Final price confirmed after free inspection. Depends on part quality and availability.
             </p>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
+          <div className="grid grid-cols-2 divide-x divide-border">
             <div className="px-6 py-4">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                 <Clock className="h-3 w-3" /> Time estimate
               </div>
-              <p className="text-sm font-semibold text-white">{repair.time}</p>
+              <p className="text-sm font-semibold text-foreground">{repair.time}</p>
             </div>
             <div className="px-6 py-4">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                 <Shield className="h-3 w-3" /> Warranty
               </div>
-              <p className="text-sm font-semibold text-green-400">{repair.warranty}</p>
+              <p className="text-sm font-semibold text-[color:var(--accent)]">{repair.warranty}</p>
             </div>
           </div>
 
@@ -306,8 +319,7 @@ export default function FullCalculator() {
           <div className="px-5 pb-5 pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button
               asChild
-              className="h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
-              style={{ boxShadow: "0 4px 20px rgba(59,130,246,0.3)" }}
+              className="btn-primary h-11 rounded-lg font-semibold text-sm"
             >
               <Link href={bookUrl} className="flex items-center justify-center gap-2">
                 Book this repair
@@ -317,17 +329,17 @@ export default function FullCalculator() {
             <Button
               asChild
               variant="outline"
-              className="h-11 rounded-xl font-semibold text-sm border-white/10 hover:bg-white/5 text-white"
+              className="h-11 rounded-lg font-semibold text-sm border-border text-foreground hover:bg-surface"
             >
               <a href={waUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                <MessageCircle className="h-4 w-4 text-green-400" />
+                <MessageCircle className="h-4 w-4 text-[color:var(--accent)]" />
                 WhatsApp for exact price
               </a>
             </Button>
           </div>
 
           {/* Pricing note */}
-          <p className="px-5 pb-5 text-[10px] text-zinc-600 leading-relaxed">
+          <p className="px-5 pb-5 text-[10px] text-muted-foreground leading-relaxed">
             Prices are estimates and may vary after inspection depending on part quality, device condition and part availability.
           </p>
         </div>
@@ -337,7 +349,7 @@ export default function FullCalculator() {
       {step > 0 && (
         <button
           onClick={reset}
-          className="mt-5 flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-zinc-300 transition-colors mx-auto"
+          className="mt-5 flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors mx-auto"
         >
           <RotateCcw className="h-3 w-3" />
           Start over
@@ -370,11 +382,11 @@ function Section({
       <div className="flex items-center justify-between mb-3">
         <p
           className="text-xs font-bold uppercase tracking-[0.14em]"
-          style={{ color: done ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.7)" }}
+          style={{ color: done ? "var(--muted-foreground)" : "var(--foreground)" }}
         >
           {title}
           {done && summary && (
-            <span className="ml-2 normal-case font-medium text-blue-400 tracking-normal">
+            <span className="ml-2 normal-case font-medium text-[color:var(--icon-fg)] tracking-normal">
               → {summary}
             </span>
           )}
@@ -382,7 +394,7 @@ function Section({
         {done && (
           <button
             onClick={onEdit}
-            className="text-[11px] text-zinc-500 hover:text-blue-400 transition-colors"
+            className="text-[11px] text-zinc-500 hover:text-foreground transition-colors"
           >
             Change
           </button>

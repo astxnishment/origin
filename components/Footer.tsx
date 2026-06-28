@@ -4,11 +4,12 @@ import { BUSINESS } from "@/lib/constants";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
 const services = [
-  { href: "/repairs/iphone", label: "iPhone Repair" },
-  { href: "/repairs/samsung", label: "Samsung Repair" },
+  { href: "/repairs/phones", label: "Phone Repair" },
   { href: "/repairs/ipad", label: "iPad Repair" },
-  { href: "/repairs/laptops", label: "Laptop & MacBook" },
-  { href: "/repairs/data-recovery", label: "Data Recovery" },
+  { href: "/repairs/laptops", label: "Laptop Repair" },
+  { href: "/repairs/consoles", label: "Console Repair" },
+  { href: "/repairs/custom-pc", label: "Custom PC Builds" },
+  { href: "/repairs/data-recovery", label: "Data & Liquid Damage" },
   { href: "/pricing", label: "Pricing" },
   { href: "/quote", label: "Get a Quote" },
 ];
@@ -35,7 +36,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" aria-label="Origin Repairs — home" className="inline-block mb-6 transition-opacity duration-200 hover:opacity-70">
-              <Logo variant="dark" heightClass="h-10" />
+              <Logo variant="light" heightClass="h-10" className="block dark:hidden" />
+              <Logo variant="dark" heightClass="h-10" className="hidden dark:block" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
               Professional device repair in Leeds. Every repair backed by a 12-month warranty.
@@ -100,7 +102,7 @@ export default function Footer() {
             <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-5">Contact</p>
             <ul className="space-y-4">
               <li className="flex items-start gap-2">
-                <Phone className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                <Phone className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
                 <a
                   href={`tel:${BUSINESS.phone}`}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -109,7 +111,7 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <Mail className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                <Mail className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
                 <a
                   href={`mailto:${BUSINESS.email}`}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -118,14 +120,21 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <address className="not-italic text-sm text-muted-foreground">
-                  76 Cookridge Street<br />
-                  Leeds, LS2 8GL
-                </address>
+                <MapPin className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
+                <a
+                  href={BUSINESS.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <address className="not-italic">
+                    76 Cookridge Street<br />
+                    Leeds, LS2 8GL
+                  </address>
+                </a>
               </li>
               <li className="flex items-start gap-2">
-                <Clock className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                <Clock className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-muted-foreground space-y-0.5">
                   <p>Mon–Fri: 9am–6pm</p>
                   <p>Sat: 10am–4pm</p>
@@ -147,7 +156,14 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">76 Cookridge Street, Leeds, LS2 8GL, UK</p>
+          <a
+            href={BUSINESS.googleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-block text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            76 Cookridge Street, Leeds, LS2 8GL, UK
+          </a>
         </div>
       </div>
     </footer>

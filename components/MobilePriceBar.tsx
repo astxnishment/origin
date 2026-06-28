@@ -41,31 +41,30 @@ export default function MobilePriceBar({
         show ? "translate-y-0" : "translate-y-[120%]"
       }`}
       style={{
-        background: "rgba(10,10,10,0.92)",
+        background: "var(--chrome-bg)",
         backdropFilter: "blur(18px) saturate(160%)",
         WebkitBackdropFilter: "blur(18px) saturate(160%)",
-        borderTop: "1px solid rgba(255,255,255,0.1)",
-        boxShadow: "0 -8px 32px rgba(0,0,0,0.5)",
+        borderTop: "1px solid var(--chrome-border)",
+        boxShadow: "var(--panel-shadow)",
         paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
       }}
     >
       <div className="flex items-center gap-3 px-4 pt-3">
         {/* Device + price */}
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-white leading-tight truncate">
+          <p className="text-[13px] font-semibold text-foreground leading-tight truncate">
             {deviceName} · {repairType}
           </p>
-          <p className="text-[12px] text-blue-400 font-medium leading-tight mt-0.5">
+          <p className="text-[12px] text-[color:var(--icon-fg)] font-medium leading-tight mt-0.5">
             £{minPrice}–£{maxPrice}
-            <span className="text-zinc-500"> · 12-mo warranty</span>
+            <span className="text-muted-foreground"> · 12-mo warranty</span>
           </p>
         </div>
 
         {/* CTA */}
         <Link
           href={bookHref}
-          className="flex-shrink-0 inline-flex items-center gap-1.5 h-11 px-5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-blue-600 to-blue-500 active:scale-[0.97] transition-transform"
-          style={{ boxShadow: "0 6px 20px -6px rgba(59,130,246,0.6)" }}
+          className="btn-primary flex-shrink-0 inline-flex h-11 items-center gap-1.5 px-5 text-sm active:scale-[0.97] transition-transform"
         >
           Book Repair
           <ArrowRight className="h-4 w-4" />

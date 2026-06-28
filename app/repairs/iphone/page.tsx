@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { REPAIR_PRICING } from "@/lib/repairPricing";
 import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
-import { serviceImages } from "@/lib/serviceImages";
 import { appleImageUrl, IPHONE_IMAGES } from "@/lib/appleDeviceImages";
 
 export const metadata: Metadata = {
@@ -67,13 +66,23 @@ const repairTypes = [
   },
   {
     name: "Water damage",
-    price: livePrice("iPhone 16", "Water Damage Diagnostic"),
-    time: "24–48 hrs",
+    price: "diagnostic from £29",
+    time: "Same day",
+  },
+  {
+    name: "Motherboard repair",
+    price: "from £79",
+    time: "1–5 days",
+  },
+  {
+    name: "Face ID repair",
+    price: "from £79",
+    time: "1–3 days",
   },
   {
     name: "Data recovery",
-    price: livePrice("Phone Data Recovery", "Data Recovery Assessment"),
-    time: "24–48 hrs",
+    price: "from £79",
+    time: "2–7 days",
   },
 ];
 
@@ -82,7 +91,7 @@ const guarantees = [
   "12-month warranty included",
   "Same-day in most cases",
   "Fixed price — no surprises",
-  "Free diagnostic assessment",
+  "Board-level repairs available",
   "Data always protected",
 ];
 
@@ -134,15 +143,11 @@ export default function IPhoneRepairsPage() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     asChild
-                    className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 text-[13px]"
+                    className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
                     <Link href="/book">Book iPhone Repair</Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted"
-                  >
+                  <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
                       Get a quote <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
@@ -152,7 +157,6 @@ export default function IPhoneRepairsPage() {
               {/* Hero device image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
                   {/* Real iPhone 16 Pro image from appledb.dev */}
                   <Image
                     src={appleImageUrl(IPHONE_IMAGES["iPhone 16 Pro"], 256, false)}
@@ -160,7 +164,7 @@ export default function IPhoneRepairsPage() {
                     width={256}
                     height={256}
                     unoptimized
-                    className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(59,130,246,0.2)]"
+                    className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                     priority
                   />
                 </div>
@@ -213,7 +217,7 @@ export default function IPhoneRepairsPage() {
                   tier: "Hard OLED",
                   badge: "Balanced",
                   desc: "Good colour, brightness, and touch response at a mid-range price.",
-                  badgeColor: "bg-blue-500/20 text-blue-300",
+                  badgeColor: "bg-surface text-[color:var(--icon-fg)]",
                   warn: false,
                 },
                 {
@@ -271,14 +275,14 @@ export default function IPhoneRepairsPage() {
                     key={model}
                     className="px-3 py-1.5 rounded-full border text-[12px]"
                     style={{
-                      background: isNew ? "rgba(59,130,246,0.08)" : undefined,
-                      borderColor: isNew ? "rgba(59,130,246,0.3)" : undefined,
-                      color: isNew ? "#93c5fd" : undefined,
+                      background: isNew ? "var(--soft-bg-strong)" : undefined,
+                      borderColor: isNew ? "var(--control-border-hover)" : undefined,
+                      color: isNew ? "var(--icon-fg)" : undefined,
                     }}
                   >
                     {model}
                     {isNew && (
-                      <span className="ml-1.5 text-[9px] font-bold uppercase text-blue-400">
+                      <span className="ml-1.5 text-[9px] font-bold uppercase text-[color:var(--icon-fg)]">
                         New
                       </span>
                     )}
@@ -301,7 +305,7 @@ export default function IPhoneRepairsPage() {
             </p>
             <Button
               asChild
-              className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-8 text-[13px]"
+              className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
               <Link href="/book">Book a Repair</Link>
             </Button>

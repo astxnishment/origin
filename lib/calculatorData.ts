@@ -19,7 +19,11 @@ export const REPAIR_TYPES = [
   "Camera repair",
   "Speaker / microphone",
   "Water damage diagnostics",
+  "Liquid damage repair",
   "Data recovery",
+  "Motherboard / logic board",
+  "No power repair",
+  "Face ID / biometric repair",
 ] as const;
 
 export type RepairType = (typeof REPAIR_TYPES)[number];
@@ -33,7 +37,11 @@ const REPAIR_TYPE_MAP: Record<RepairType, string> = {
   "Camera repair": "Camera Lens Replacement",
   "Speaker / microphone": "Speaker / Earpiece Replacement",
   "Water damage diagnostics": "Water Damage Diagnostic",
+  "Liquid damage repair": "Liquid Damage Repair",
   "Data recovery": "Data Recovery Assessment",
+  "Motherboard / logic board": "Motherboard Repair",
+  "No power repair": "No Power Repair",
+  "Face ID / biometric repair": "Face ID / Biometric Repair",
 };
 
 export interface DeviceModel {
@@ -110,8 +118,51 @@ const REPAIR_ID_MAP: Record<RepairType, string> = {
   "Camera repair":           "camera",
   "Speaker / microphone":    "speaker",
   "Water damage diagnostics":"water",
+  "Liquid damage repair":     "liquid-repair",
   "Data recovery":           "data-recovery",
+  "Motherboard / logic board":"motherboard",
+  "No power repair":          "no-power",
+  "Face ID / biometric repair":"face-id",
 };
+
+export type DeviceCategory = "phone" | "tablet" | "laptop";
+
+export function deviceCategory(device: DeviceModel): DeviceCategory {
+  if (/macbook|galaxy book/i.test(device.name)) return "laptop";
+  if (/ipad|tab/i.test(device.name)) return "tablet";
+  return "phone";
+}
+
+function advancedRepairQuote(device: DeviceModel, repairType: RepairType): RepairPrice | null {
+  const category = deviceCategory(device);
+  const phoneBoard = { minPrice: 79, maxPrice: 249, estimatedTime: "1-5 days", warranty: "3 months" };
+  const tabletBoard = { minPrice: 99, maxPrice: 299, estimatedTime: "1-5 days", warranty: "3 months" };
+  const laptopBoard = { minPrice: 129, maxPrice: 399, estimatedTime: "2-7 days", warranty: "3 months" };
+
+  if (repairType === "Motherboard / logic board" || repairType === "No power repair") {
+    return category === "laptop" ? laptopBoard : category === "tablet" ? tabletBoard : phoneBoard;
+  }
+
+  if (repairType === "Liquid damage repair") {
+    if (category === "laptop") return { minPrice: 129, maxPrice: 399, estimatedTime: "2-7 days", warranty: "3 months" };
+    if (category === "tablet") return { minPrice: 89, maxPrice: 279, estimatedTime: "1-5 days", warranty: "3 months" };
+    return { minPrice: 79, maxPrice: 249, estimatedTime: "1-5 days", warranty: "3 months" };
+  }
+
+  if (repairType === "Data recovery") {
+    if (category === "laptop") return { minPrice: 99, maxPrice: 499, estimatedTime: "3-10 days", warranty: "N/A" };
+    if (category === "tablet") return { minPrice: 99, maxPrice: 299, estimatedTime: "2-7 days", warranty: "N/A" };
+    return { minPrice: 79, maxPrice: 299, estimatedTime: "2-7 days", warranty: "N/A" };
+  }
+
+  if (repairType === "Face ID / biometric repair" && category === "phone") {
+    return device.brand === "Apple"
+      ? { minPrice: 79, maxPrice: 199, estimatedTime: "1-3 days", warranty: "3 months" }
+      : { minPrice: 59, maxPrice: 179, estimatedTime: "1-3 days", warranty: "3 months" };
+  }
+
+  return null;
+}
 
 // ── Price lookup ──────────────────────────────────────────────────
 export function getRepairQuote(device: DeviceModel, repairType: RepairType): RepairPrice {
@@ -132,6 +183,8 @@ export function getRepairQuote(device: DeviceModel, repairType: RepairType): Rep
         warranty: repair.warranty,
       };
     }
+    const advanced = advancedRepairQuote(device, repairType);
+    if (advanced) return advanced;
     return { minPrice: 0, maxPrice: 0, estimatedTime: "Contact us", warranty: "12 months", inspectionRequired: true };
   }
 
@@ -161,6 +214,9 @@ export function getRepairQuote(device: DeviceModel, repairType: RepairType): Rep
       inspectionRequired: true,
     };
   }
+
+  const advanced = advancedRepairQuote(device, repairType);
+  if (advanced) return advanced;
 
   // No data: generic placeholder
   return {
