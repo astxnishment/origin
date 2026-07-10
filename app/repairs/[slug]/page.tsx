@@ -37,7 +37,7 @@ export async function generateMetadata({
 
   const { device, repairType } = parsed;
   const title = `${device.name} ${repairType} Leeds`;
-  const description = `Professional ${repairType.toLowerCase()} for ${device.name} in Leeds. Same-day service, OEM-grade parts, 12-month warranty on eligible repairs. 76 Cookridge Street, Leeds. Call 07768 426 754.`;
+  const description = `Professional ${repairType.toLowerCase()} for ${device.name} in Leeds. Same-day service, OEM-grade parts, 12-month warranty on eligible repairs. 76 Cookridge Street, Leeds. Call +44 7768 426754.`;
 
   return {
     title,
@@ -340,7 +340,7 @@ export default async function RepairPage({
               <Link href="/book">Book Online</Link>
             </Button>
             <Button asChild className="btn-secondary h-11 px-8">
-              <a href="tel:+447768426754">Call 07768 426 754</a>
+              <a href="tel:+447768426754">Call +44 7768 426754</a>
             </Button>
           </div>
         </div>

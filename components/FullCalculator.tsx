@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -114,21 +114,13 @@ function OptionGrid({
 
 // ── Main component ────────────────────────────────────────────────
 export default function FullCalculator() {
-  const [brand, setBrand]           = useState<Brand | null>(null);
-  const [deviceType, setDeviceType] = useState<DeviceType | null>(null);
+  const searchParams = useSearchParams();
+  const initialDeviceType = getDeviceTypeById(searchParams.get("device") ?? "");
+
+  const [brand, setBrand]           = useState<Brand | null>(initialDeviceType?.brand ?? null);
+  const [deviceType, setDeviceType] = useState<DeviceType | null>(initialDeviceType ?? null);
   const [model, setModel]           = useState<DeviceModel | null>(null);
   const [repair, setRepair]         = useState<RepairOption | null>(null);
-
-  // Prefill from URL: /quote?device=<deviceTypeId> jumps straight to model picking.
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const id = searchParams.get("device");
-    if (!id) return;
-    const dt = getDeviceTypeById(id);
-    if (dt) { setBrand(dt.brand); setDeviceType(dt); }
-    // run once on mount with the initial query string
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Step index: 0=brand 1=type 2=model 3=repair 4=quote
   const step = brand === null ? 0 : deviceType === null ? 1 : model === null ? 2 : repair === null ? 3 : 4;

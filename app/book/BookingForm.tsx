@@ -28,10 +28,20 @@ import { BUSINESS } from "@/lib/constants";
 import { Check, Clock, Shield, ArrowRight, AlertCircle } from "lucide-react";
 
 // ── Time slots available for booking ─────────────────────────────
-const TIME_SLOTS = [
+// Mon–Fri 9am–6pm, Sat 10am–4pm, Sun closed (see BUSINESS.hours).
+const WEEKDAY_SLOTS = [
   "9:00am", "10:00am", "11:00am", "12:00pm",
   "1:00pm", "2:00pm", "3:00pm", "4:00pm", "5:00pm",
 ];
+const SATURDAY_SLOTS = ["10:00am", "11:00am", "12:00pm", "1:00pm", "2:00pm", "3:00pm"];
+
+function slotsForDate(dateStr: string): string[] {
+  if (!dateStr) return WEEKDAY_SLOTS;
+  const day = new Date(`${dateStr}T12:00:00`).getDay();
+  if (day === 0) return []; // Sunday — closed
+  if (day === 6) return SATURDAY_SLOTS;
+  return WEEKDAY_SLOTS;
+}
 
 const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
   Apple:          "iphone",
@@ -87,7 +97,11 @@ function validateForm(data: {
   }
   if (!data.repairType) errors.repair = "Please select a repair type.";
   if (!data.date) errors.date = "Please select a preferred date.";
+  else if (slotsForDate(data.date).length === 0)
+    errors.date = "We're closed on Sundays — please pick another day.";
   if (!data.time) errors.time = "Please select a preferred time.";
+  else if (data.date && !slotsForDate(data.date).includes(data.time))
+    errors.time = "That time isn't available on the selected day.";
   return errors;
 }
 
@@ -603,8 +617,16 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
               value={date}
               min={today}
               onChange={(e) => {
-                setDate(e.target.value);
-                setErrors((prev) => ({ ...prev, date: "" }));
+                const next = e.target.value;
+                setDate(next);
+                // Drop a selected time that isn't offered on the new day
+                if (time && !slotsForDate(next).includes(time)) setTime("");
+                setErrors((prev) => ({
+                  ...prev,
+                  date: slotsForDate(next).length === 0
+                    ? "We're closed on Sundays — please pick another day."
+                    : "",
+                }));
               }}
               className="bg-card border-border h-10 rounded-xl text-[13px] max-w-xs"
               aria-describedby={errors.date ? "date-error" : undefined}
@@ -620,8 +642,13 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
                 <AlertCircle className="h-3 w-3" /> {errors.time}
               </p>
             )}
+            {slotsForDate(date).length === 0 && (
+              <p className="text-[12px] text-muted-foreground mb-2">
+                We&apos;re closed on Sundays. Open Mon–Fri 9am–6pm, Sat 10am–4pm.
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
-              {TIME_SLOTS.map((slot) => (
+              {slotsForDate(date).map((slot) => (
                 <button
                   key={slot}
                   type="button"

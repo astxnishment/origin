@@ -37,11 +37,35 @@ export const serviceImages: Record<string, ServiceImage> = {
     width: 1162,
     height: 701,
   },
+  samsungGalaxyTab: {
+    src: "/images/services/samsung-galaxy-tab.png",
+    alt: "Samsung Galaxy Tab repair at Origin Repairs Leeds",
+    width: 1536,
+    height: 1024,
+  },
+  androidLogo: {
+    src: "/images/services/android-logo.svg",
+    alt: "Android tablet repair at Origin Repairs Leeds",
+    width: 96,
+    height: 96,
+  },
   macbook: {
     src: "/images/services/macbook.png",
     alt: "MacBook repair at Origin Repairs Leeds — screen, battery and keyboard",
     width: 1104,
     height: 700,
+  },
+  samsungGalaxyBook: {
+    src: "/images/services/samsung-galaxy-book.png",
+    alt: "Samsung Galaxy Book laptop repair at Origin Repairs Leeds",
+    width: 1536,
+    height: 1024,
+  },
+  windowsLogo: {
+    src: "/images/services/windows-logo.png",
+    alt: "Windows laptop repair at Origin Repairs Leeds",
+    width: 192,
+    height: 192,
   },
   laptop: {
     src: "/images/services/macbook.png",
@@ -66,6 +90,24 @@ export const serviceImages: Record<string, ServiceImage> = {
     alt: "PlayStation 5, Xbox Series X and Nintendo Switch repair at Origin Repairs Leeds",
     width: 1312,
     height: 764,
+  },
+  playstation: {
+    src: "/images/services/console-playstation.png",
+    alt: "PlayStation 5 repair at Origin Repairs Leeds",
+    width: 300,
+    height: 738,
+  },
+  xbox: {
+    src: "/images/services/console-xbox.png",
+    alt: "Xbox Series X repair at Origin Repairs Leeds",
+    width: 406,
+    height: 652,
+  },
+  nintendoSwitch: {
+    src: "/images/services/console-switch.png",
+    alt: "Nintendo Switch repair at Origin Repairs Leeds",
+    width: 479,
+    height: 320,
   },
   customPc: {
     src: "/images/services/custom-pc-build.png",

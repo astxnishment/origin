@@ -24,7 +24,7 @@ export default function WarrantyPage() {
             <section>
               <h2 className="text-[16px] font-semibold text-foreground mb-3">1. What is covered</h2>
               <p>
-                Origin Repairs provides a <strong className="text-foreground">12-month warranty</strong> on eligible repairs. The warranty covers defects in parts supplied by us and faults directly caused by our repair work. If the same fault returns due to our repair, we will fix it free of charge.
+                Origin Repairs provides a <strong className="text-foreground">12-month warranty</strong> on eligible repairs. The warranty only applies where our assessment confirms the fault was caused by our installation, workmanship, or a part supplied by us. If the same fault returns due to our repair, we will fix it free of charge.
               </p>
             </section>
 

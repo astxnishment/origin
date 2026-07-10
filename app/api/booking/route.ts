@@ -64,10 +64,10 @@ export async function POST(req: NextRequest) {
         <li>Repair completed with 12-month warranty</li>
       </ol>
 
-      <p><strong>Contact:</strong> 07768 426 754</p>
+      <p><strong>Contact:</strong> +44 7768 426754</p>
       <p><strong>Hours:</strong> Mon–Fri: 9am–6pm · Sat: 10am–4pm · Sun: Closed</p>
 
-      <p>If you need to reschedule or have any questions, call us on <a href="tel:+447768426754">07768 426 754</a>.</p>
+      <p>If you need to reschedule or have any questions, call us on <a href="tel:+447768426754">+44 7768 426754</a>.</p>
 
       <p>Thanks for choosing Origin Repairs!</p>
     `;

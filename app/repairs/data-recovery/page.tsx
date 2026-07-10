@@ -100,7 +100,7 @@ export default function DataRecoveryPage() {
               <div>
                 <p className="text-[13px] font-semibold text-foreground mb-1">Act quickly to maximise recovery chances</p>
                 <p className="text-[13px] text-muted-foreground">
-                  If your device has failed, stop using it immediately. Further use can overwrite recoverable data. Call us now for emergency assessment: <a href="tel:+447768426754" className="text-primary">07768 426 754</a>
+                  If your device has failed, stop using it immediately. Further use can overwrite recoverable data. Call us now for emergency assessment: <a href="tel:+447768426754" className="text-primary">+44 7768 426754</a>
                 </p>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function DataRecoveryPage() {
                 <Link href="/contact">Start Free Assessment</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
-                <a href="tel:+447768426754">07768 426 754</a>
+                <a href="tel:+447768426754">+44 7768 426754</a>
               </Button>
             </div>
           </div>

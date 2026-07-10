@@ -59,7 +59,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-[16px] font-semibold text-foreground mb-3">6. Warranty</h2>
               <p>
-                See our <a href="/warranty" className="text-primary hover:underline">Warranty Terms</a> for full details.
+                Warranty cover applies only where our assessment confirms the fault was caused by our installation, workmanship, or a part supplied by us. It does not cover unrelated faults, accidental damage, liquid damage, misuse, normal wear and tear, or later third-party repair attempts. See our <a href="/warranty" className="text-primary hover:underline">Warranty Terms</a> for full details.
               </p>
             </section>
 

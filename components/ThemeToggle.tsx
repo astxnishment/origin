@@ -53,7 +53,7 @@ export default function ThemeToggle() {
         localStorage.setItem(STORAGE_KEY, nextTheme);
         window.dispatchEvent(new Event("origin-theme-change"));
       }}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface/70 text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
     >
       {theme === "dark" ? (
         <Sun className="h-4 w-4" />

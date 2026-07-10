@@ -3,6 +3,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroCalculator from "@/components/HeroCalculator";
+import TrackRepairStrip from "@/components/TrackRepairStrip";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -23,7 +24,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, TESTIMONIALS } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
 import { appleImageUrl, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
 
@@ -153,7 +154,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mx-auto flex min-h-[calc(100svh-72px)] max-w-6xl items-center px-5 py-14 sm:px-8 lg:py-20">
+          {/* Content sits ~96px below the header rather than vertically centred */}
+          <div className="mx-auto flex min-h-[calc(100svh-72px)] max-w-6xl items-start px-5 pt-10 pb-14 sm:px-8 lg:pt-24 lg:pb-20">
             <div className="max-w-[680px]">
               <div className="relative mb-8 h-44 lg:hidden">
                 <Image
@@ -248,6 +250,8 @@ export default function Home() {
           </div>
         </section>
 
+        <TrackRepairStrip />
+
         <section className="section-border">
           <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
             <div className="mb-7 flex items-end justify-between gap-4">
@@ -324,6 +328,44 @@ export default function Home() {
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Pick. Price. Book.</h2>
             </div>
             <HeroCalculator />
+          </div>
+        </section>
+
+        <section className="section-border">
+          <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
+            <div className="mb-7 flex items-end justify-between gap-4">
+              <div>
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Reviews</p>
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">What Leeds says.</h2>
+              </div>
+              <a
+                href={BUSINESS.googleReviewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
+              >
+                Leave a review
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
+              {TESTIMONIALS.map(({ author, role, content, rating, device }) => (
+                <figure key={author} className="flex flex-col gap-4 bg-card p-6">
+                  <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+                    {Array.from({ length: rating }).map((_, i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                    ))}
+                  </div>
+                  <blockquote className="flex-1 text-sm leading-relaxed text-muted-foreground">
+                    &ldquo;{content}&rdquo;
+                  </blockquote>
+                  <figcaption className="flex items-center justify-between gap-3 text-[13px]">
+                    <span className="font-semibold text-foreground">{author} · {role}</span>
+                    <span className="text-muted-foreground">{device}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </section>
       </main>

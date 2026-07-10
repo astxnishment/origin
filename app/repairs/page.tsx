@@ -13,6 +13,7 @@ type Choice = {
   name: string;
   note: string;
   href: string;
+  image?: (typeof serviceImages)[keyof typeof serviceImages];
   /** When set, render a real DeviceImage (brand/model). */
   brand?: "Apple" | "Samsung" | "Google Pixel";
   model?: string;
@@ -42,7 +43,7 @@ const categories: Array<{
     image: serviceImages.phones,
     prompt: "Which phone do you have? Pick your brand to see models & pricing.",
     choices: [
-      { name: "iPhone", note: "iPhone 6 through 16 Pro Max", href: "/repairs/iphone", brand: "Apple", model: "iPhone 16 Pro", deviceTypeId: "iphone" },
+      { name: "iPhone", note: "iPhone 6 through 17 Pro Max", href: "/repairs/iphone", brand: "Apple", model: "iPhone 17 Pro Max", deviceTypeId: "iphone" },
       { name: "Samsung Galaxy", note: "Galaxy S, A, Z Fold & Flip", href: "/repairs/samsung", brand: "Samsung", model: "Galaxy S24 Ultra", deviceTypeId: "galaxy-s" },
       { name: "Google Pixel", note: "Pixel 6 through 9 Pro", href: "/repairs/google-pixel", brand: "Google Pixel", model: "Pixel 9 Pro", deviceTypeId: "google-pixel" },
       { name: "Other Android", note: "OnePlus, Xiaomi, Sony & more", href: "/repairs/phones", brand: "Samsung", model: "Galaxy A55", deviceTypeId: "galaxy-a" },
@@ -56,8 +57,8 @@ const categories: Array<{
     prompt: "Which tablet do you have? Pick yours for an instant price.",
     choices: [
       { name: "iPad", note: "Pro, Air, mini & standard", href: "/quote?device=ipad", brand: "Apple", model: 'iPad Pro 11" M4', deviceTypeId: "ipad" },
-      { name: "Samsung Galaxy Tab", note: "Tab S, Tab A series", href: "/quote?device=galaxy-tab", brand: "Samsung", model: "Galaxy Tab S9", deviceTypeId: "galaxy-tab" },
-      { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/book", icon: "ipad" },
+      { name: "Samsung Galaxy Tab", note: "Tab S, Tab A series", href: "/quote?device=galaxy-tab", image: serviceImages.samsungGalaxyTab },
+      { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/book", image: serviceImages.androidLogo },
     ],
   },
   {
@@ -68,8 +69,8 @@ const categories: Array<{
     prompt: "Which laptop do you have? Pick yours to get started.",
     choices: [
       { name: "MacBook", note: "Air & Pro, all years", href: "/quote?device=macbook", brand: "Apple", model: 'MacBook Pro 14" M3', deviceTypeId: "macbook" },
-      { name: "Samsung Galaxy Book", note: "Galaxy Book series", href: "/quote?device=galaxy-book", brand: "Samsung", model: "Galaxy Book4 Pro", deviceTypeId: "galaxy-book" },
-      { name: "Windows / Gaming laptop", note: "Dell, HP, Lenovo, ASUS, Acer & more", href: "/repairs/laptops", icon: "laptop" },
+      { name: "Samsung Galaxy Book", note: "Galaxy Book series", href: "/quote?device=galaxy-book", image: serviceImages.samsungGalaxyBook },
+      { name: "Windows / Gaming laptop", note: "Dell, HP, Lenovo, ASUS, Acer & more", href: "/repairs/laptops", image: serviceImages.windowsLogo },
     ],
   },
   {
@@ -79,9 +80,9 @@ const categories: Array<{
     image: serviceImages.console,
     prompt: "Which console do you have? Pick yours to see what we fix.",
     choices: [
-      { name: "PlayStation", note: "PS5 & PS4 — HDMI, power, overheating", href: "/repairs/consoles", icon: "console" },
-      { name: "Xbox", note: "Series X/S & Xbox One", href: "/repairs/consoles", icon: "console" },
-      { name: "Nintendo Switch", note: "Switch, OLED, Lite & handhelds", href: "/repairs/consoles", icon: "console" },
+      { name: "PlayStation", note: "PS5 & PS4 — HDMI, power, overheating", href: "/repairs/consoles", image: serviceImages.playstation },
+      { name: "Xbox", note: "Series X/S & Xbox One", href: "/repairs/consoles", image: serviceImages.xbox },
+      { name: "Nintendo Switch", note: "Switch, OLED, Lite & handhelds", href: "/repairs/consoles", image: serviceImages.nintendoSwitch },
     ],
   },
   {
@@ -192,14 +193,22 @@ export default function RepairsPage() {
                         href={c.href}
                         className="group bg-card p-5 flex items-center gap-4 hover:bg-surface transition-colors"
                       >
-                        <div className="w-11 h-11 flex-shrink-0 flex items-center justify-center">
-                          {c.brand ? (
+                        <div className="w-16 h-14 flex-shrink-0 flex items-center justify-center">
+                          {c.image ? (
+                            <Image
+                              src={c.image.src}
+                              alt={c.image.alt}
+                              width={c.image.width}
+                              height={c.image.height}
+                              className="h-full w-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
+                            />
+                          ) : c.brand ? (
                             <DeviceImage
                               brand={c.brand}
                               model={c.model ?? ""}
                               deviceTypeId={c.deviceTypeId}
                               category="phone"
-                              size={44}
+                              size={52}
                               className="w-full h-full flex items-center justify-center"
                               imgClassName="object-contain w-full h-full"
                             />

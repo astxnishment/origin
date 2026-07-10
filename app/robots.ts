@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/"],
+        disallow: ["/api/", "/account/", "/account"],
       },
     ],
     sitemap: "https://originrepairs.co.uk/sitemap.xml",

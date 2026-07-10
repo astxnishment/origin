@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Phone } from "lucide-react";
@@ -12,14 +13,16 @@ import {
 } from "@/components/ui/sheet";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
+import { AuthMenu, AuthMenuMobile } from "@/components/AuthMenu";
 import { BUSINESS } from "@/lib/constants";
 
+// Primary nav — Contact lives in the footer to keep the header uncluttered
 const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
   { href: "/pricing", label: "Pricing" },
   { href: "/quote",   label: "Quote"   },
+  { href: "/track",   label: "Track Repair" },
   { href: "/about",   label: "About"   },
-  { href: "/contact", label: "Contact" },
 ];
 
 const PHONE = BUSINESS.phoneDisplay;
@@ -27,32 +30,34 @@ const PHONE_HREF = BUSINESS.phoneHref;
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <header className="glass fixed top-0 inset-x-0 z-50">
-      <div className="max-w-6xl mx-auto grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-6 px-5 sm:px-8">
+      {/* 1fr | auto | 1fr keeps the nav mathematically centred in the container */}
+      <div className="max-w-6xl mx-auto grid h-[72px] grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 sm:px-8">
 
         <Link
           href="/"
           aria-label="Origin Repairs — home"
-          className="shrink-0 transition-opacity duration-200 hover:opacity-75"
+          className="shrink-0 justify-self-start transition-opacity duration-200 hover:opacity-75"
         >
-          <Logo variant="light" heightClass="h-9 sm:h-10" className="block dark:hidden" />
-          <Logo variant="dark" heightClass="h-9 sm:h-10" className="hidden dark:block" />
+          <Logo variant="light" heightClass="h-10 sm:h-11" className="block dark:hidden" />
+          <Logo variant="dark" heightClass="h-10 sm:h-11" className="hidden dark:block" />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center justify-center gap-7">
+        {/* Desktop nav — centred column */}
+        <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(({ href, label }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
               <Link
                 key={href}
                 href={href}
-                className={`text-[13px] font-medium transition-colors duration-150 relative pb-0.5 ${
+                className={`whitespace-nowrap text-[13px] font-medium tracking-[0.01em] transition-colors duration-150 relative pb-0.5 ${
                   active
                     ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-foreground/65 hover:text-foreground"
                 }`}
               >
                 {label}
@@ -64,17 +69,11 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right side — phone + CTA */}
-        <div className="hidden md:flex items-center gap-3">
-          <a
-            href={PHONE_HREF}
-            className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Phone className="h-3.5 w-3.5" />
-            {PHONE}
-          </a>
+        {/* Right side — theme icon · account icon · CTA */}
+        <div className="hidden md:flex items-center gap-1.5 justify-self-end">
           <ThemeToggle />
-          <Button asChild className="btn-primary h-9 px-5 text-[13px]">
+          <AuthMenu />
+          <Button asChild className="btn-primary ml-2 h-10 whitespace-nowrap px-5 text-[13px]">
             <Link href="/book">Book Repair</Link>
           </Button>
         </div>
@@ -89,7 +88,7 @@ export default function Navbar() {
             <Phone className="h-4 w-4" />
           </a>
           <ThemeToggle />
-          <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-10 w-10">
                 <Menu className="h-5 w-5" />
@@ -116,6 +115,11 @@ export default function Navbar() {
                     </SheetClose>
                   ))}
                 </nav>
+
+                {/* Account */}
+                <div className="pt-5 border-t border-border pb-5">
+                  <AuthMenuMobile onNavigate={() => setSheetOpen(false)} />
+                </div>
 
                 {/* Mobile CTAs */}
                 <div className="pt-5 border-t border-border space-y-2.5">

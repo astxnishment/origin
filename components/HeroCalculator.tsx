@@ -185,7 +185,7 @@ export default function HeroCalculator() {
               <p className="py-0.5 text-3xl font-bold text-foreground">{priceStr}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {isQuoteReq
-                  ? "Free assessment — no charge if we can't fix it"
+                  ? "Free assessment — no charge if we can't fix it*"
                   : "Confirmed after free inspection · includes parts & labour"}
               </p>
             </div>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingCTA from "@/components/FloatingCTA";
 import MobileCTABar from "@/components/MobileCTABar";
+import { AuthProvider } from "@/lib/auth";
 import { BUSINESS, SEO, SERVICES } from "@/lib/constants";
 
 const geistSans = Geist({
@@ -165,7 +166,7 @@ export default function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang="en-GB"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -183,11 +184,13 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
-          {children}
-        </div>
-        <FloatingCTA />
-        <MobileCTABar />
+        <AuthProvider>
+          <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </div>
+          <FloatingCTA />
+          <MobileCTABar />
+        </AuthProvider>
       </body>
     </html>
   );

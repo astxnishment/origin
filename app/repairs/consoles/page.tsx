@@ -35,6 +35,24 @@ const consoles = [
   "Steam Deck",
 ];
 
+const consoleFamilies = [
+  {
+    name: "PlayStation",
+    note: "PS5 and PS4 repairs",
+    image: serviceImages.playstation,
+  },
+  {
+    name: "Xbox",
+    note: "Series X/S and Xbox One repairs",
+    image: serviceImages.xbox,
+  },
+  {
+    name: "Nintendo Switch",
+    note: "Switch, OLED and Lite repairs",
+    image: serviceImages.nintendoSwitch,
+  },
+];
+
 const guarantees = [
   "HDMI and USB-C port repair",
   "No power and board-level faults",
@@ -92,6 +110,27 @@ export default function ConsoleRepairsPage() {
                   priority
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="py-16 border-b border-border">
+            <h2 className="text-xl font-semibold mb-8">Console families</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+              {consoleFamilies.map(({ name, note, image }) => (
+                <div key={name} className="bg-card p-5 text-center hover:bg-surface transition-colors">
+                  <div className="mx-auto mb-4 flex h-32 items-center justify-center">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      width={image.width}
+                      height={image.height}
+                      className="max-h-32 w-auto object-contain drop-shadow-[0_14px_34px_rgba(0,0,0,0.32)]"
+                    />
+                  </div>
+                  <p className="text-[14px] font-semibold text-foreground">{name}</p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">{note}</p>
+                </div>
+              ))}
             </div>
           </div>
 
