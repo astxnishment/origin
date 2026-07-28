@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingForm from "./BookingForm";
@@ -10,7 +11,7 @@ import {
   type Brand,
   type RepairType,
 } from "@/lib/calculatorData";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Package } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Book a Repair — Leeds | Origin Repairs",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ brand?: string; model?: string; repair?: string }>;
+  searchParams: Promise<{ brand?: string; model?: string; repair?: string; method?: string }>;
 }
 
 export default async function BookRepairPage({ searchParams }: PageProps) {
@@ -30,6 +31,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
     prefillModel?.brand ?? slugToBrand(params.brand ?? "") ?? undefined;
   const prefillRepair: RepairType | undefined =
     slugToRepairType(params.repair ?? "") ?? undefined;
+  const prefillServiceMethod = params.method === "mail-in" ? "mail-in" : "drop-off";
 
   return (
     <>
@@ -46,8 +48,8 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
               Schedule your repair.
             </h1>
             <p className="text-[15px] text-muted-foreground max-w-md">
-              Fill in the form and we&apos;ll confirm your slot by email within the hour.
-              Walk-ins always welcome.
+              Fill in the form and we&apos;ll confirm the next step by email within the hour.
+              Walk in, book ahead, or ship your device to us.
             </p>
           </div>
 
@@ -59,6 +61,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                 prefillBrand={prefillBrand}
                 prefillModelId={prefillModel?.id}
                 prefillRepair={prefillRepair}
+                prefillServiceMethod={prefillServiceMethod}
               />
 
               {/* noscript fallback — visible only when JS is disabled */}
@@ -86,7 +89,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
             <aside className="space-y-6">
               <div className="rounded-xl border border-border bg-card p-6 space-y-5">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Visit us
+                  Visit or post
                 </p>
 
                 <a
@@ -140,6 +143,16 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                     <p className="text-[14px] font-medium text-foreground">Sat: 10am–4pm</p>
                   </div>
                 </div>
+
+                <Link href="/mail-in" className="group flex items-start gap-3">
+                  <Package className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-[12px] text-muted-foreground">Mail-in repairs</p>
+                    <p className="text-[14px] font-medium text-foreground transition-colors group-hover:text-primary">
+                      Ship your device to us tracked
+                    </p>
+                  </div>
+                </Link>
               </div>
 
               <div className="rounded-xl border border-border bg-card p-6 space-y-3">

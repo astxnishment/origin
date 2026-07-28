@@ -112,8 +112,8 @@ export const serviceImages: Record<string, ServiceImage> = {
   customPc: {
     src: "/images/services/custom-pc-build.png",
     alt: "Custom gaming PC build and upgrade service at Origin Repairs Leeds",
-    width: 1536,
-    height: 1024,
+    width: 696,
+    height: 817,
   },
   // ── Aliases kept for any other pages that reference these keys ───────────
   samsungTab: {

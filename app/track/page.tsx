@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -234,19 +234,12 @@ function RepairResult({ repair }: { repair: RepairRecord }) {
 function TrackForm() {
   const searchParams = useSearchParams();
 
-  const [reference, setReference] = useState("");
+  const [reference, setReference] = useState(() => searchParams.get("ref")?.toUpperCase() ?? "");
   const [contact, setContact] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [lookupError, setLookupError] = useState("");
   const [repair, setRepair] = useState<RepairRecord | null>(null);
-
-  // Prefill from the homepage quick-track strip (?ref=OR-…)
-  useEffect(() => {
-    const ref = searchParams.get("ref");
-    if (ref) setReference(ref.toUpperCase());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -25,7 +25,7 @@ import {
   type DeviceCategory,
 } from "@/lib/calculatorData";
 import { BUSINESS } from "@/lib/constants";
-import { Check, Clock, Shield, ArrowRight, AlertCircle } from "lucide-react";
+import { Check, Clock, Shield, ArrowRight, AlertCircle, Package, Store } from "lucide-react";
 
 // ── Time slots available for booking ─────────────────────────────
 // Mon–Fri 9am–6pm, Sat 10am–4pm, Sun closed (see BUSINESS.hours).
@@ -73,11 +73,15 @@ interface Props {
   prefillBrand?: Brand;
   prefillModelId?: string;
   prefillRepair?: RepairType;
+  prefillServiceMethod?: ServiceMethod;
 }
+
+type ServiceMethod = "drop-off" | "mail-in";
 
 // ── Validation ────────────────────────────────────────────────────
 function validateForm(data: {
   name: string; email: string; phone: string;
+  serviceMethod: ServiceMethod; returnAddress: string;
   deviceType: string; isCatalog: boolean;
   brand: Brand | ""; modelId: string; deviceName: string;
   repairType: RepairType | "";
@@ -88,6 +92,8 @@ function validateForm(data: {
   if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
     errors.email = "Please enter a valid email address.";
   if (!data.phone.trim()) errors.phone = "Please enter your phone number.";
+  if (data.serviceMethod === "mail-in" && !data.returnAddress.trim())
+    errors.returnAddress = "Please enter the return address for your device.";
   if (!data.deviceType) errors.deviceType = "Please choose a device type.";
   if (data.isCatalog) {
     if (!data.brand) errors.brand = "Please select a brand.";
@@ -105,9 +111,10 @@ function validateForm(data: {
   return errors;
 }
 
-export default function BookingForm({ prefillBrand, prefillModelId, prefillRepair }: Props) {
+export default function BookingForm({ prefillBrand, prefillModelId, prefillRepair, prefillServiceMethod = "drop-off" }: Props) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serviceMethod, setServiceMethod] = useState<ServiceMethod>(prefillServiceMethod);
 
   // Device selection. Infer the device type from a prefilled model if present,
   // otherwise default to "phone" when a brand was prefilled, else force a choice.
@@ -137,6 +144,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
   const [phone, setPhone] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [returnAddress, setReturnAddress] = useState("");
   const [issue, setIssue] = useState("");
 
   const models = brand && isCatalog
@@ -160,6 +168,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
 
     const validationErrors = validateForm({
       name, email, phone,
+      serviceMethod, returnAddress,
       deviceType, isCatalog,
       brand, modelId, deviceName,
       repairType, date, time,
@@ -181,6 +190,8 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name, email, phone, issue, date, time,
+          serviceMethod,
+          returnAddress: serviceMethod === "mail-in" ? returnAddress : "",
           deviceType: deviceTypeOption?.label ?? "",
           brand: isCatalog ? brand : "",
           model: isCatalog ? (selectedModel?.name ?? "") : deviceName,
@@ -213,7 +224,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
           <h2 className="text-2xl font-semibold mb-2">Booking received.</h2>
           <p className="text-[15px] text-muted-foreground">
             Check your email for confirmation. We&apos;ll be in touch within the hour to confirm
-            your slot.
+            {serviceMethod === "mail-in" ? " your mail-in instructions." : " your slot."}
           </p>
         </div>
 
@@ -221,12 +232,20 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
           <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
             What happens next
           </p>
-          {[
-            `Come to ${BUSINESS.address}`,
-            "Free assessment to confirm the fault and exact price",
-            "Price agreed before any work begins",
-            "Repair carried out — 12-month warranty on eligible repairs",
-          ].map((step, i) => (
+          {(serviceMethod === "mail-in"
+            ? [
+                `Ship your device tracked to ${BUSINESS.address}`,
+                "Include your name, phone number, return address and booking reference",
+                "We assess it and confirm the quote before any work begins",
+                "Repair completed and returned by tracked delivery",
+              ]
+            : [
+                `Come to ${BUSINESS.address}`,
+                "Free assessment to confirm the fault and exact price",
+                "Price agreed before any work begins",
+                "Repair carried out — 12-month warranty on eligible repairs",
+              ]
+          ).map((step, i) => (
             <div key={i} className="flex gap-3">
               <span className="text-[12px] font-semibold text-primary mt-0.5 flex-shrink-0">
                 {i + 1}.
@@ -363,6 +382,59 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
               aria-describedby={errors.phone ? "phone-error" : undefined}
             />
           </Field>
+
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+              How will we receive it?
+            </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {[
+                { value: "drop-off" as const, title: "Visit the shop", body: "Walk in or book a time at our Leeds workshop.", icon: Store },
+                { value: "mail-in" as const, title: "Mail-in repair", body: "Ship your device to us using tracked postage.", icon: Package },
+              ].map(({ value, title, body, icon: Icon }) => {
+                const active = serviceMethod === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => {
+                      setServiceMethod(value);
+                      setErrors((prev) => ({ ...prev, returnAddress: "" }));
+                    }}
+                    className="rounded-xl border p-4 text-left transition-colors hover:bg-surface"
+                    style={{
+                      borderColor: active ? "var(--control-border-hover)" : "var(--border)",
+                      background: active ? "var(--selection-bg)" : "var(--card)",
+                    }}
+                  >
+                    <div className="mb-2 flex items-center gap-2">
+                      <Icon className="h-4 w-4 text-[color:var(--icon-fg)]" />
+                      <span className="text-[13px] font-semibold text-foreground">{title}</span>
+                    </div>
+                    <p className="text-[12px] leading-relaxed text-muted-foreground">{body}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {serviceMethod === "mail-in" && (
+            <Field label="Return address" id="returnAddress" required error={errors.returnAddress}>
+              <Textarea
+                id="returnAddress"
+                name="returnAddress"
+                value={returnAddress}
+                onChange={(e) => {
+                  setReturnAddress(e.target.value);
+                  setErrors((prev) => ({ ...prev, returnAddress: "" }));
+                }}
+                placeholder="Your return shipping address"
+                rows={3}
+                className="bg-card border-border rounded-xl text-[13px] resize-none"
+                aria-describedby={errors.returnAddress ? "returnAddress-error" : undefined}
+              />
+            </Field>
+          )}
         </div>
       </section>
 
@@ -605,11 +677,11 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
           >
             3
           </span>
-          Preferred date &amp; time
+          {serviceMethod === "mail-in" ? "Expected send date" : "Preferred date & time"}
         </h2>
 
         <div className="space-y-5">
-          <Field label="Date" id="date" required error={errors.date}>
+          <Field label={serviceMethod === "mail-in" ? "Expected send date" : "Date"} id="date" required error={errors.date}>
             <Input
               id="date"
               name="date"
@@ -635,7 +707,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
 
           <fieldset>
             <legend className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              Time <span className="text-destructive ml-0.5">*</span>
+              {serviceMethod === "mail-in" ? "Best time to contact you" : "Time"} <span className="text-destructive ml-0.5">*</span>
             </legend>
             {errors.time && (
               <p id="time-error" role="alert" className="text-[12px] text-destructive mb-2 flex items-center gap-1">

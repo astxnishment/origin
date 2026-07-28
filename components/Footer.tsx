@@ -5,6 +5,7 @@ import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
 const services = [
   { href: "/repairs/phones", label: "Phone Repair" },
+  { href: "/mail-in", label: "Mail-in Repairs" },
   { href: "/repairs/ipad", label: "iPad Repair" },
   { href: "/repairs/laptops", label: "Laptop Repair" },
   { href: "/repairs/consoles", label: "Console Repair" },

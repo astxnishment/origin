@@ -19,6 +19,7 @@ import { BUSINESS } from "@/lib/constants";
 // Primary nav — Contact lives in the footer to keep the header uncluttered
 const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
+  { href: "/mail-in", label: "Mail-in" },
   { href: "/pricing", label: "Pricing" },
   { href: "/quote",   label: "Quote"   },
   { href: "/track",   label: "Track Repair" },

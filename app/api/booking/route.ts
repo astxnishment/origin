@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
       estimatedPrice,
       estimatedTime,
       warranty,
+      serviceMethod,
+      returnAddress,
       date,
       time,
       issue,
@@ -30,6 +32,8 @@ export async function POST(req: NextRequest) {
     // Prefer "Brand Model" for catalog devices; fall back to "DeviceType — Model".
     const deviceLine = brand ? `${brand} ${model}` : `${deviceType} — ${model}`;
     const repairLine = repair + (estimatedPrice ? ` — ${estimatedPrice}` : "");
+    const isMailIn = serviceMethod === "mail-in";
+    const serviceMethodLabel = isMailIn ? "Mail-in repair" : "Visit / drop-off";
 
     // Format the booking details for email
     const bookingDate = new Date(date).toLocaleDateString("en-GB", {
@@ -46,23 +50,34 @@ export async function POST(req: NextRequest) {
 
       <h3>Booking Details</h3>
       <ul>
+        <li><strong>Service method:</strong> ${serviceMethodLabel}</li>
         <li><strong>Device:</strong> ${deviceLine}</li>
         <li><strong>Repair:</strong> ${repairLine}</li>
         ${estimatedTime ? `<li><strong>Estimated time:</strong> ${estimatedTime}</li>` : ""}
         ${warranty ? `<li><strong>Warranty:</strong> ${warranty}</li>` : ""}
-        <li><strong>Date:</strong> ${bookingDate}</li>
-        <li><strong>Time:</strong> ${time}</li>
+        <li><strong>${isMailIn ? "Expected send date" : "Date"}:</strong> ${bookingDate}</li>
+        <li><strong>${isMailIn ? "Best contact time" : "Time"}:</strong> ${time}</li>
+        ${isMailIn && returnAddress ? `<li><strong>Return address:</strong><br>${String(returnAddress).replace(/\n/g, "<br>")}</li>` : ""}
         <li><strong>Issue:</strong> ${issue || "To be diagnosed"}</li>
       </ul>
-      <p style="font-size:13px;color:#666;">Estimated price is confirmed after a free in-store inspection.</p>
+      <p style="font-size:13px;color:#666;">Estimated price is confirmed after a free assessment.</p>
 
       <h3>What to Expect</h3>
-      <ol>
-        <li>Come to our location: 76 Cookridge Street, Leeds, LS2 8GL</li>
-        <li>Our technician will diagnose your device (free)</li>
-        <li>We'll confirm the final price before any work starts</li>
-        <li>Repair completed with 12-month warranty</li>
-      </ol>
+      ${isMailIn ? `
+        <ol>
+          <li>Pack your device safely with padding and use tracked postage.</li>
+          <li>Send it to: Origin Repairs, 76 Cookridge Street, Leeds, LS2 8GL.</li>
+          <li>Include your name, phone number, return address and booking reference inside the parcel.</li>
+          <li>We'll confirm the final price before any work starts, then return it by tracked delivery after repair.</li>
+        </ol>
+      ` : `
+        <ol>
+          <li>Come to our location: 76 Cookridge Street, Leeds, LS2 8GL</li>
+          <li>Our technician will diagnose your device (free)</li>
+          <li>We'll confirm the final price before any work starts</li>
+          <li>Repair completed with 12-month warranty</li>
+        </ol>
+      `}
 
       <p><strong>Contact:</strong> +44 7768 426754</p>
       <p><strong>Hours:</strong> Mon–Fri: 9am–6pm · Sat: 10am–4pm · Sun: Closed</p>
@@ -91,7 +106,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         from: "Origin Repairs <noreply@originrepairs.co.uk>",
         to: email,
-        subject: `Booking Confirmed - ${date} at ${time}`,
+        subject: `${isMailIn ? "Mail-in Repair Started" : "Booking Confirmed"} - ${date}`,
         html: emailBody,
       }),
     });
@@ -111,17 +126,19 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         from: "Origin Repairs <noreply@originrepairs.co.uk>",
         to: "tech@originrepairs.co.uk",
-        subject: `New Booking: ${deviceLine} on ${date}`,
+        subject: `${isMailIn ? "New Mail-in Repair" : "New Booking"}: ${deviceLine} on ${date}`,
         html: `
           <h2>New Booking Received</h2>
           <p><strong>Customer:</strong> ${name}</p>
           <p><strong>Phone:</strong> ${phone}</p>
           <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Service method:</strong> ${serviceMethodLabel}</p>
           <p><strong>Device:</strong> ${deviceLine}</p>
           <p><strong>Repair:</strong> ${repairLine}</p>
           ${estimatedTime ? `<p><strong>Estimated time:</strong> ${estimatedTime}</p>` : ""}
-          <p><strong>Date:</strong> ${bookingDate}</p>
-          <p><strong>Time:</strong> ${time}</p>
+          <p><strong>${isMailIn ? "Expected send date" : "Date"}:</strong> ${bookingDate}</p>
+          <p><strong>${isMailIn ? "Best contact time" : "Time"}:</strong> ${time}</p>
+          ${isMailIn && returnAddress ? `<p><strong>Return address:</strong><br>${String(returnAddress).replace(/\n/g, "<br>")}</p>` : ""}
           <p><strong>Issue:</strong> ${issue || "To be diagnosed"}</p>
         `,
       }),

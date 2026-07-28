@@ -16,6 +16,7 @@ import {
   Laptop,
   MonitorCog,
   MapPin,
+  Package,
   Phone,
   Shield,
   Smartphone,
@@ -124,7 +125,7 @@ const popularRepairs = [
 const trustItems = [
   { icon: Clock, label: "Same-day" },
   { icon: Shield, label: "12-month warranty" },
-  { icon: MapPin, label: "Leeds LS2" },
+  { icon: Package, label: "Mail-in repairs" },
   { icon: Check, label: "Free diagnosis" },
 ];
 

@@ -13,7 +13,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -51,13 +50,10 @@ function readStoredUser(): AuthUser | null {
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setUser(readStoredUser());
-    setLoading(false);
-  }, []);
+  const [user, setUser] = useState<AuthUser | null>(() =>
+    typeof window === "undefined" ? null : readStoredUser()
+  );
+  const [loading] = useState(false);
 
   const persist = useCallback((u: AuthUser) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
@@ -66,8 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = useCallback(
-    async (email: string, _password: string) => {
+    async (email: string, password: string) => {
       // TODO(backend): POST /api/auth/login
+      void password;
       await delay(700);
       const name = email
         .split("@")[0]
@@ -79,8 +76,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const signUp = useCallback(
-    async (name: string, email: string, _password: string) => {
+    async (name: string, email: string, password: string) => {
       // TODO(backend): POST /api/auth/register
+      void password;
       await delay(900);
       return persist({ name, email });
     },
