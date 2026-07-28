@@ -20,7 +20,15 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ brand?: string; model?: string; repair?: string; method?: string }>;
+  searchParams: Promise<{
+    brand?: string;
+    model?: string;
+    repair?: string;
+    method?: string;
+    device?: string;
+    deviceName?: string;
+    issue?: string;
+  }>;
 }
 
 export default async function BookRepairPage({ searchParams }: PageProps) {
@@ -62,6 +70,9 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                 prefillModelId={prefillModel?.id}
                 prefillRepair={prefillRepair}
                 prefillServiceMethod={prefillServiceMethod}
+                prefillDeviceType={params.device}
+                prefillDeviceName={params.deviceName}
+                prefillIssue={params.issue}
               />
 
               {/* noscript fallback — visible only when JS is disabled */}

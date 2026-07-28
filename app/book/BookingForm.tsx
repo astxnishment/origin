@@ -74,6 +74,9 @@ interface Props {
   prefillModelId?: string;
   prefillRepair?: RepairType;
   prefillServiceMethod?: ServiceMethod;
+  prefillDeviceType?: string;
+  prefillDeviceName?: string;
+  prefillIssue?: string;
 }
 
 type ServiceMethod = "drop-off" | "mail-in";
@@ -111,7 +114,48 @@ function validateForm(data: {
   return errors;
 }
 
-export default function BookingForm({ prefillBrand, prefillModelId, prefillRepair, prefillServiceMethod = "drop-off" }: Props) {
+const REPAIRS_BY_DEVICE: Record<string, readonly RepairType[]> = {
+  phone: REPAIR_TYPES.filter((repair) =>
+    ![
+      "Keyboard / trackpad repair", "SSD / RAM upgrade", "HDMI port repair",
+      "Overheating / fan service", "Custom PC build", "GPU / cooling upgrade",
+    ].includes(repair)
+  ),
+  tablet: REPAIR_TYPES.filter((repair) =>
+    ![
+      "Back glass", "Face ID / biometric repair", "Keyboard / trackpad repair",
+      "SSD / RAM upgrade", "HDMI port repair", "Overheating / fan service",
+      "Custom PC build", "GPU / cooling upgrade",
+    ].includes(repair)
+  ),
+  laptop: REPAIR_TYPES.filter((repair) =>
+    ![
+      "Back glass", "Face ID / biometric repair", "HDMI port repair",
+      "Custom PC build", "GPU / cooling upgrade",
+    ].includes(repair)
+  ),
+  console: [
+    "HDMI port repair", "Charging port", "No power repair",
+    "Motherboard / logic board", "Overheating / fan service",
+    "Liquid damage repair", "Software / OS issue", "Hardware diagnostics", "Other repair",
+  ],
+  desktop: [
+    "Custom PC build", "GPU / cooling upgrade", "SSD / RAM upgrade",
+    "No power repair", "Motherboard / logic board", "Overheating / fan service",
+    "Software / OS issue", "Data recovery", "Hardware diagnostics", "Other repair",
+  ],
+  other: REPAIR_TYPES,
+};
+
+export default function BookingForm({
+  prefillBrand,
+  prefillModelId,
+  prefillRepair,
+  prefillServiceMethod = "drop-off",
+  prefillDeviceType,
+  prefillDeviceName,
+  prefillIssue,
+}: Props) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serviceMethod, setServiceMethod] = useState<ServiceMethod>(prefillServiceMethod);
@@ -122,11 +166,11 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
     ? deviceCategory(getDeviceById(prefillModelId) ?? { id: "", name: "", brand: "Apple", tier: "mid" })
     : null;
   const [deviceType, setDeviceType] = useState<string>(
-    prefillCategory ?? (prefillBrand ? "phone" : "")
+    prefillCategory ?? prefillDeviceType ?? (prefillBrand ? "phone" : "")
   );
   const [brand, setBrand] = useState<Brand | "">(prefillBrand ?? "");
   const [modelId, setModelId] = useState<string>(prefillModelId ?? "");
-  const [deviceName, setDeviceName] = useState<string>("");
+  const [deviceName, setDeviceName] = useState<string>(prefillDeviceName ?? "");
   const [repairType, setRepairType] = useState<RepairType | "">(prefillRepair ?? "");
 
   const deviceTypeOption = DEVICE_TYPE_OPTIONS.find((d) => d.id === deviceType);
@@ -145,7 +189,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [returnAddress, setReturnAddress] = useState("");
-  const [issue, setIssue] = useState("");
+  const [issue, setIssue] = useState(prefillIssue ?? "");
 
   const models = brand && isCatalog
     ? getModelsByBrand(brand).filter((m) => deviceCategory(m) === selectedCategory)
@@ -155,6 +199,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
     selectedModel && repairType
       ? getRepairQuote(selectedModel, repairType as RepairType)
       : null;
+  const availableRepairs = REPAIRS_BY_DEVICE[deviceType] ?? REPAIR_TYPES;
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -568,7 +613,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
                     />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-border rounded-xl">
-                    {REPAIR_TYPES.map((type) => (
+                    {availableRepairs.map((type) => (
                       <SelectItem key={type} value={type} className="text-[13px]">
                         {type}
                       </SelectItem>
@@ -614,7 +659,7 @@ export default function BookingForm({ prefillBrand, prefillModelId, prefillRepai
                     />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-border rounded-xl">
-                    {REPAIR_TYPES.map((type) => (
+                    {availableRepairs.map((type) => (
                       <SelectItem key={type} value={type} className="text-[13px]">
                         {type}
                       </SelectItem>

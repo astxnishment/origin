@@ -24,12 +24,21 @@ export const REPAIR_TYPES = [
   "Motherboard / logic board",
   "No power repair",
   "Face ID / biometric repair",
+  "Keyboard / trackpad repair",
+  "SSD / RAM upgrade",
+  "HDMI port repair",
+  "Overheating / fan service",
+  "Software / OS issue",
+  "Custom PC build",
+  "GPU / cooling upgrade",
+  "Hardware diagnostics",
+  "Other repair",
 ] as const;
 
 export type RepairType = (typeof REPAIR_TYPES)[number];
 
 // Map UI repair type → Excel repair_type value (v3 workbook names)
-const REPAIR_TYPE_MAP: Record<RepairType, string> = {
+const REPAIR_TYPE_MAP: Partial<Record<RepairType, string>> = {
   "Screen replacement": "Screen Replacement",
   "Battery replacement": "Battery Replacement",
   "Back glass": "Back Glass Replacement",
@@ -110,7 +119,7 @@ export function getModelsByBrand(brand: Brand): DeviceModel[] {
 }
 
 // Map UI repair type → deviceData repair ID (for Pixel / Samsung lookup via deviceData)
-const REPAIR_ID_MAP: Record<RepairType, string> = {
+const REPAIR_ID_MAP: Partial<Record<RepairType, string>> = {
   "Screen replacement":      "screen",
   "Battery replacement":     "battery",
   "Back glass":              "back-glass",
@@ -161,6 +170,26 @@ function advancedRepairQuote(device: DeviceModel, repairType: RepairType): Repai
       : { minPrice: 59, maxPrice: 179, estimatedTime: "1-3 days", warranty: "3 months" };
   }
 
+  if (repairType === "Keyboard / trackpad repair" && category === "laptop") {
+    return { minPrice: 99, maxPrice: 249, estimatedTime: "1-3 days", warranty: "6 months" };
+  }
+
+  if (repairType === "SSD / RAM upgrade" && category === "laptop") {
+    return { minPrice: 69, maxPrice: 249, estimatedTime: "Same day", warranty: "12 months on supplied parts" };
+  }
+
+  if (repairType === "Overheating / fan service") {
+    return { minPrice: 49, maxPrice: 89, estimatedTime: "Same day", warranty: "3 months" };
+  }
+
+  if (repairType === "Software / OS issue") {
+    return { minPrice: 39, maxPrice: 99, estimatedTime: "Same day", warranty: "1 month" };
+  }
+
+  if (repairType === "Hardware diagnostics") {
+    return { minPrice: 29, maxPrice: 79, estimatedTime: "Same day assessment", warranty: "Diagnostic only" };
+  }
+
   return null;
 }
 
@@ -189,9 +218,11 @@ export function getRepairQuote(device: DeviceModel, repairType: RepairType): Rep
   }
 
   // Find the cheapest non-inspection row for this model + repair type
-  const rows = REPAIR_PRICING.filter(
-    (r) => r.model === device.name && r.repairType === excelType
-  );
+  const rows = excelType
+    ? REPAIR_PRICING.filter(
+        (r) => r.model === device.name && r.repairType === excelType
+      )
+    : [];
 
   const fixed = rows.filter((r) => r.minPrice !== null);
   if (fixed.length > 0) {
