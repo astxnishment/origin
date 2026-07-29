@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 
-const ROWS_PER_PAGE = 20;
+const ROWS_PER_PAGE = 8;
 
 function unique(values: string[]): string[] {
   return [...new Set(values)].sort((a, b) => a.localeCompare(b));
@@ -42,7 +42,7 @@ function PriceStatus({ row }: { row: PublicPriceRow }) {
 
 export default function PricingTable() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All categories");
+  const [category, setCategory] = useState("Choose category");
   const [brand, setBrand] = useState("All brands");
   const [repair, setRepair] = useState("All repairs");
   const [page, setPage] = useState(1);
@@ -62,8 +62,15 @@ export default function PricingTable() {
 
   const filteredRows = useMemo(() => {
     const term = query.trim().toLowerCase();
+    const hasSelection =
+      Boolean(term) ||
+      category !== "Choose category" ||
+      brand !== "All brands" ||
+      repair !== "All repairs";
+    if (!hasSelection) return [];
+
     return ALL_PUBLIC_PRICES.filter((row) => {
-      if (category !== "All categories" && row.category !== category) return false;
+      if (category !== "Choose category" && row.category !== category) return false;
       if (brand !== "All brands" && row.brand !== brand) return false;
       if (repair !== "All repairs" && row.repair !== repair) return false;
       if (!term) return true;
@@ -84,9 +91,9 @@ export default function PricingTable() {
     (safePage - 1) * ROWS_PER_PAGE,
     safePage * ROWS_PER_PAGE
   );
-  const hasFilters =
-    query ||
-    category !== "All categories" ||
+  const hasSelection =
+    Boolean(query.trim()) ||
+    category !== "Choose category" ||
     brand !== "All brands" ||
     repair !== "All repairs";
 
@@ -97,7 +104,7 @@ export default function PricingTable() {
 
   function clearFilters() {
     setQuery("");
-    setCategory("All categories");
+    setCategory("Choose category");
     setBrand("All brands");
     setRepair("All repairs");
     setPage(1);
@@ -175,7 +182,7 @@ export default function PricingTable() {
               aria-label="Filter by category"
               className="h-10 min-w-36 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none"
             >
-              <option>All categories</option>
+              <option>Choose category</option>
               {categories.map((item) => (
                 <option key={item}>{item}</option>
               ))}
@@ -215,9 +222,10 @@ export default function PricingTable() {
           <button
             type="button"
             onClick={downloadCsv}
+            disabled={!hasSelection}
             title="Download filtered prices as CSV"
             aria-label="Download filtered prices as CSV"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:bg-surface"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:bg-surface disabled:opacity-35"
           >
             <Download className="h-4 w-4" />
           </button>
@@ -226,9 +234,11 @@ export default function PricingTable() {
         <div className="mt-3 flex min-h-6 items-center justify-between gap-3">
           <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <SlidersHorizontal className="h-3.5 w-3.5" />
-            {filteredRows.length} price option{filteredRows.length === 1 ? "" : "s"}
+            {hasSelection
+              ? `${filteredRows.length} matching price option${filteredRows.length === 1 ? "" : "s"}`
+              : `${ALL_PUBLIC_PRICES.length} prices available`}
           </p>
-          {hasFilters && (
+          {hasSelection && (
             <button
               type="button"
               onClick={clearFilters}
@@ -241,7 +251,28 @@ export default function PricingTable() {
         </div>
       </div>
 
-      <div className="hidden md:block">
+      {!hasSelection && (
+        <div className="p-4 sm:p-5">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Choose a category
+          </p>
+          <div className="grid overflow-hidden rounded-md border border-border sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => updateFilter(() => setCategory(item))}
+                className="min-h-14 border-b border-border px-4 py-3 text-left text-[13px] font-semibold text-foreground transition-colors hover:bg-surface sm:border-r lg:[&:nth-child(3n)]:border-r-0"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {hasSelection && (
+        <div className="hidden md:block">
         <div className="grid grid-cols-[1.4fr_1.4fr_1.2fr_0.8fr_0.8fr] gap-4 border-b border-border bg-card px-5 py-3">
           {["Device", "Repair", "Part quality", "Time / warranty", "Price"].map(
             (label, index) => (
@@ -291,9 +322,11 @@ export default function PricingTable() {
             <PriceStatus row={row} />
           </div>
         ))}
-      </div>
+        </div>
+      )}
 
-      <div className="md:hidden">
+      {hasSelection && (
+        <div className="md:hidden">
         {visibleRows.map((row) => (
           <div
             key={row.id}
@@ -318,9 +351,10 @@ export default function PricingTable() {
             </p>
           </div>
         ))}
-      </div>
+        </div>
+      )}
 
-      {visibleRows.length === 0 && (
+      {hasSelection && visibleRows.length === 0 && (
         <div className="px-5 py-16 text-center">
           <p className="text-[14px] font-medium text-foreground">
             No matching prices
@@ -331,7 +365,8 @@ export default function PricingTable() {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-4 border-t border-border bg-surface px-4 py-3 sm:px-5">
+      {hasSelection && visibleRows.length > 0 && (
+        <div className="flex items-center justify-between gap-4 border-t border-border bg-surface px-4 py-3 sm:px-5">
         <p className="text-[11px] text-muted-foreground">
           Page {safePage} of {pageCount}
         </p>
@@ -359,8 +394,8 @@ export default function PricingTable() {
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
-
