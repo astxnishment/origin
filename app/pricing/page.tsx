@@ -2,126 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PricingTable from "@/components/PricingTable";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight, Cpu, Droplets, HardDrive, Zap } from "lucide-react";
-import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Repair Pricing Leeds | Transparent Fixed Quotes",
   description:
     "Clear repair pricing for screens, batteries, charging ports, liquid damage, data recovery and board-level repairs in Leeds. Fixed quote before work starts.",
 };
-
-function price(brand: string, model: string, repairType: string): string {
-  const row = getRepairPrice(brand, model, repairType);
-  if (!row) return "POA";
-  return formatPriceRange(row.minPrice, row.maxPrice);
-}
-
-const repairs = [
-  {
-    device: "iPhone 16e",
-    service: "Screen replacement",
-    price: price("Apple", "iPhone 16e", "Screen Replacement"),
-    time: "45–90 min",
-  },
-  {
-    device: "iPhone 16 Pro",
-    service: "Screen replacement",
-    price: price("Apple", "iPhone 16 Pro", "Screen Replacement"),
-    time: "45–90 min",
-  },
-  {
-    device: "iPhone 16",
-    service: "Battery replacement",
-    price: price("Apple", "iPhone 16", "Battery Replacement"),
-    time: "30–75 min",
-  },
-  {
-    device: "iPhone 16 Pro",
-    service: "Charging port",
-    price: price("Apple", "iPhone 16 Pro", "Charging Port Replacement"),
-    time: "1–2 hrs",
-  },
-  {
-    device: "Galaxy S25 Ultra",
-    service: "Screen replacement",
-    price: price("Samsung", "Galaxy S25 Ultra", "Screen Replacement"),
-    time: "60–90 min",
-  },
-  {
-    device: "Galaxy A55",
-    service: "Screen replacement",
-    price: price("Samsung", "Galaxy A55", "Screen Replacement"),
-    time: "60 min",
-  },
-  {
-    device: "Galaxy S25",
-    service: "Battery replacement",
-    price: price("Samsung", "Galaxy S25", "Battery Replacement"),
-    time: "45–75 min",
-  },
-  {
-    device: "iPad Air 5",
-    service: "Screen replacement",
-    price: price("Apple", "iPad Air 5", "Screen Replacement"),
-    time: "90 min",
-  },
-  {
-    device: "iPad 10th Gen",
-    service: "Battery replacement",
-    price: price("Apple", "iPad 10th Gen", "Battery Replacement"),
-    time: "60–90 min",
-  },
-  {
-    device: "MacBook Air M2",
-    service: "Screen replacement",
-    price: price("Apple", "MacBook Air M2", "Screen Replacement"),
-    time: "2–3 hrs",
-  },
-  {
-    device: "MacBook",
-    service: "Battery replacement",
-    price: price("Apple", "MacBook Battery Replacement", "Battery Replacement"),
-    time: "90 min",
-  },
-  {
-    device: "Phone / tablet",
-    service: "Motherboard repair",
-    price: "£79–£299",
-    time: "1–5 days",
-  },
-  {
-    device: "MacBook",
-    service: "Logic board repair",
-    price: "£129–£399",
-    time: "2–7 days",
-  },
-  {
-    device: "Game console",
-    service: "HDMI / no power repair",
-    price: "£59–£249",
-    time: "1–5 days",
-  },
-  {
-    device: "Custom PC",
-    service: "Builds & upgrades",
-    price: "£29–£199",
-    time: "30 min–3 days",
-  },
-  {
-    device: "Any device",
-    service: "Liquid damage diagnostic",
-    price: "£29–£79",
-    time: "Same day",
-  },
-  {
-    device: "Any device",
-    service: "Data recovery",
-    price: "£79–£499",
-    time: "2–10 days",
-  },
-];
 
 const included = [
   "Fixed price quote before we start",
@@ -240,31 +129,21 @@ export default function PricingPage() {
 
           {/* Price table */}
           <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-3">Common repair prices</h2>
-            <p className="text-[13px] text-muted-foreground mb-8">
-              Prices are estimates and may vary after inspection depending on part quality, device condition, and availability.{" "}
-              <Link href="/quote" className="text-primary hover:underline">Use the calculator</Link> for your specific model.
-            </p>
-            <div className="rounded-xl border border-border overflow-hidden">
-              <div className="grid grid-cols-4 bg-surface px-5 py-3">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Device</p>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground col-span-2">Service</p>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground text-right">Price</p>
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Complete repair price table</h2>
+                <p className="max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
+                  Every published model, repair and part-quality option, plus our console,
+                  custom PC, board-level and recovery services. Prices are estimates until
+                  the device and fault are assessed.
+                </p>
               </div>
-              {repairs.map(({ device, service, price: p, time }) => (
-                <div
-                  key={`${device}-${service}`}
-                  className="grid grid-cols-4 px-5 py-4 items-center border-t border-border bg-card hover:bg-surface transition-colors"
-                >
-                  <p className="text-[12px] text-muted-foreground">{device}</p>
-                  <div className="col-span-2">
-                    <p className="text-[13px] font-medium text-foreground">{service}</p>
-                    <p className="text-[12px] text-muted-foreground">{time}</p>
-                  </div>
-                  <p className="text-[13px] font-semibold text-foreground text-right">{p}</p>
-                </div>
-              ))}
+              <Link href="/quote" className="flex items-center gap-1.5 text-[12px] font-semibold text-foreground hover:underline">
+                Build a device quote
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
+            <PricingTable />
           </div>
 
           {/* FAQ */}
