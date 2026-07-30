@@ -55,7 +55,7 @@
   --space-24: 96px;
   --space-30: 120px;
 
-  --text-display: clamp(3rem, 5.4vw, 5.25rem);
+  --text-display: clamp(2.75rem, 4.6vw, 4.75rem);
   --text-page-title: clamp(2.35rem, 4vw, 4rem);
   --text-section-title: clamp(1.9rem, 3vw, 2.75rem);
   --text-card-title: 1.125rem;
@@ -268,8 +268,8 @@
     max-width: 12ch;
     font-size: var(--text-display);
     font-weight: 680;
-    line-height: 0.96;
-    letter-spacing: -0.045em;
+    line-height: 0.98;
+    letter-spacing: 0;
     text-wrap: balance;
   }
 

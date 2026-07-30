@@ -127,7 +127,7 @@ export default function Home() {
       <main>
         <section className="border-b border-border pt-16 md:pt-[72px]">
           <PageContainer>
-            <div className="grid min-h-[640px] items-center gap-4 py-4 sm:min-h-[680px] sm:gap-8 sm:py-12 lg:grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] lg:gap-10 lg:py-14">
+            <div className="grid min-h-[620px] items-center gap-5 py-5 sm:min-h-[650px] sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,0.52fr)_minmax(0,0.48fr)] lg:gap-12 lg:py-12">
               <div className="relative z-10">
                 <a
                   href={BUSINESS.googleMapsUrl}
@@ -194,31 +194,23 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="relative order-first h-36 sm:h-64 lg:order-last lg:h-[540px]">
+              <div className="relative order-first h-40 sm:h-60 lg:order-last lg:h-[460px]">
                 <Image
                   src={serviceImages.iphone.src}
                   alt="Latest iPhone supported by Origin Repairs"
                   width={serviceImages.iphone.width}
                   height={serviceImages.iphone.height}
                   priority
-                  sizes="(max-width: 639px) 180px, (max-width: 1023px) 260px, 390px"
-                  className="absolute right-[3%] top-0 z-20 h-36 w-36 object-contain drop-shadow-[0_26px_52px_rgba(0,0,0,0.3)] sm:h-60 sm:w-60 lg:right-[4%] lg:top-[1%] lg:h-[390px] lg:w-[390px]"
+                  sizes="(max-width: 639px) 152px, (max-width: 1023px) 220px, 330px"
+                  className="absolute right-[8%] top-0 z-20 h-[152px] w-[152px] object-contain drop-shadow-[0_24px_44px_rgba(0,0,0,0.28)] sm:right-[10%] sm:h-[220px] sm:w-[220px] lg:right-[2%] lg:top-[2%] lg:h-[330px] lg:w-[330px]"
                 />
                 <Image
                   src={homepageMacBookImage.src}
                   alt={homepageMacBookImage.alt}
                   width={homepageMacBookImage.width}
                   height={homepageMacBookImage.height}
-                  sizes="(max-width: 639px) 170px, (max-width: 1023px) 280px, 420px"
-                  className="absolute bottom-0 left-[4%] z-10 h-24 w-44 object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.28)] sm:h-36 sm:w-72 lg:bottom-[4%] lg:left-[2%] lg:h-60 lg:w-[430px]"
-                />
-                <Image
-                  src="/GooglePixel/Pixel-9-repair-in-Leeds.png"
-                  alt="Google Pixel supported by Origin Repairs"
-                  width={1200}
-                  height={1200}
-                  sizes="(max-width: 639px) 88px, (max-width: 1023px) 130px, 170px"
-                  className="absolute bottom-[10%] left-0 z-20 h-20 w-20 object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.28)] sm:h-28 sm:w-28 lg:bottom-[24%] lg:left-[4%] lg:h-40 lg:w-40"
+                  sizes="(max-width: 639px) 176px, (max-width: 1023px) 260px, 360px"
+                  className="absolute bottom-0 left-[3%] z-10 h-[88px] w-44 object-contain drop-shadow-[0_22px_40px_rgba(0,0,0,0.24)] sm:left-[5%] sm:h-32 sm:w-[260px] lg:bottom-[8%] lg:left-0 lg:h-[200px] lg:w-[360px]"
                 />
               </div>
             </div>
