@@ -6,10 +6,10 @@ afterEach(() => {
 });
 
 describe("feature flags", () => {
-  it("keeps unfinished customer systems disabled by default", async () => {
+  it("keeps customer accounts available while unfinished operational systems stay disabled", async () => {
     const { FEATURES } = await import("@/lib/business-config");
     expect(FEATURES.trackingEnabled).toBe(false);
-    expect(FEATURES.customerAccountsEnabled).toBe(false);
+    expect(FEATURES.customerAccountsEnabled).toBe(true);
     expect(FEATURES.mailInEnabled).toBe(false);
     expect(FEATURES.walkInsEnabled).toBe(false);
   });

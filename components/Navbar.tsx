@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Phone } from "lucide-react";
+import { Menu, Phone, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -75,6 +75,18 @@ export default function Navbar() {
         {/* Right side */}
         <div className="hidden md:flex items-center gap-1.5 justify-self-end">
           <ThemeToggle />
+          {FEATURES.customerAccountsEnabled && (
+            <Button
+              asChild
+              variant="ghost"
+              className="h-10 gap-2 px-3 text-[13px]"
+            >
+              <Link href="/account" aria-label="Customer account">
+                <UserRound className="h-4 w-4" />
+                <span className="hidden xl:inline">Account</span>
+              </Link>
+            </Button>
+          )}
           {FEATURES.bookingEnabled && (
             <Button asChild className="btn-primary ml-2 h-10 whitespace-nowrap px-5 text-[13px]">
               <Link href="/book">Request Repair</Link>
@@ -115,6 +127,17 @@ export default function Navbar() {
                       </Link>
                     </SheetClose>
                   ))}
+                  {FEATURES.customerAccountsEnabled && (
+                    <SheetClose asChild>
+                      <Link
+                        href="/account"
+                        className="flex items-center gap-2.5 rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+                      >
+                        <UserRound className="h-4 w-4" />
+                        Customer account
+                      </Link>
+                    </SheetClose>
+                  )}
                 </nav>
 
                 {/* Mobile CTAs */}

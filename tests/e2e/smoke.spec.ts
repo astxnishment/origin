@@ -103,12 +103,30 @@ test("major pages have no automatically detectable accessibility violations", as
   }
 });
 
-test("disabled prototype features are absent from navigation", async ({
+test("customer account is available while disabled services stay hidden", async ({
   page,
+  viewport,
 }) => {
   await page.goto("/");
-  const navigation = page.getByRole("navigation").first();
-  await expect(navigation.getByText(/Track Repair|Account|Mail-in/)).toHaveCount(0);
+  if (viewport && viewport.width < 768) {
+    await page.getByRole("button", { name: "Menu" }).click();
+  }
+  await expect(
+    page.getByRole("link", { name: /Customer account/i }).first()
+  ).toBeVisible();
+  await expect(page.getByText(/Track Repair|Mail-in/)).toHaveCount(0);
+});
+
+test("customer account login uses secure email-link access", async ({ page }) => {
+  await page.goto("/login");
+  await expect(
+    page.getByRole("heading", { name: "Sign in to your account" })
+  ).toBeVisible();
+  await expect(page.getByLabel("Email address")).toHaveAttribute(
+    "type",
+    "email"
+  );
+  await expect(page.getByLabel(/password/i)).toHaveCount(0);
 });
 
 test("mobile fixed bar does not cover the final page content", async ({

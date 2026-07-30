@@ -162,5 +162,24 @@ export const contactRequestSchema = z.object({
   ...antiSpamFields,
 });
 
+export const accountAccessSchema = z.object({
+  email,
+  next: z
+    .string()
+    .trim()
+    .max(200)
+    .refine(
+      (value) =>
+        value === "" || (value.startsWith("/") && !value.startsWith("//")),
+      "Invalid account destination."
+    )
+    .optional()
+    .default("/account"),
+  website: z.string().max(0).optional().default(""),
+  formStartedAt: z.number().int().positive(),
+  turnstileToken: z.string().trim().max(2048).optional().default(""),
+});
+
 export type BookingRequestInput = z.infer<typeof bookingRequestSchema>;
 export type ContactRequestInput = z.infer<typeof contactRequestSchema>;
+export type AccountAccessInput = z.infer<typeof accountAccessSchema>;

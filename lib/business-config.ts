@@ -100,7 +100,7 @@ export const FEATURES: FeatureFlags = {
   ),
   customerAccountsEnabled: publicFlag(
     process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED,
-    false
+    true
   ),
 };
 

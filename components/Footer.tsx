@@ -16,6 +16,9 @@ const repairs = [
 const services = [
   { href: "/pricing", label: "Pricing" },
   { href: "/quote", label: "Get a Quote" },
+  ...(FEATURES.customerAccountsEnabled
+    ? [{ href: "/account", label: "Customer Account" }]
+    : []),
   ...(FEATURES.mailInEnabled
     ? [{ href: "/mail-in", label: "Mail-in Repairs" }]
     : []),
