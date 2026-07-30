@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   ALL_PUBLIC_PRICES,
   type PublicPriceRow,
@@ -289,8 +290,9 @@ export default function PricingTable() {
         </div>
 
         {visibleRows.map((row) => (
-          <div
+          <Link
             key={row.id}
+            href={row.href}
             className="grid min-h-20 grid-cols-[1.4fr_1.4fr_1.2fr_0.8fr_0.8fr] items-center gap-4 border-b border-border px-5 py-3 last:border-b-0 hover:bg-surface"
             title={row.note}
           >
@@ -320,7 +322,7 @@ export default function PricingTable() {
               </p>
             </div>
             <PriceStatus row={row} />
-          </div>
+          </Link>
         ))}
         </div>
       )}
@@ -328,8 +330,9 @@ export default function PricingTable() {
       {hasSelection && (
         <div className="md:hidden">
         {visibleRows.map((row) => (
-          <div
+          <Link
             key={row.id}
+            href={row.href}
             className="border-b border-border p-4 last:border-b-0"
           >
             <div className="flex items-start justify-between gap-4">
@@ -349,7 +352,7 @@ export default function PricingTable() {
             <p className="mt-1 text-[11px] text-muted-foreground">
               {row.part} · {row.time} · {row.warranty}
             </p>
-          </div>
+          </Link>
         ))}
         </div>
       )}

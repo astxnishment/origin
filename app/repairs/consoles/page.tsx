@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
+import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Console Repair Leeds | PlayStation, Xbox, Nintendo",
@@ -14,14 +15,13 @@ export const metadata: Metadata = {
 };
 
 const repairTypes = [
-  { name: "HDMI port repair", price: "from £59", time: "1-3 days" },
-  { name: "USB-C / charging port", price: "from £59", time: "1-3 days" },
-  { name: "No power repair", price: "from £79", time: "1-5 days" },
-  { name: "Overheating service", price: "from £49", time: "Same day" },
-  { name: "Liquid damage repair", price: "from £79", time: "1-5 days" },
-  { name: "Board-level repair", price: "from £89", time: "1-5 days" },
-  { name: "Storage upgrade", price: "from £79", time: "60 min" },
-  { name: "Software / update issue", price: "from £39", time: "60 min" },
+  { name: "HDMI port repair", price: getSpecialistPriceLabel("console", "hdmi-port-repair"), time: "1–3 days estimate" },
+  { name: "USB-C / charging port", price: getSpecialistPriceLabel("console", "charging-port"), time: "1–3 days estimate" },
+  { name: "No power repair", price: getSpecialistPriceLabel("console", "no-power-repair"), time: "1–5 days estimate" },
+  { name: "Overheating / fan service", price: getSpecialistPriceLabel("console", "overheating-fan-service"), time: "Fault dependent" },
+  { name: "Liquid damage repair", price: getSpecialistPriceLabel("console", "liquid-damage-repair"), time: "Assessment required" },
+  { name: "Board-level repair", price: getSpecialistPriceLabel("console", "motherboard-logic-board"), time: "1–5 days estimate" },
+  { name: "Software / update issue", price: getSpecialistPriceLabel("console", "software-os-issue"), time: "Scope dependent" },
 ];
 
 const consoles = [
@@ -91,7 +91,7 @@ export default function ConsoleRepairsPage() {
                 </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                    <Link href="/book">Book Console Repair</Link>
+                    <Link href="/book">Request Console Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/contact" className="flex items-center gap-2">

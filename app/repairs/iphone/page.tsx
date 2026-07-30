@@ -5,111 +5,102 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
-import { REPAIR_PRICING } from "@/lib/repairPricing";
-import { getRepairPrice, formatPriceRange } from "@/lib/pricing";
-import { appleImageUrl, IPHONE_IMAGES } from "@/lib/appleDeviceImages";
+import {
+  getStartingPriceLabel,
+  getSpecialistPriceLabel,
+  getVisibleModels,
+} from "@/lib/serviceCatalogue";
+import { serviceImages } from "@/lib/serviceImages";
 
 export const metadata: Metadata = {
-  title: "iPhone Repair Leeds | All Models",
+  title: "iPhone Repair Leeds | Listed Models",
   description:
-    "Expert iPhone repairs in Leeds. Screen replacement, battery, charging port and more. All models from iPhone SE to iPhone 17 Pro Max. Same-day service, 12-month warranty.",
+    "iPhone repair estimates in Leeds for visible catalogue models, including screens, batteries, charging ports and assessment-led board repairs.",
 };
 
-// Live prices from v3 workbook — cheapest available tier
-function livePrice(model: string, repairType: string): string {
-  const row = getRepairPrice("Apple", model, repairType);
-  if (!row) return "POA";
-  return formatPriceRange(row.minPrice, row.maxPrice);
+function iphonePrice(repairTypeIds: string[], model?: string): string {
+  return getStartingPriceLabel({
+    brand: "Apple",
+    category: "phone",
+    model,
+    repairTypeIds,
+  });
 }
 
-// Use iPhone 16 as representative "current" model for repair type pricing
 const repairTypes = [
   {
     name: "Screen replacement",
-    price: `from £${
-      REPAIR_PRICING.filter((r) => r.brand === "Apple" && r.repairType === "Screen Replacement" && r.minPrice !== null)
-        .reduce((min, r) => Math.min(min, r.minPrice!), Infinity)
-    }`,
-    time: "45–90 min",
+    price: iphonePrice(["screen-replacement"]),
+    time: "Model and part dependent",
   },
   {
     name: "Battery replacement",
-    price: `from £${
-      REPAIR_PRICING.filter((r) => r.brand === "Apple" && r.repairType === "Battery Replacement" && r.minPrice !== null)
-        .reduce((min, r) => Math.min(min, r.minPrice!), Infinity)
-    }`,
-    time: "30–60 min",
+    price: iphonePrice(["battery-replacement"]),
+    time: "Model dependent",
   },
   {
     name: "Charging port",
-    price: `from £${
-      REPAIR_PRICING.filter((r) => r.brand === "Apple" && r.repairType === "Charging Port Replacement" && r.minPrice !== null)
-        .reduce((min, r) => Math.min(min, r.minPrice!), Infinity)
-    }`,
-    time: "60 min",
+    price: iphonePrice([
+      "charging-port-replacement",
+      "charging-port-repair",
+    ]),
+    time: "Fault dependent",
   },
   {
     name: "Back glass",
-    price: `from £${
-      REPAIR_PRICING.filter((r) => r.brand === "Apple" && r.repairType === "Back Glass Replacement" && r.minPrice !== null)
-        .reduce((min, r) => Math.min(min, r.minPrice!), Infinity)
-    }`,
-    time: "45–90 min",
+    price: iphonePrice([
+      "back-glass-replacement",
+      "back-glass",
+    ]),
+    time: "Model dependent",
   },
   {
     name: "Camera lens",
-    price: `from £${
-      REPAIR_PRICING.filter((r) => r.brand === "Apple" && r.repairType === "Camera Lens Replacement" && r.minPrice !== null)
-        .reduce((min, r) => Math.min(min, r.minPrice!), Infinity)
-    }`,
-    time: "60 min",
+    price: iphonePrice(["camera-lens-replacement", "camera-repair"]),
+    time: "Model dependent",
   },
   {
     name: "Water damage",
-    price: "diagnostic from £29",
-    time: "Same day",
+    price: iphonePrice([
+      "water-damage-diagnostic",
+      "liquid-damage-diagnostic",
+    ]),
+    time: "Assessment required",
   },
   {
     name: "Motherboard repair",
-    price: "from £79",
+    price: getSpecialistPriceLabel("phone", "motherboard-logic-board"),
     time: "1–5 days",
   },
   {
     name: "Face ID repair",
-    price: "from £79",
+    price: getSpecialistPriceLabel("phone", "face-id-biometric-repair"),
     time: "1–3 days",
   },
   {
     name: "Data recovery",
-    price: "from £79",
+    price: getSpecialistPriceLabel("phone", "data-recovery"),
     time: "2–7 days",
   },
 ];
 
 const guarantees = [
-  "OEM-grade replacement screens",
-  "12-month warranty included",
-  "Same-day in most cases",
-  "Fixed price — no surprises",
+  "Compatible and original-part options explained",
+  "Warranty shown for the selected part",
+  "Repair time estimated before approval",
+  "Price agreed before repair",
   "Board-level repairs available",
-  "Data always protected",
+  "Backup recommended before repair",
 ];
 
-// Pull iPhone models from v3 REPAIR_PRICING (in order they appear)
-const iphoneModels = (() => {
-  const seen = new Set<string>();
-  const result: string[] = [];
-  for (const row of REPAIR_PRICING) {
-    if (row.brand === "Apple" && row.model.startsWith("iPhone") && !seen.has(row.model)) {
-      seen.add(row.model);
-      result.push(row.model);
-    }
-  }
-  return result;
-})();
+const iphoneModels = getVisibleModels("Apple", "phone").filter((model) =>
+  model.startsWith("iPhone")
+);
 
-// iPhone 16 Pro screen price breakdown for the tier preview
-const iphone16ProScreenPrice = livePrice("iPhone 16 Pro", "Screen Replacement");
+const iphone16ProScreenPrice = iphonePrice(
+  ["screen-replacement"],
+  "iPhone 16 Pro"
+);
 
 export default function IPhoneRepairsPage() {
   return (
@@ -129,8 +120,9 @@ export default function IPhoneRepairsPage() {
                   iPhone repair, done right.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  Every model from iPhone 8 to iPhone 17 Pro Max. Screen replacements from £39.
-                  12-month warranty on every repair.
+                  Visible catalogue models through iPhone 17 Pro Max, with
+                  screen, battery, port and specialist repair options. Price,
+                  part type and warranty vary by selection.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {guarantees.map((g) => (
@@ -145,7 +137,7 @@ export default function IPhoneRepairsPage() {
                     asChild
                     className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
-                    <Link href="/book">Book iPhone Repair</Link>
+                    <Link href="/book">Request iPhone Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
@@ -157,13 +149,12 @@ export default function IPhoneRepairsPage() {
               {/* Hero device image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  {/* Real iPhone 16 Pro image from appledb.dev */}
                   <Image
-                    src={appleImageUrl(IPHONE_IMAGES["iPhone 16 Pro"], 256, false)}
-                    alt="iPhone 16 Pro — Origin Repairs"
-                    width={256}
-                    height={256}
-                    unoptimized
+                    src={serviceImages.iphone.src}
+                    alt={serviceImages.iphone.alt}
+                    width={serviceImages.iphone.width}
+                    height={serviceImages.iphone.height}
+                    sizes="(min-width: 1024px) 320px, 70vw"
                     className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                     priority
                   />
@@ -229,15 +220,15 @@ export default function IPhoneRepairsPage() {
                 },
                 {
                   tier: "Refurbished Original",
-                  badge: "Near-OEM",
-                  desc: "Genuine pulled screen from a working device. Best non-genuine option.",
+                  badge: "Original",
+                  desc: "An original display restored with replacement glass. Availability varies by model.",
                   badgeColor: "bg-violet-500/20 text-violet-300",
                   warn: false,
                 },
                 {
-                  tier: "Genuine Apple / IRP",
+                  tier: "Genuine service part",
                   badge: "Premium",
-                  desc: "Authentic Apple part via Independent Repair Programme. Highest quality.",
+                  desc: "Only offered when a genuine service part is listed and available for the selected model.",
                   badgeColor: "bg-amber-500/20 text-amber-300",
                   warn: false,
                 },
@@ -301,13 +292,13 @@ export default function IPhoneRepairsPage() {
               Ready to get your iPhone fixed?
             </h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Book online or walk in. Most repairs done the same day.
+              Request a preferred time and the team will confirm availability.
             </p>
             <Button
               asChild
               className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
-              <Link href="/book">Book a Repair</Link>
+              <Link href="/book">Request a Repair</Link>
             </Button>
           </div>
         </div>

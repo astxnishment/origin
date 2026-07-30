@@ -4,7 +4,7 @@
  * DeviceImage — unified device image component.
  *
  * Resolves the right image strategy per brand:
- *   Apple   → real photo from img.appledb.dev (+ SVG fallback on error)
+ *   Apple   → local optimised device image
  *   Samsung → clean category SVG (Galaxy S / A / Z Fold / Z Flip / Tab / Book)
  *   Google  → Pixel-styled inline SVG per generation
  *
@@ -44,35 +44,19 @@ export default function DeviceImage({
   imgClassName = "object-contain w-full h-full",
 }: Props) {
   const resolved = resolveDeviceImage({ brand, model, deviceTypeId, category });
-  // Both error states declared unconditionally (Rules of Hooks)
-  const [cdnFailed, setCdnFailed]     = useState(false);
   const [photoFailed, setPhotoFailed] = useState(false);
 
-  // ── Apple CDN photo ───────────────────────────────────────────────────────
-  if (resolved.strategy === "apple-cdn") {
-    if (cdnFailed) {
-      return (
-        <div className={className}>
-          <DeviceIcon
-            device={
-              category === "tablet" || deviceTypeId === "ipad"    ? "ipad"    :
-              category === "laptop" || deviceTypeId === "macbook" ? "macbook" : "iphone"
-            }
-            size={size}
-          />
-        </div>
-      );
-    }
+  // ── Local Apple image ─────────────────────────────────────────────────────
+  if (resolved.strategy === "apple-local") {
     return (
       <div className={className}>
         <Image
-          src={resolved.url256}
+          src={resolved.src}
           alt={`${model} device`}
-          width={256}
-          height={256}
+          width={resolved.width}
+          height={resolved.height}
           loading="lazy"
-          unoptimized
-          onError={() => setCdnFailed(true)}
+          sizes={`${size}px`}
           className={imgClassName}
         />
       </div>

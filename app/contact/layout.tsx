@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact Us — Leeds",
-  description: "Get in touch with Origin Repairs. Call, email or visit us at 76 Cookridge Street, Leeds LS2 8GL. We respond within the hour during business hours.",
+  description: "Contact Origin Repairs about a device, published estimate or repair assessment in Leeds. Response times vary with workload.",
 };
 
 export default function ContactLayout({ children }: { children: React.ReactNode }) {

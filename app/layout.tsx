@@ -1,28 +1,32 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
+import localFont from "next/font/local";
 import "./globals.css";
-import FloatingCTA from "@/components/FloatingCTA";
 import MobileCTABar from "@/components/MobileCTABar";
-import { AuthProvider } from "@/lib/auth";
-import { BUSINESS, SEO, SERVICES } from "@/lib/constants";
+import { BUSINESS, FEATURES, SEO, SERVICES, TRUST } from "@/lib/constants";
+import { INDEXING_ENABLED } from "@/lib/deployment";
 
-const geistSans = Geist({
+const geistSans = localFont({
+  src: "../public/fonts/geist-latin.woff2",
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "../public/fonts/geist-mono-latin.woff2",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Origin Repairs — Premium Device Repair in Leeds",
+    default: "Origin Repairs — Device Repair in Leeds",
     template: "%s | Origin Repairs",
   },
   description:
-    "Expert repair for phones, tablets, laptops, consoles, custom PCs and liquid-damaged devices. Based in Leeds.",
+    "Repair for phones, tablets, laptops, consoles, custom PCs and liquid-damaged devices in Leeds.",
   metadataBase: new URL(SEO.siteUrl),
   keywords: [
     "device repair Leeds",
@@ -37,6 +41,17 @@ export const metadata: Metadata = {
     "liquid damage repair Leeds",
   ],
   category: "Device repair",
+  alternates: {
+    canonical: SEO.siteUrl,
+  },
+  robots: {
+    index: INDEXING_ENABLED,
+    follow: INDEXING_ENABLED,
+    googleBot: {
+      index: INDEXING_ENABLED,
+      follow: INDEXING_ENABLED,
+    },
+  },
   icons: {
     icon: [
       { url: "/logos/origin-icon.png", type: "image/png", sizes: "512x512" },
@@ -45,8 +60,9 @@ export const metadata: Metadata = {
     shortcut: ["/logos/origin-icon.png"],
   },
   openGraph: {
-    title: "Origin Repairs — Premium Device Repair in Leeds",
-    description: "Expert device repair. Same-day service. 12-month warranty.",
+    title: "Origin Repairs — Device Repair in Leeds",
+    description:
+      "Device repair in Leeds with clear estimates and repair-specific warranty terms.",
     url: SEO.siteUrl,
     siteName: "Origin Repairs",
     locale: "en_GB",
@@ -62,13 +78,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Origin Repairs — Premium Device Repair in Leeds",
-    description: "Expert device repair. Same-day service. 12-month warranty.",
+    title: "Origin Repairs — Device Repair in Leeds",
+    description:
+      "Device repair in Leeds with clear estimates and repair-specific warranty terms.",
     images: ["/logos/origin-logo-light.png"],
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -77,18 +94,26 @@ export default function RootLayout({
     (() => {
       try {
         const stored = localStorage.getItem("origin-theme");
-        const theme = stored === "light" || stored === "dark" ? stored : "dark";
+        const theme = stored === "light" || stored === "dark"
+          ? stored
+          : window.matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark";
         const root = document.documentElement;
         root.classList.toggle("dark", theme === "dark");
         root.dataset.theme = theme;
         root.style.colorScheme = theme;
       } catch {
-        document.documentElement.classList.add("dark");
-        document.documentElement.dataset.theme = "dark";
-        document.documentElement.style.colorScheme = "dark";
+        const theme = window.matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark";
+        document.documentElement.classList.toggle("dark", theme === "dark");
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
       }
     })();
   `;
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -98,13 +123,12 @@ export default function RootLayout({
         "@id": `${SEO.siteUrl}/#business`,
         name: BUSINESS.name,
         description:
-          "Device repair service in Leeds city centre. Expert phone, tablet, laptop, console, custom PC, liquid damage and data recovery repairs.",
+          "Device repair service in Leeds for phones, tablets, laptops, consoles, custom PCs, liquid damage and data recovery assessment.",
         url: SEO.siteUrl,
         telephone: BUSINESS.phone,
         email: BUSINESS.email,
         image: `${SEO.siteUrl}/logos/origin-logo-light.png`,
         logo: `${SEO.siteUrl}/logos/origin-icon.png`,
-        priceRange: "£39-£599",
         address: {
           "@type": "PostalAddress",
           streetAddress: "76 Cookridge Street",
@@ -118,28 +142,31 @@ export default function RootLayout({
           longitude: BUSINESS.coordinates.lng,
         },
         hasMap: BUSINESS.googleMapsUrl,
-        areaServed: [
-          "Leeds City Centre",
-          "Headingley",
-          "Hyde Park",
-          "Chapel Allerton",
-          "Roundhay",
-          "Horsforth",
-        ],
-        openingHoursSpecification: [
-          {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            opens: "09:00",
-            closes: "18:00",
-          },
-          {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: "Saturday",
-            opens: "10:00",
-            closes: "16:00",
-          },
-        ],
+        areaServed: "Leeds",
+        ...(FEATURES.walkInsEnabled
+          ? {
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                  ],
+                  opens: "09:00",
+                  closes: "18:00",
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: "Saturday",
+                  opens: "10:00",
+                  closes: "16:00",
+                },
+              ],
+            }
+          : {}),
         makesOffer: SERVICES.map((service) => ({
           "@type": "Offer",
           itemOffered: {
@@ -151,7 +178,14 @@ export default function RootLayout({
           },
           url: `${SEO.siteUrl}${service.href}`,
         })),
-        sameAs: [BUSINESS.googleReviewUrl, BUSINESS.trustpilotUrl],
+        ...(TRUST.googleBusinessUrl || TRUST.trustpilotUrl
+          ? {
+              sameAs: [
+                TRUST.googleBusinessUrl,
+                TRUST.trustpilotUrl,
+              ].filter((url): url is string => Boolean(url)),
+            }
+          : {}),
       },
       {
         "@type": "WebSite",
@@ -167,30 +201,41 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schemaData).replace(/</g, "\\u003c"),
+          }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground pb-[60px] md:pb-0">
+      <body className="min-h-full flex flex-col bg-background text-foreground pb-[calc(82px+env(safe-area-inset-bottom,0px))] md:pb-0">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"
         >
           Skip to main content
         </a>
-        <AuthProvider>
-          <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
-            {children}
+        <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
+          {children}
+        </div>
+        {process.env.VERCEL_ENV === "preview" && (
+          <div className="fixed bottom-20 left-3 z-[90] rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:bottom-3">
+            Preview
           </div>
-          <FloatingCTA />
-          <MobileCTABar />
-        </AuthProvider>
+        )}
+        <MobileCTABar />
       </body>
     </html>
   );

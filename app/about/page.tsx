@@ -3,25 +3,32 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
+import { WARRANTY_NOTICE } from "@/lib/warranty";
 
 export const metadata: Metadata = {
   title: "About — Leeds Device Repair Specialists",
-  description: "Origin Repairs — a Leeds-based device repair specialist founded in 2018. Honest pricing, quality parts, 12-month warranty on every repair.",
+  description:
+    "Learn how Origin Repairs approaches device assessment, repair quotes, parts choices and warranty terms in Leeds.",
 };
 
 const values = [
-  { title: "Honesty", desc: "Fixed quotes. No surprises. No upselling. You're told the full picture before anything starts." },
-  { title: "Speed", desc: "Most common repairs completed same day. Screen replacements, batteries, charging ports — done while you wait." },
-  { title: "Quality", desc: "OEM-grade parts and experienced technicians. 12-month warranty on eligible repairs, because we stand behind our work." },
-  { title: "Accountability", desc: "Something not right? We make it right. Our warranty means what it says." },
-];
-
-const stats = [
-  { value: "2018", label: "Founded in Leeds" },
-  { value: "Same Day", label: "Most repairs" },
-  { value: "12 mo.", label: "Warranty standard" },
-  { value: "Free", label: "Diagnostics always" },
+  {
+    title: "Clear approval",
+    desc: "The proposed work and price are explained before a repair begins.",
+  },
+  {
+    title: "Appropriate repair",
+    desc: "The assessment determines whether a component-level repair, replacement part or specialist referral is appropriate.",
+  },
+  {
+    title: "Parts choices",
+    desc: "Available compatible, refurbished-original or genuine service-part options are identified accurately before selection.",
+  },
+  {
+    title: "Documented warranty",
+    desc: WARRANTY_NOTICE,
+  },
 ];
 
 export default function AboutPage() {
@@ -41,33 +48,29 @@ export default function AboutPage() {
                 The repair shop that doesn&apos;t feel like one.
               </h1>
               <p className="text-[15px] text-muted-foreground leading-relaxed">
-                Founded in Leeds in {BUSINESS.founded}, ORIGIN was built on a simple idea: device repair should be fast, honest, and professional. No generic kiosk experience. No opaque pricing. Just technically excellent work, done right.
+                Origin Repairs is an independent Leeds device-repair business.
+                We assess the fault, explain the available repair and part
+                options, and agree the price before authorised work begins.
               </p>
             </div>
           </div>
 
           {/* Story */}
           <div className="py-16 border-b border-border">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-              <div className="space-y-4 text-[15px] text-muted-foreground leading-relaxed">
-                <p>
-                  We started because we were frustrated with the state of repair services. Hidden charges. Cheap parts. Technicians who&apos;d rather replace than repair. We knew there was a better way.
-                </p>
-                <p>
-                  We&apos;ve built a reputation in Leeds for being the team you can actually trust — whether it&apos;s a cracked iPhone screen or a catastrophic data loss situation.
-                </p>
-                <p>
-                  Every technician we hire meets a rigorous standard. Every part we use is OEM-grade or better. Every repair comes with a 12-month warranty, because we stand behind our work.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-px bg-border rounded-xl overflow-hidden">
-                {stats.map(({ value, label }) => (
-                  <div key={label} className="bg-card p-8 flex flex-col justify-center">
-                    <p className="text-3xl font-semibold text-foreground mb-1">{value}</p>
-                    <p className="text-[13px] text-muted-foreground">{label}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="max-w-3xl space-y-4 text-[15px] text-muted-foreground leading-relaxed">
+              <p>
+                Our published catalogue covers phones, tablets, laptops, game
+                consoles, custom PCs, liquid-damage assessment and data-recovery
+                work. Device condition and parts availability can affect the
+                final repair plan.
+              </p>
+              <p>
+                Some straightforward repairs can be completed quickly, while
+                board-level, liquid-damage and data-recovery work requires
+                inspection. The estimate shown with a repair is not presented
+                as a guaranteed completion time.
+              </p>
+              <p>{WARRANTY_NOTICE}</p>
             </div>
           </div>
 
@@ -126,14 +129,20 @@ export default function AboutPage() {
 
           {/* CTA */}
           <div className="pt-16 text-center">
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Come in and meet us.</h2>
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">
+              Discuss your repair.
+            </h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Walk-ins welcome. Or book a time that suits you.
+              {FEATURES.walkInsEnabled
+                ? "Walk-ins are currently available, or request a time in advance."
+                : "Contact us first or send a repair request so we can confirm the next step."}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                <Link href="/book">Book a Repair</Link>
-              </Button>
+              {FEATURES.bookingEnabled && (
+                <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
+                  <Link href="/book">Request a Repair</Link>
+                </Button>
+              )}
               <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <Link href="/contact">Contact Us</Link>
               </Button>

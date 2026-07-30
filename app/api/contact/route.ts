@@ -1,87 +1,122 @@
 import { NextRequest, NextResponse } from "next/server";
+import { contactRequestSchema } from "@/lib/forms/schemas";
+import { BUSINESS } from "@/lib/constants";
+import { sendEmail } from "@/lib/server/email";
+import {
+  RequestBodyError,
+  beginIdempotentRequest,
+  checkRateLimit,
+  completeIdempotentRequest,
+  escapeHtml,
+  htmlWithLineBreaks,
+  isPlausibleSubmissionTime,
+  readJsonBody,
+  releaseIdempotentRequest,
+  verifyTurnstile,
+} from "@/lib/server/requestSecurity";
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
+  if (!checkRateLimit(request, "contact", 5, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait before trying again." },
+      { status: 429 }
+    );
+  }
+
   try {
-    const { name, email, phone, device, issue } = await req.json();
-
-    // Validate required fields
-    if (!name || !email || !issue) {
+    const body = await readJsonBody(request, 16_000);
+    const result = contactRequestSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        {
+          error: "Check the form and try again.",
+          fields: result.error.flatten().fieldErrors,
+        },
         { status: 400 }
       );
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      console.error("RESEND_API_KEY not configured");
+    const input = result.data;
+    if (!isPlausibleSubmissionTime(input.formStartedAt)) {
       return NextResponse.json(
-        { error: "Email service not configured" },
-        { status: 500 }
+        { error: "Please review the form and try again." },
+        { status: 400 }
       );
     }
 
-    // Send confirmation to customer
-    const customerEmailRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Origin Repairs <noreply@originrepairs.co.uk>",
-        to: email,
-        subject: "Message received — Origin Repairs",
-        html: `
-          <h2>Thanks for getting in touch!</h2>
-          <p>Hi ${name},</p>
-          <p>We received your message and will get back to you within 1 hour during business hours.</p>
-          <h3>Your message:</h3>
-          <p>${device ? `<strong>Device:</strong> ${device}<br />` : ""}</p>
-          <p><strong>Issue:</strong> ${issue}</p>
-          <p>If your issue is urgent, call us: <a href="tel:+447768426754"><strong>+44 7768 426754</strong></a></p>
-          <p>Thanks,<br />Origin Repairs</p>
-        `,
-      }),
-    });
-
-    if (!customerEmailRes.ok) {
-      const error = await customerEmailRes.text();
-      console.error("Failed to send customer email:", error);
+    if (!(await verifyTurnstile(input.turnstileToken, request))) {
+      return NextResponse.json(
+        { error: "Verification failed. Please try again." },
+        { status: 400 }
+      );
     }
 
-    // Send to business
-    const businessEmailRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Origin Repairs <noreply@originrepairs.co.uk>",
-        to: "tech@originrepairs.co.uk",
-        subject: `New inquiry from ${name}`,
-        html: `
-          <h2>New Inquiry</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
-          ${device ? `<p><strong>Device:</strong> ${device}</p>` : ""}
-          <p><strong>Issue:</strong> ${issue}</p>
-        `,
-      }),
-    });
-
-    if (!businessEmailRes.ok) {
-      const error = await businessEmailRes.text();
-      console.error("Failed to send business email:", error);
+    if (!beginIdempotentRequest("contact", input.idempotencyKey)) {
+      return NextResponse.json(
+        { error: "This message has already been submitted." },
+        { status: 409 }
+      );
     }
 
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("Contact form error:", err);
+    const businessEmail = await sendEmail({
+      to: BUSINESS.email,
+      subject: "New website enquiry - Origin Repairs",
+      html: `
+        <h2>New website enquiry</h2>
+        <p><strong>Name:</strong> ${escapeHtml(input.name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(input.email)}</p>
+        ${input.phone ? `<p><strong>Phone:</strong> ${escapeHtml(input.phone)}</p>` : ""}
+        ${input.device ? `<p><strong>Device:</strong> ${escapeHtml(input.device)}</p>` : ""}
+        <p><strong>Message:</strong><br>${htmlWithLineBreaks(input.issue)}</p>
+      `,
+    });
+
+    if (!businessEmail.ok) {
+      releaseIdempotentRequest("contact", input.idempotencyKey);
+      console.error("Contact enquiry delivery failed", {
+        reason: businessEmail.reason,
+        status: businessEmail.status,
+      });
+      return NextResponse.json(
+        {
+          error:
+            "We could not deliver your message. Please try again or contact us directly.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const customerEmail = await sendEmail({
+      to: input.email,
+      subject: "Message received - Origin Repairs",
+      html: `
+        <h2>Message received</h2>
+        <p>Hi ${escapeHtml(input.name)},</p>
+        <p>Origin Repairs received your message. We aim to respond during business hours.</p>
+        <p>If the matter is urgent, call <a href="${BUSINESS.phoneHref}">${BUSINESS.phoneDisplay}</a>.</p>
+      `,
+    });
+
+    completeIdempotentRequest("contact", input.idempotencyKey);
+
+    return NextResponse.json({
+      ok: true,
+      confirmationEmailSent: customerEmail.ok,
+      message: customerEmail.ok
+        ? "Message received. A receipt has been emailed to you."
+        : "Message received. The team has your message, but the email receipt could not be delivered.",
+    });
+  } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status }
+      );
+    }
+
+    console.error("Contact enquiry failed", { type: "unexpected" });
     return NextResponse.json(
-      { error: "Failed to process request" },
+      { error: "We could not process the message. Please try again." },
       { status: 500 }
     );
   }

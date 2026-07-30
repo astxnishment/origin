@@ -9,11 +9,18 @@ import {
   buildBookingHref,
   deviceCategory,
   getRepairQuote,
+  getRepairTiers,
+  getSupportedRepairTypes,
   repairTypeToSlug,
   type DeviceModel,
   type RepairPrice,
   type RepairType,
 } from "@/lib/calculatorData";
+import {
+  getSpecialistEntry,
+  type CatalogueCategory,
+} from "@/lib/repairCatalogue";
+import { FEATURES } from "@/lib/constants";
 import {
   ArrowLeft,
   ArrowRight,
@@ -29,11 +36,10 @@ import {
   ShieldCheck,
   Smartphone,
   Tablet,
-  Wrench,
   type LucideIcon,
 } from "lucide-react";
 
-type CategoryId = "phone" | "tablet" | "laptop" | "console" | "desktop" | "data" | "other";
+type CategoryId = "phone" | "tablet" | "laptop" | "console" | "desktop" | "data";
 
 type Category = {
   id: CategoryId;
@@ -59,7 +65,6 @@ const CATEGORIES: Category[] = [
   { id: "console", label: "Game console", detail: "PlayStation, Xbox, Switch & more", icon: Gamepad2 },
   { id: "desktop", label: "Custom PC", detail: "Builds, repairs & upgrades", icon: MonitorCog },
   { id: "data", label: "Data recovery", detail: "Drives, SSDs, phones & computers", icon: HardDrive },
-  { id: "other", label: "Other device", detail: "Tell us what you need repaired", icon: Wrench },
 ];
 
 const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
@@ -98,9 +103,6 @@ const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
     { id: "computer-data", label: "Laptop / desktop", detail: "Mac, Windows and custom PCs", freeText: true },
     { id: "removable-data", label: "USB / memory card", detail: "Flash drives and camera cards", presets: ["USB drive / memory card"] },
   ],
-  other: [
-    { id: "other-device", label: "Describe your device", detail: "Any make, model or type", freeText: true },
-  ],
 };
 
 const REPAIRS: Record<CategoryId, RepairType[]> = {
@@ -132,53 +134,34 @@ const REPAIRS: Record<CategoryId, RepairType[]> = {
     "Data recovery", "Hardware diagnostics", "Other repair",
   ],
   data: ["Data recovery", "Liquid damage repair", "Hardware diagnostics"],
-  other: ["Hardware diagnostics", "Liquid damage repair", "Data recovery", "Other repair"],
 };
 
-const GENERIC_PRICES: Partial<Record<RepairType, Record<CategoryId, [number, number, string, string]>>> = {
-  "Liquid damage repair": {
-    phone: [79, 249, "1-5 days", "3 months"],
-    tablet: [89, 279, "1-5 days", "3 months"],
-    laptop: [129, 399, "2-7 days", "3 months"],
-    console: [79, 249, "1-5 days", "3 months"],
-    desktop: [99, 399, "2-7 days", "3 months"],
-    data: [79, 399, "2-10 days", "After assessment"],
-    other: [79, 399, "After assessment", "After assessment"],
-  },
-  "Data recovery": {
-    phone: [79, 299, "2-7 days", "N/A"],
-    tablet: [99, 299, "2-7 days", "N/A"],
-    laptop: [99, 499, "3-10 days", "N/A"],
-    console: [99, 399, "3-10 days", "N/A"],
-    desktop: [99, 499, "3-10 days", "N/A"],
-    data: [79, 499, "2-10 days", "N/A"],
-    other: [79, 499, "After assessment", "N/A"],
-  },
-  "Motherboard / logic board": {
-    phone: [79, 249, "1-5 days", "3 months"],
-    tablet: [99, 299, "1-5 days", "3 months"],
-    laptop: [129, 399, "2-7 days", "3 months"],
-    console: [89, 299, "1-5 days", "3 months"],
-    desktop: [99, 399, "2-7 days", "3 months"],
-    data: [99, 399, "After assessment", "3 months"],
-    other: [99, 399, "After assessment", "3 months"],
-  },
-};
+function catalogueCategory(category: CategoryId): CatalogueCategory {
+  return category === "data" ? "data-recovery" : category;
+}
 
-const CATEGORY_DEFAULTS: Record<CategoryId, [number, number, string, string]> = {
-  phone: [39, 249, "45 min-5 days", "Up to 12 months"],
-  tablet: [59, 299, "1-5 days", "Up to 12 months"],
-  laptop: [49, 449, "Same day-7 days", "Up to 12 months"],
-  console: [39, 299, "Same day-5 days", "Up to 6 months"],
-  desktop: [39, 399, "Same day-7 days", "Up to 12 months"],
-  data: [79, 499, "2-10 days", "N/A"],
-  other: [29, 399, "After assessment", "Repair dependent"],
-};
+function genericQuote(
+  category: CategoryId,
+  repair: RepairType
+): RepairPrice | null {
+  const entry = getSpecialistEntry(
+    catalogueCategory(category),
+    repairTypeToSlug(repair)
+  );
+  if (!entry) return null;
 
-function genericQuote(category: CategoryId, repair: RepairType): RepairPrice {
-  const [minPrice, maxPrice, estimatedTime, warranty] =
-    GENERIC_PRICES[repair]?.[category] ?? CATEGORY_DEFAULTS[category];
-  return { minPrice, maxPrice, estimatedTime, warranty, inspectionRequired: true };
+  return {
+    minPrice: entry.minPrice ?? 0,
+    maxPrice: entry.maxPrice ?? 0,
+    estimatedTime: entry.estimatedTime,
+    warranty: entry.warranty,
+    inspectionRequired: entry.inspectionRequired,
+    catalogueId: entry.id,
+    partTierId: entry.partTierId,
+    partTier: entry.partTier,
+    partOrigin: entry.partOrigin,
+    supported: true,
+  };
 }
 
 function ChoiceButton({
@@ -221,6 +204,7 @@ export default function FullCalculator() {
   const [deviceName, setDeviceName] = useState("");
   const [deviceNameDraft, setDeviceNameDraft] = useState("");
   const [repair, setRepair] = useState<RepairType | null>(null);
+  const [partTierId, setPartTierId] = useState("");
 
   const models = useMemo(() => {
     if (!deviceChoice?.brand || !deviceChoice.catalogCategory) return [];
@@ -232,11 +216,33 @@ export default function FullCalculator() {
   }, [deviceChoice]);
 
   const resolvedDeviceName = model?.name || deviceName.trim();
+  const repairTiers =
+    model && repair ? getRepairTiers(model, repair) : [];
+  const needsTierSelection =
+    repairTiers.length > 1 && !partTierId;
   const quote = category && repair
     ? model
-      ? getRepairQuote(model, repair)
+      ? needsTierSelection
+        ? null
+        : getRepairQuote(
+            model,
+            repair,
+            repairTiers.length === 1
+              ? repairTiers[0].partTierId
+              : partTierId
+          )
       : genericQuote(category, repair)
     : null;
+  const availableRepairs = model
+    ? getSupportedRepairTypes(model)
+    : category
+      ? REPAIRS[category].filter((item) =>
+          getSpecialistEntry(
+            catalogueCategory(category),
+            repairTypeToSlug(item)
+          )
+        )
+      : [];
 
   const isReady = Boolean(category && deviceChoice && resolvedDeviceName && repair && quote);
 
@@ -247,6 +253,7 @@ export default function FullCalculator() {
     setDeviceName("");
     setDeviceNameDraft("");
     setRepair(null);
+    setPartTierId("");
   }
 
   function pickDevice(choice: DeviceChoice) {
@@ -255,6 +262,7 @@ export default function FullCalculator() {
     setDeviceName(choice.presets?.length === 1 ? choice.presets[0] : "");
     setDeviceNameDraft("");
     setRepair(null);
+    setPartTierId("");
   }
 
   function reset() {
@@ -264,13 +272,21 @@ export default function FullCalculator() {
     setDeviceName("");
     setDeviceNameDraft("");
     setRepair(null);
+    setPartTierId("");
   }
 
   const bookingBase = (() => {
     if (!isReady || !category || !repair || !quote) return "/book";
-    if (model) return buildBookingHref(model, repair);
+    if (model) {
+      return buildBookingHref(
+        model,
+        repair,
+        quote.partTierId
+      );
+    }
+    if (!["console", "desktop"].includes(category)) return "/contact";
     const params = new URLSearchParams({
-      device: ["console", "desktop"].includes(category) ? category : "other",
+      device: category,
       deviceName: resolvedDeviceName,
       repair: repairTypeToSlug(repair),
       issue: category === "data" ? "Data recovery assessment requested" : "",
@@ -279,6 +295,9 @@ export default function FullCalculator() {
   })();
 
   const mailInUrl = `${bookingBase}${bookingBase.includes("?") ? "&" : "?"}method=mail-in`;
+  const canRequestOnline =
+    FEATURES.bookingEnabled &&
+    (Boolean(model) || category === "console" || category === "desktop");
 
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
@@ -435,17 +454,67 @@ export default function FullCalculator() {
               </button>
               <p className="mb-3 text-[13px] text-muted-foreground">{resolvedDeviceName}</p>
               <div className="grid overflow-hidden rounded-lg border border-border sm:grid-cols-2">
-                {REPAIRS[category].map((item) => (
+                {availableRepairs.map((item) => (
                   <ChoiceButton
                     key={item}
                     active={false}
                     title={item}
-                    onClick={() => setRepair(item)}
+                    onClick={() => {
+                      setRepair(item);
+                      setPartTierId("");
+                    }}
                   />
                 ))}
               </div>
             </div>
           )}
+
+          {category &&
+            model &&
+            repair &&
+            repairTiers.length > 1 &&
+            needsTierSelection && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setRepair(null)}
+                  className="mb-5 flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Change repair
+                </button>
+                <p className="mb-3 text-[13px] text-muted-foreground">
+                  Choose a part option. Each option has its own price and
+                  warranty.
+                </p>
+                <div className="grid overflow-hidden rounded-lg border border-border sm:grid-cols-2">
+                  {repairTiers.map((tier) => (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      onClick={() => setPartTierId(tier.partTierId)}
+                      className="min-h-28 border-b border-border p-4 text-left transition-colors last:border-b-0 hover:bg-surface sm:border-r"
+                    >
+                      <span className="block text-[13px] font-semibold">
+                        {tier.partTier}
+                      </span>
+                      <span className="mt-1 block text-[11px] capitalize text-muted-foreground">
+                        {tier.partOrigin.replaceAll("-", " ")}
+                      </span>
+                      <span className="mt-3 block text-[12px] font-medium">
+                        {tier.minPrice === null || tier.maxPrice === null
+                          ? "Assessment required"
+                          : tier.minPrice === tier.maxPrice
+                            ? `£${tier.minPrice}`
+                            : `£${tier.minPrice}–£${tier.maxPrice}`}
+                        {" · "}
+                        {tier.warranty}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
           {isReady && quote && category && repair && (
             <div>
@@ -518,18 +587,28 @@ export default function FullCalculator() {
 
           {isReady ? (
             <div className="mt-7 space-y-2.5">
-              <Button asChild className="btn-primary h-11 w-full rounded-md">
-                <Link href={bookingBase} className="flex items-center justify-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Book in Leeds
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-11 w-full rounded-md border-border bg-card">
-                <Link href={mailInUrl} className="flex items-center justify-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Book a mail-in repair
-                </Link>
-              </Button>
+              {canRequestOnline ? (
+                <Button asChild className="btn-primary h-11 w-full rounded-md">
+                  <Link href={bookingBase} className="flex items-center justify-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    {quote?.inspectionRequired
+                      ? "Request an Assessment"
+                      : "Request Repair"}
+                  </Link>
+                </Button>
+              ) : (
+                <Button asChild className="btn-primary h-11 w-full rounded-md">
+                  <Link href="/contact">Request a manual quote</Link>
+                </Button>
+              )}
+              {canRequestOnline && FEATURES.mailInEnabled && (
+                <Button asChild variant="outline" className="h-11 w-full rounded-md border-border bg-card">
+                  <Link href={mailInUrl} className="flex items-center justify-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Request mail-in repair
+                  </Link>
+                </Button>
+              )}
             </div>
           ) : (
             <p className="mt-7 text-[12px] leading-relaxed text-muted-foreground">

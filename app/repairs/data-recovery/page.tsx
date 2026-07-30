@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
+import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Liquid Damage & Data Recovery Leeds | Phones, Laptops, Consoles",
@@ -13,29 +14,27 @@ export const metadata: Metadata = {
 };
 
 const recoveryTypes = [
-  { name: "Phone data recovery", price: "£79–£299", time: "2–7 days", desc: "Deleted files, broken screen, water damage" },
-  { name: "Liquid damage diagnostic", price: "£29–£79", time: "Same day", desc: "Phones, tablets, laptops, consoles and board-level inspection" },
-  { name: "Board-level recovery", price: "£129–£399", time: "2–7 days", desc: "No power, damaged charging circuits, failed components" },
-  { name: "Console liquid damage", price: "£79–£249", time: "1–5 days", desc: "PlayStation, Xbox, Nintendo Switch and handheld consoles" },
-  { name: "Laptop / SSD recovery", price: "£99–£499", time: "3–10 days", desc: "Corrupted drive, accidental deletion, OS failure" },
-  { name: "Hard drive recovery", price: "£99–£499", time: "3–10 days", desc: "Mechanical failure, logical corruption, file system errors" },
-  { name: "RAID recovery", price: "£299–£599", time: "5–10 days", desc: "RAID 0/1/5 arrays, NAS devices, server storage" },
+  { name: "Liquid-damage diagnostic", price: "Assessment required", time: "Condition dependent", desc: "Inspection separates cleaning, parts and board-level work." },
+  { name: "Logical data recovery", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "2–10 days estimate", desc: "File-system, deletion and software-level recovery attempts." },
+  { name: "Device board recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate", desc: "Assessment-led work for a device that does not power on." },
+  { name: "Drive assessment", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "Media dependent", desc: "SSD, hard-drive and removable-media condition is checked first." },
+  { name: "Specialist laboratory referral", price: "Quoted by specialist", time: "Confirmed after assessment", desc: "Physical drive or complex media work may require an external specialist." },
 ];
 
 const process = [
   { step: "1", title: "Assessment first", desc: "We evaluate the damage and give you a fixed quote before recovery work starts." },
-  { step: "2", title: "Recovery attempt", desc: "Our technicians work with specialist tools to extract and reconstruct your data." },
-  { step: "3", title: "Verification", desc: "You review the recovered files before we charge anything." },
-  { step: "4", title: "Secure transfer", desc: "Data returned on encrypted storage device. Your privacy protected." },
+  { step: "2", title: "Consent and scope", desc: "The proposed work, cost, data access and any specialist referral are agreed first." },
+  { step: "3", title: "Recovery attempt", desc: "Recovery is attempted within the agreed scope; no outcome is guaranteed." },
+  { step: "4", title: "Transfer or return", desc: "Any recovered data and the return method are agreed with the customer." },
 ];
 
 const guarantees = [
-  "No recovery — no fee",
-  "High success rate on logical failures",
-  "Encrypted data handling",
-  "Free initial assessment",
-  "Same-day emergency service",
-  "All storage types covered",
+  "Assessment before recovery work",
+  "No recovery outcome promised",
+  "Data access requires consent",
+  "Price agreed before work",
+  "Specialist referral explained first",
+  "Warranty generally not applicable to recovered data",
 ];
 
 export default function DataRecoveryPage() {
@@ -68,11 +67,11 @@ export default function DataRecoveryPage() {
                 </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                    <Link href="/contact">Get Free Assessment</Link>
+                    <Link href="/contact">Request an Assessment</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/book" className="flex items-center gap-2">
-                      Book appointment <ArrowRight className="h-3.5 w-3.5" />
+                      Request a time <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </Button>
                 </div>
@@ -100,7 +99,9 @@ export default function DataRecoveryPage() {
               <div>
                 <p className="text-[13px] font-semibold text-foreground mb-1">Act quickly to maximise recovery chances</p>
                 <p className="text-[13px] text-muted-foreground">
-                  If your device has failed, stop using it immediately. Further use can overwrite recoverable data. Call us now for emergency assessment: <a href="tel:+447768426754" className="text-primary">+44 7768 426754</a>
+                  If a storage device has failed, further writes may reduce the
+                  chance of recovery. Power it down where safe and contact the
+                  team before attempting repairs: <a href="tel:+447768426754" className="text-primary">+44 7768 426754</a>
                 </p>
               </div>
             </div>
@@ -141,11 +142,12 @@ export default function DataRecoveryPage() {
           <div className="pt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Don&apos;t give up on your data.</h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Free assessment. No recovery, no fee. Call us or book online.
+              Tell us what happened and what data matters. The team will
+              explain the assessment, consent and likely next step.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                <Link href="/contact">Start Free Assessment</Link>
+                <Link href="/contact">Request an Assessment</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <a href="tel:+447768426754">+44 7768 426754</a>

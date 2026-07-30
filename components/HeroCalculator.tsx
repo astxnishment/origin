@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useId, useMemo, useState } from "react";
 import Link from "next/link";
+import { ArrowRight, Clock, Search, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,219 +11,340 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import {
-  getDeviceTypesByBrand,
-  formatPrice,
-  buildBookingUrl,
-  type Brand,
-} from "@/lib/deviceData";
 import DeviceImage from "@/components/DeviceImage";
-import { ArrowRight, Clock, ShieldCheck, CalendarCheck } from "lucide-react";
+import {
+  ALL_DEVICES,
+  BRANDS,
+  buildBookingHref,
+  getRepairQuote,
+  getRepairTiers,
+  getSupportedRepairTypes,
+  type Brand,
+  type DeviceCategory,
+  type RepairType,
+} from "@/lib/calculatorData";
+import { FEATURES } from "@/lib/constants";
+
+const CATEGORIES: { id: DeviceCategory; label: string }[] = [
+  { id: "phone", label: "Phone" },
+  { id: "tablet", label: "Tablet" },
+  { id: "laptop", label: "Laptop" },
+];
+
+function priceLabel(
+  minPrice: number,
+  maxPrice: number,
+  inspectionRequired?: boolean
+): string {
+  if (inspectionRequired) return "Assessment required";
+  return minPrice === maxPrice
+    ? `£${minPrice}`
+    : `£${minPrice}–£${maxPrice}`;
+}
 
 export default function HeroCalculator() {
-  const [brand, setBrand]       = useState<Brand>("Apple");
-  const [deviceTypeId, setTypeId] = useState<string>(() =>
-    getDeviceTypesByBrand("Apple")[0]?.id ?? ""
-  );
-  const [modelId, setModelId]   = useState<string>(() =>
-    getDeviceTypesByBrand("Apple")[0]?.models[0]?.id ?? ""
-  );
-  const [repairId, setRepairId] = useState<string>(() =>
-    getDeviceTypesByBrand("Apple")[0]?.models[0]?.repairs[0]?.id ?? ""
-  );
+  const modelListId = useId();
+  const [category, setCategory] = useState<DeviceCategory | "">("");
+  const [brand, setBrand] = useState<Brand | "">("");
+  const [modelName, setModelName] = useState("");
+  const [repairType, setRepairType] = useState<RepairType | "">("");
+  const [partTierId, setPartTierId] = useState("");
 
-  const deviceTypes    = useMemo(() => getDeviceTypesByBrand(brand), [brand]);
-  const deviceType     = useMemo(() => deviceTypes.find((d) => d.id === deviceTypeId) ?? null, [deviceTypes, deviceTypeId]);
-  const models         = deviceType?.models ?? [];
-  const selectedModel  = models.find((m) => m.id === modelId) ?? null;
-  const repairs        = selectedModel?.repairs ?? [];
-  const selectedRepair = repairs.find((r) => r.id === repairId) ?? null;
+  const brands = useMemo(
+    () =>
+      category
+        ? BRANDS.filter((candidate) =>
+            ALL_DEVICES.some(
+              (device) =>
+                device.brand === candidate && device.category === category
+            )
+          )
+        : [],
+    [category]
+  );
+  const models = useMemo(
+    () =>
+      category && brand
+        ? ALL_DEVICES.filter(
+            (device) =>
+              device.category === category && device.brand === brand
+          )
+        : [],
+    [brand, category]
+  );
+  const selectedModel = models.find((device) => device.name === modelName);
+  const repairs = selectedModel
+    ? getSupportedRepairTypes(selectedModel)
+    : [];
+  const tiers =
+    selectedModel && repairType
+      ? getRepairTiers(selectedModel, repairType)
+      : [];
+  const effectiveTierId =
+    tiers.length === 1 ? tiers[0].partTierId : partTierId;
+  const quote =
+    selectedModel &&
+    repairType &&
+    (tiers.length <= 1 || effectiveTierId)
+      ? getRepairQuote(selectedModel, repairType, effectiveTierId)
+      : null;
 
-  function changeBrand(b: Brand) {
-    setBrand(b);
-    const types = getDeviceTypesByBrand(b);
-    const t = types[0];
-    setTypeId(t?.id ?? "");
-    setModelId(t?.models[0]?.id ?? "");
-    setRepairId(t?.models[0]?.repairs[0]?.id ?? "");
+  function resetAfterCategory(value: DeviceCategory) {
+    setCategory(value);
+    setBrand("");
+    setModelName("");
+    setRepairType("");
+    setPartTierId("");
   }
 
-  function changeType(id: string) {
-    setTypeId(id);
-    const dt = deviceTypes.find((d) => d.id === id);
-    setModelId(dt?.models[0]?.id ?? "");
-    setRepairId(dt?.models[0]?.repairs[0]?.id ?? "");
+  function resetAfterBrand(value: Brand) {
+    setBrand(value);
+    setModelName("");
+    setRepairType("");
+    setPartTierId("");
   }
 
-  function changeModel(id: string) {
-    setModelId(id);
-    const mdl = deviceType?.models.find((m) => m.id === id);
-    setRepairId(mdl?.repairs[0]?.id ?? "");
+  function chooseModel(value: string) {
+    setModelName(value);
+    setRepairType("");
+    setPartTierId("");
   }
 
-  const priceStr   = selectedRepair ? formatPrice(selectedRepair.price) : "—";
-  const isQuoteReq = !selectedRepair?.price;
-  const bookUrl    = buildBookingUrl(brand, deviceTypeId, modelId, repairId);
-
-  // Derive the repairCategory for sizing SVG icons
-  const repairCategory = deviceType?.repairCategory ?? "phone";
-
-  const selectStyle = {
-    background: "var(--control-bg)",
-    border: "1px solid var(--control-border)",
-    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-  };
+  const bookingHref =
+    selectedModel && repairType && quote
+      ? buildBookingHref(
+          selectedModel,
+          repairType,
+          quote.partTierId
+        )
+      : "/quote";
 
   return (
-    <div className="relative w-full">
-      <div className="surface-glass relative overflow-hidden rounded-lg">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent" />
-
-        {/* Header — device image updates live as user picks model */}
-        <div className="relative flex items-center justify-between gap-4 border-b border-border px-5 pb-4 pt-5">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--accent)]" />
-              <span className="text-[11px] font-semibold text-[color:var(--accent)] uppercase tracking-[0.14em]">
-                Instant Quote
-              </span>
-            </div>
-            <h3 className="truncate text-lg font-bold leading-tight text-foreground">
-              {selectedModel?.name ?? "Select your device"}
-            </h3>
-            <p className="mt-0.5 text-xs text-muted-foreground">{selectedRepair?.label ?? ""}</p>
-          </div>
-
-          {/* Device image — live update per model */}
-          <div className="flex-shrink-0 w-16 h-16">
-            <DeviceImage
-              brand={brand}
-              model={selectedModel?.name ?? ""}
-              deviceTypeId={deviceTypeId}
-              category={repairCategory as "phone" | "tablet" | "laptop"}
-              size={64}
-              className="w-full h-full flex items-center justify-center"
-              imgClassName="object-contain w-full h-full drop-shadow-[0_12px_20px_rgba(0,0,0,0.45)]"
-            />
-          </div>
+    <div className="w-full overflow-hidden rounded-md border border-border bg-card">
+      <div className="flex min-h-20 items-center justify-between gap-4 border-b border-border px-5 py-4">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Repair estimate
+          </p>
+          <h2 className="mt-1 truncate text-lg font-semibold">
+            {selectedModel?.name ?? "Start with your device"}
+          </h2>
         </div>
-
-        {/* Selects */}
-        <div className="space-y-2.5 px-5 pb-4 pt-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Brand</label>
-              <Select value={brand} onValueChange={(v) => changeBrand(v as Brand)}>
-                <SelectTrigger className="h-10 rounded-lg text-sm font-medium" style={selectStyle}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(["Apple", "Samsung", "Google Pixel"] as Brand[]).map((b) => (
-                    <SelectItem key={b} value={b}>{b}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Type</label>
-              <Select value={deviceTypeId} onValueChange={changeType}>
-                <SelectTrigger className="h-10 rounded-lg text-sm font-medium" style={selectStyle}>
-                  <SelectValue placeholder="Type…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {deviceTypes.map((dt) => (
-                    <SelectItem key={dt.id} value={dt.id}>{dt.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Model</label>
-            <Select value={modelId} onValueChange={changeModel} disabled={!deviceType}>
-              <SelectTrigger className="h-10 rounded-lg text-sm font-medium" style={selectStyle}>
-                <SelectValue placeholder="Select model…" />
-              </SelectTrigger>
-              <SelectContent>
-                {models.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Repair</label>
-            <Select value={repairId} onValueChange={setRepairId} disabled={!selectedModel}>
-              <SelectTrigger className="h-10 rounded-lg text-sm font-medium" style={selectStyle}>
-                <SelectValue placeholder="Select repair…" />
-              </SelectTrigger>
-              <SelectContent>
-                {repairs.map((r) => (
-                  <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Result */}
-        {selectedRepair && (
-          <div
-            className="mx-4 mb-3 overflow-hidden rounded-lg"
-            style={{
-              background: "var(--soft-bg)",
-              border: "1px solid var(--control-border)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-            }}
-          >
-            <div className="border-b border-border px-5 pb-3 pt-4 text-center">
-              <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Estimated price
-              </p>
-              <p className="py-0.5 text-3xl font-bold text-foreground">{priceStr}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {isQuoteReq
-                  ? "Free assessment — no charge if we can't fix it*"
-                  : "Confirmed after free inspection · includes parts & labour"}
-              </p>
-            </div>
-            <div className="grid grid-cols-3 divide-x divide-border">
-              <div className="px-3 py-2.5 flex flex-col items-center gap-1 text-center">
-                <CalendarCheck className="h-4 w-4 text-[color:var(--accent)]" />
-                <span className="text-[11px] font-semibold text-foreground">Same Day</span>
-                <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Repair</span>
-              </div>
-              <div className="px-3 py-2.5 flex flex-col items-center gap-1 text-center">
-                <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-                <span className="text-[11px] font-semibold text-foreground">{selectedRepair.warranty}</span>
-                <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Warranty</span>
-              </div>
-              <div className="px-3 py-2.5 flex flex-col items-center gap-1 text-center">
-                <Clock className="h-4 w-4 text-[color:var(--accent)]" />
-                <span className="text-[11px] font-semibold text-foreground">{selectedRepair.time}</span>
-                <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Est. time</span>
-              </div>
-            </div>
+        {selectedModel && brand && category ? (
+          <DeviceImage
+            brand={brand}
+            model={selectedModel.name}
+            category={category}
+            size={60}
+            className="flex h-16 w-16 shrink-0 items-center justify-center"
+            imgClassName="h-full w-full object-contain"
+          />
+        ) : (
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-surface">
+            <Search className="h-4 w-4 text-muted-foreground" />
           </div>
         )}
-
-        {/* CTA */}
-        <div className="px-4 pb-4">
-          <Button
-            asChild
-            className="btn-primary w-full h-11 rounded-lg font-semibold text-[14px]"
-          >
-            <Link href={bookUrl} className="flex items-center justify-center gap-2">
-              Book Same-Day Repair
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
+
+      <div className="space-y-3 p-5">
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Category">
+            <Select
+              value={category}
+              onValueChange={(value) =>
+                resetAfterCategory(value as DeviceCategory)
+              }
+            >
+              <SelectTrigger
+                aria-label="Category"
+                className="h-10 rounded-md border-border bg-surface text-[13px]"
+              >
+                <SelectValue placeholder="Choose" />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field label="Brand">
+            <Select
+              value={brand}
+              disabled={!category}
+              onValueChange={(value) => resetAfterBrand(value as Brand)}
+            >
+              <SelectTrigger
+                aria-label="Brand"
+                className="h-10 rounded-md border-border bg-surface text-[13px]"
+              >
+                <SelectValue placeholder="Choose" />
+              </SelectTrigger>
+              <SelectContent>
+                {brands.map((item) => (
+                  <SelectItem key={item} value={item}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+
+        <Field label="Model">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              list={modelListId}
+              value={modelName}
+              disabled={!brand}
+              onChange={(event) => chooseModel(event.target.value)}
+              placeholder={brand ? "Search or choose a model" : "Choose a brand first"}
+              aria-label="Model"
+              autoComplete="off"
+              className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-[13px] outline-none transition-colors focus:border-[color:var(--control-border-hover)] disabled:opacity-50"
+            />
+            <datalist id={modelListId}>
+              {models.map((device) => (
+                <option key={`${device.brand}-${device.id}`} value={device.name} />
+              ))}
+            </datalist>
+          </div>
+        </Field>
+
+        <Field label="Repair">
+          <Select
+            value={repairType}
+            disabled={!selectedModel}
+            onValueChange={(value) => {
+              setRepairType(value as RepairType);
+              setPartTierId("");
+            }}
+          >
+            <SelectTrigger
+              aria-label="Repair"
+              className="h-10 rounded-md border-border bg-surface text-[13px]"
+            >
+              <SelectValue placeholder="Choose a repair" />
+            </SelectTrigger>
+            <SelectContent>
+              {repairs.map((item) => (
+                <SelectItem key={item} value={item}>
+                  {item}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+
+        {tiers.length > 1 && (
+          <Field label="Part option">
+            <Select value={partTierId} onValueChange={setPartTierId}>
+              <SelectTrigger
+                aria-label="Part option"
+                className="h-10 rounded-md border-border bg-surface text-[13px]"
+              >
+                <SelectValue placeholder="Compare part options" />
+              </SelectTrigger>
+              <SelectContent>
+                {tiers.map((tier) => (
+                  <SelectItem key={tier.id} value={tier.partTierId}>
+                    {tier.partTier} ·{" "}
+                    {tier.minPrice === null
+                      ? "assessment"
+                      : tier.minPrice === tier.maxPrice
+                        ? `£${tier.minPrice}`
+                        : `£${tier.minPrice}–£${tier.maxPrice}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        )}
+      </div>
+
+      {quote && (
+        <div className="mx-5 mb-4 overflow-hidden rounded-md border border-border bg-surface">
+          <div className="border-b border-border px-5 py-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Estimated price
+            </p>
+            <p className="mt-1 text-2xl font-semibold tracking-tight">
+              {priceLabel(
+                quote.minPrice,
+                quote.maxPrice,
+                quote.inspectionRequired
+              )}
+            </p>
+            <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+              Estimate only. Availability, fault and final price are confirmed
+              before repair.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 divide-x divide-border">
+            <div className="p-4">
+              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="mt-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                Estimated time
+              </p>
+              <p className="mt-1 text-[12px] font-semibold">
+                {quote.estimatedTime}
+              </p>
+            </div>
+            <div className="p-4">
+              <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="mt-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                Warranty
+              </p>
+              <p className="mt-1 text-[12px] font-semibold">
+                {quote.warranty}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="px-5 pb-5">
+        <Button asChild className="h-11 w-full rounded-md text-[13px]">
+          <Link
+            href={
+              quote && !FEATURES.bookingEnabled
+                ? "/contact"
+                : bookingHref
+            }
+          >
+            {quote
+              ? quote.inspectionRequired
+                ? "Request an Assessment"
+                : FEATURES.bookingEnabled
+                  ? "Request This Repair"
+                  : "Contact the Team"
+              : "Open Full Quote"}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </label>
+      {children}
     </div>
   );
 }

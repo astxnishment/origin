@@ -3,7 +3,6 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroCalculator from "@/components/HeroCalculator";
-import TrackRepairStrip from "@/components/TrackRepairStrip";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -20,22 +19,15 @@ import {
   Phone,
   Shield,
   Smartphone,
-  Star,
   Tablet,
   Wrench,
   Zap,
 } from "lucide-react";
-import { BUSINESS, TESTIMONIALS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
-import { appleImageUrl, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
+import { getHomepageRepairs } from "@/lib/serviceCatalogue";
 
-const homepageMacBookImage = {
-  src: appleImageUrl(MACBOOK_IMAGES['MacBook Pro 16" M3'], 256, false),
-  alt: "MacBook Pro repair in Leeds",
-  width: 256,
-  height: 256,
-};
-
+const homepageMacBookImage = serviceImages.macbook;
 
 const heroDevices = [
   {
@@ -115,18 +107,19 @@ const categories = [
   },
 ];
 
-const popularRepairs = [
-  { icon: Wrench, label: "Screen repair", price: "From £49", time: "45-90 min" },
-  { icon: Battery, label: "Battery", price: "From £39", time: "30-75 min" },
-  { icon: Zap, label: "Charging port", price: "From £45", time: "60 min" },
-  { icon: Droplets, label: "Water damage", price: "Free check", time: "Same day" },
-];
+const popularRepairIcons = [Wrench, Battery, Zap, Droplets];
+const popularRepairs = getHomepageRepairs().map((repair, index) => ({
+  ...repair,
+  icon: popularRepairIcons[index],
+}));
 
 const trustItems = [
-  { icon: Clock, label: "Same-day" },
-  { icon: Shield, label: "12-month warranty" },
-  { icon: Package, label: "Mail-in repairs" },
-  { icon: Check, label: "Free diagnosis" },
+  { icon: Check, label: "Price agreed first" },
+  { icon: Shield, label: "Warranty shown in quote" },
+  { icon: Clock, label: "Time estimate provided" },
+  ...(FEATURES.mailInEnabled
+    ? [{ icon: Package, label: "Mail-in available" }]
+    : []),
 ];
 
 export default function Home() {
@@ -139,15 +132,15 @@ export default function Home() {
           <div className="absolute inset-0 -z-10">
             <div className="absolute inset-y-0 right-0 hidden w-[62%] lg:block">
               <div className="relative h-full min-h-[560px] opacity-95">
-                {heroDevices.map(({ src, alt, width, height, className }) => (
+                {heroDevices.map(({ src, alt, width, height, className }, index) => (
                   <Image
                     key={alt}
                     src={src}
                     alt={alt}
                     width={width}
                     height={height}
-                    priority
-                    unoptimized={src.startsWith("https://")}
+                    priority={index === 0}
+                    sizes="(min-width: 1024px) 430px, 1px"
                     className={`${className} object-contain drop-shadow-[0_28px_70px_rgba(0,0,0,0.34)]`}
                   />
                 ))}
@@ -173,7 +166,8 @@ export default function Home() {
                   width={homepageMacBookImage.width}
                   height={homepageMacBookImage.height}
                   priority
-                  unoptimized
+                  loading="eager"
+                  sizes="176px"
                   className="absolute bottom-0 left-10 h-24 w-44 object-contain drop-shadow-[0_18px_42px_rgba(0,0,0,0.32)]"
                 />
                 <Image
@@ -181,7 +175,7 @@ export default function Home() {
                   alt="Google Pixel repair in Leeds"
                   width={1200}
                   height={1200}
-                  priority
+                  loading="lazy"
                   className="absolute left-0 top-10 h-24 w-24 object-contain drop-shadow-[0_18px_42px_rgba(0,0,0,0.32)]"
                 />
               </div>
@@ -199,14 +193,20 @@ export default function Home() {
               <h1 className="max-w-3xl text-6xl font-bold leading-[0.95] tracking-tight text-foreground sm:text-7xl lg:text-8xl">
                 Device repair in Leeds.
               </h1>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Phones, tablets, laptops, consoles and custom PCs, with the
+                price agreed before work begins.
+              </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button asChild className="btn-primary h-[54px] px-8 text-base">
-                  <Link href="/book" className="flex items-center gap-2">
-                    Book Repair
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                {FEATURES.bookingEnabled && (
+                  <Button asChild className="btn-primary h-[54px] px-8 text-base">
+                    <Link href="/book" className="flex items-center gap-2">
+                      Request Repair
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
                 <Button asChild className="btn-secondary h-[54px] px-8 text-base">
                   <a href={BUSINESS.phoneHref} className="flex items-center gap-2">
                     <Phone className="h-4 w-4" />
@@ -226,32 +226,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <section className="border-y border-border">
-          <div className="mx-auto grid max-w-6xl grid-cols-2 divide-x divide-y divide-border px-5 sm:px-8 lg:grid-cols-4 lg:divide-y-0">
-            <a
-              href={BUSINESS.googleReviewUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 py-5 text-sm text-muted-foreground transition-colors hover:text-foreground lg:px-5"
-            >
-              <span className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                ))}
-              </span>
-              Reviews
-            </a>
-            {trustItems.slice(0, 3).map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-2 py-5 text-sm text-muted-foreground lg:px-5">
-                <Icon className="h-4 w-4 text-[color:var(--icon-fg)]" />
-                {label}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <TrackRepairStrip />
 
         <section className="section-border">
           <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
@@ -284,7 +258,6 @@ export default function Home() {
                       width={image.width}
                       height={image.height}
                       loading="lazy"
-                      unoptimized={image.src.startsWith("https://")}
                       sizes="160px"
                       className={`${imageClassName} object-contain transition-transform duration-300 group-hover:scale-105`}
                     />
@@ -332,43 +305,6 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section-border">
-          <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
-            <div className="mb-7 flex items-end justify-between gap-4">
-              <div>
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Reviews</p>
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">What Leeds says.</h2>
-              </div>
-              <a
-                href={BUSINESS.googleReviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
-              >
-                Leave a review
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
-              {TESTIMONIALS.map(({ author, role, content, rating, device }) => (
-                <figure key={author} className="flex flex-col gap-4 bg-card p-6">
-                  <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
-                    {Array.from({ length: rating }).map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
-                    ))}
-                  </div>
-                  <blockquote className="flex-1 text-sm leading-relaxed text-muted-foreground">
-                    &ldquo;{content}&rdquo;
-                  </blockquote>
-                  <figcaption className="flex items-center justify-between gap-3 text-[13px]">
-                    <span className="font-semibold text-foreground">{author} · {role}</span>
-                    <span className="text-muted-foreground">{device}</span>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
 
       <Footer />

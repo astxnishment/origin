@@ -4,81 +4,164 @@ import Footer from "@/components/Footer";
 import { BUSINESS } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Origin Repairs",
-  description: "How Origin Repairs collects, uses, and protects your personal data.",
+  title: "Privacy Notice | Origin Repairs",
+  description:
+    "How Origin Repairs uses contact, repair and website data when handling enquiries and repair requests.",
 };
 
 export default function PrivacyPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-24 pb-24">
-        <div className="max-w-2xl mx-auto px-5 sm:px-8">
-          <div className="pt-10 pb-10 border-b border-border mb-10">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">Legal</p>
-            <h1 className="text-4xl font-semibold tracking-tight mb-4">Privacy Policy</h1>
-            <p className="text-[13px] text-muted-foreground">Last updated: June 2025</p>
+      <main className="pb-24 pt-24">
+        <div className="mx-auto max-w-2xl px-5 sm:px-8">
+          <header className="mb-10 border-b border-border pb-10 pt-10">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
+              Legal
+            </p>
+            <h1 className="text-4xl font-semibold tracking-tight">
+              Privacy Notice
+            </h1>
+            <p className="mt-4 text-[13px] text-muted-foreground">
+              Last updated: 29 July 2026
+            </p>
+          </header>
+
+          <div className="mb-10 rounded-md border border-border bg-surface p-5 text-[12px] leading-6 text-muted-foreground">
+            Draft launch notice. The owner must confirm the legal data
+            controller identity, retention schedule and processor agreements,
+            then obtain qualified UK privacy review before production use.
           </div>
 
-          <div className="space-y-8 text-[14px] text-muted-foreground leading-relaxed">
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">1. Who we are</h2>
+          <div className="space-y-8 text-[14px] leading-relaxed text-muted-foreground">
+            <PolicySection title="Who controls the data">
               <p>
-                Origin Repairs, {BUSINESS.address}. We repair electronic devices. This policy explains how we handle personal data collected via our website and in-store.
+                {BUSINESS.name}, {BUSINESS.address}, is the contact point for
+                personal data used to respond to enquiries and provide repair
+                services. Privacy requests can be sent to{" "}
+                <a
+                  href={`mailto:${BUSINESS.email}`}
+                  className="text-primary hover:underline"
+                >
+                  {BUSINESS.email}
+                </a>
+                . The owner must add the verified legal entity or sole-trader
+                identity before launch.
               </p>
-            </section>
+            </PolicySection>
 
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">2. What data we collect</h2>
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong className="text-foreground">Contact details</strong> — name, email address, phone number (collected when you book or contact us)</li>
-                <li><strong className="text-foreground">Device information</strong> — brand, model, and description of the fault (to process your repair)</li>
-                <li><strong className="text-foreground">Booking details</strong> — preferred date and time</li>
-                <li><strong className="text-foreground">Website usage</strong> — standard server logs and anonymous analytics (no tracking cookies beyond what is necessary)</li>
+            <PolicySection title="Data collected">
+              <ul className="list-disc space-y-1.5 pl-5">
+                <li>Name, email address, phone number and contact consent.</li>
+                <li>Device type, brand, model, fault description and selected repair.</li>
+                <li>Preferred appointment date, time and service method.</li>
+                <li>A return address only when an enabled mail-in service is selected.</li>
+                <li>Technical request data used for security, such as IP-derived rate-limit state, timestamps and server logs.</li>
+                <li>Device data accessed only where the agreed repair or recovery work requires it and the customer has consented.</li>
               </ul>
-            </section>
+            </PolicySection>
 
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">3. How we use your data</h2>
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li>To confirm your booking and send repair status updates</li>
-                <li>To contact you about your device</li>
-                <li>To manage our repair records</li>
-                <li>We do <strong className="text-foreground">not</strong> sell your data, share it with advertisers, or use it for automated decision-making</li>
+            <PolicySection title="Purposes and lawful bases">
+              <ul className="list-disc space-y-1.5 pl-5">
+                <li>To respond to a requested quote or repair request and take steps before a service contract.</li>
+                <li>To perform an approved repair contract and communicate about the device.</li>
+                <li>To maintain necessary accounting, warranty and dispute records where required by law or legitimate business interests.</li>
+                <li>To prevent spam, duplicate submissions and service abuse under legitimate interests.</li>
+                <li>To access personal device data only with explicit customer instructions appropriate to the recovery or diagnostic work.</li>
               </ul>
-            </section>
+            </PolicySection>
 
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">4. Device data safety</h2>
+            <PolicySection title="Service providers and transfers">
               <p>
-                We do not access the personal files, photos, or accounts on your device during repair. For laptop and data recovery work, we advise customers to back up before dropping off. Where data recovery is the purpose of the repair, a separate consent process applies.
+                The website is hosted by Vercel. Form notifications use Resend
+                when production email delivery is enabled. The contact page can
+                load a Google Maps embed after customer interaction. Cloudflare
+                Turnstile may be enabled for spam protection. These providers
+                may process technical or contact data outside the UK; the
+                controller must verify the applicable contract and transfer
+                safeguard before enabling production processing.
               </p>
-            </section>
+            </PolicySection>
 
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">5. Data retention</h2>
+            <PolicySection title="Analytics, storage and cookies">
               <p>
-                Booking and repair records are retained for up to 3 years for warranty and accounting purposes, then securely deleted. You can request deletion at any time by contacting us.
+                No advertising or behavioural analytics are configured in this
+                repository. The site stores a light or dark theme preference in
+                the browser. During a repair request it can also retain
+                non-sensitive device, repair and preferred-time selections for
+                the current browser session; contact details and fault
+                descriptions are not included in that draft. A consent banner
+                is not shown because no
+                non-essential cookie or equivalent tracking is currently
+                enabled. This notice and consent approach must be updated before
+                adding analytics, advertising or other non-essential storage.
               </p>
-            </section>
+            </PolicySection>
 
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">6. Your rights</h2>
+            <PolicySection title="Retention">
               <p>
-                Under UK GDPR you have the right to access, correct, or delete your personal data. To exercise these rights, email <a href={`mailto:${BUSINESS.email}`} className="text-primary hover:underline">{BUSINESS.email}</a>.
+                Enquiry, repair, accounting and warranty information must be
+                kept only for the verified business, legal and service period,
+                then deleted or anonymised. The production retention schedule
+                has not been confirmed in the repository and must be completed
+                by the owner before launch. Server and anti-spam logs should use
+                the shortest operational period supported by the configured
+                providers.
               </p>
-            </section>
+            </PolicySection>
 
-            <section>
-              <h2 className="text-[16px] font-semibold text-foreground mb-3">7. Contact</h2>
+            <PolicySection title="Your rights">
               <p>
-                For privacy questions: <a href={`mailto:${BUSINESS.email}`} className="text-primary hover:underline">{BUSINESS.email}</a> or {BUSINESS.address}.
+                Depending on the circumstances, UK data-protection law may give
+                you rights to access, correct, erase or restrict personal data,
+                object to processing, or receive portable data. You can raise a
+                request using the email address above. Identity may need to be
+                checked before information is released.
               </p>
-            </section>
+              <p className="mt-3">
+                You can also complain to the{" "}
+                <a
+                  href="https://ico.org.uk/make-a-complaint/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  UK Information Commissioner&apos;s Office
+                </a>
+                .
+              </p>
+            </PolicySection>
+
+            <PolicySection title="Device and recovery data">
+              <p>
+                Back up a device before repair where possible. Routine hardware
+                work does not normally require access to personal files.
+                Diagnostics or recovery that does require access must be agreed
+                with the customer. No recovery result or protection from
+                pre-existing storage failure can be guaranteed.
+              </p>
+            </PolicySection>
           </div>
         </div>
       </main>
       <Footer />
     </>
+  );
+}
+
+function PolicySection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <h2 className="mb-3 text-[16px] font-semibold text-foreground">
+        {title}
+      </h2>
+      {children}
+    </section>
   );
 }

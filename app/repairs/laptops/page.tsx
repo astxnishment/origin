@@ -5,8 +5,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
-import { APPLE_MACBOOKS } from "@/lib/repair-data";
-import { appleImageUrl, MACBOOK_IMAGES } from "@/lib/appleDeviceImages";
+import { serviceImages } from "@/lib/serviceImages";
+import {
+  getSpecialistPriceLabel,
+  getStartingPriceLabel,
+  getVisibleModels,
+} from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Laptop Repair Leeds | MacBook, Windows, Gaming Laptops",
@@ -14,14 +18,14 @@ export const metadata: Metadata = {
 };
 
 const repairTypes = [
-  { name: "Screen replacement", price: "from £199", time: "1–3 days" },
-  { name: "Battery replacement", price: "from £99", time: "90 min" },
-  { name: "Keyboard replacement", price: "from £129", time: "2 hrs" },
-  { name: "Liquid damage", price: "from £129", time: "2–7 days" },
-  { name: "Logic board repair", price: "from £129", time: "2–7 days" },
-  { name: "No power repair", price: "from £129", time: "2–7 days" },
-  { name: "SSD upgrade", price: "from £79", time: "60 min" },
-  { name: "Fan cleaning", price: "from £49", time: "60 min" },
+  { name: "Screen replacement", price: getStartingPriceLabel({ category: "laptop", repairTypeIds: ["screen-replacement"] }), time: "Model and part dependent" },
+  { name: "Battery replacement", price: getStartingPriceLabel({ category: "laptop", repairTypeIds: ["battery-replacement"] }), time: "Model dependent" },
+  { name: "Keyboard / trackpad", price: getSpecialistPriceLabel("laptop", "keyboard-trackpad-repair"), time: "1–3 days estimate" },
+  { name: "Liquid damage", price: getSpecialistPriceLabel("laptop", "liquid-damage-repair"), time: "2–7 days estimate" },
+  { name: "Logic board repair", price: getSpecialistPriceLabel("laptop", "motherboard-logic-board"), time: "2–7 days estimate" },
+  { name: "No power repair", price: getSpecialistPriceLabel("laptop", "no-power-repair"), time: "2–7 days estimate" },
+  { name: "SSD / RAM upgrade", price: getSpecialistPriceLabel("laptop", "ssd-ram-upgrade"), time: "Parts dependent" },
+  { name: "Overheating / fan service", price: getSpecialistPriceLabel("laptop", "overheating-fan-service"), time: "Fault dependent" },
 ];
 
 const brands = [
@@ -32,14 +36,14 @@ const brands = [
 
 const guarantees = [
   "MacBook & PC laptops covered",
-  "Data always protected",
-  "12-month warranty included",
+  "Backup recommended before repair",
+  "Repair-specific warranty shown",
   "Board-level repairs available",
-  "Transparent fixed pricing",
-  "Certified engineers only",
+  "Price agreed before repair",
+  "Parts and scope explained first",
 ];
 
-const macbookModels = Array.from(new Set(APPLE_MACBOOKS.map((d) => d.model)));
+const macbookModels = getVisibleModels("Apple", "laptop");
 
 export default function LaptopRepairsPage() {
   return (
@@ -59,7 +63,9 @@ export default function LaptopRepairsPage() {
                   All kinds of laptop repair.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  MacBook, Windows laptops, gaming laptops, business laptops and 2-in-1 devices. Your data is always protected, and complex faults are quoted before work starts.
+                  MacBook, Windows, gaming, business and 2-in-1 laptops.
+                  Back up important data where possible; complex faults are
+                  assessed and quoted before repair work starts.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {guarantees.map((g) => (
@@ -71,7 +77,7 @@ export default function LaptopRepairsPage() {
                 </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                    <Link href="/book">Book Laptop Repair</Link>
+                    <Link href="/book">Request Laptop Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
@@ -83,13 +89,12 @@ export default function LaptopRepairsPage() {
               {/* Hero device image */}
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative w-full max-w-sm">
-                  {/* Real MacBook Air M3 image from appledb.dev */}
                   <Image
-                    src={appleImageUrl(MACBOOK_IMAGES['MacBook Air 13" M3'], 256, false)}
-                    alt="MacBook Air M3 — Origin Repairs"
-                    width={256}
-                    height={256}
-                    unoptimized
+                    src={serviceImages.macbook.src}
+                    alt={serviceImages.macbook.alt}
+                    width={serviceImages.macbook.width}
+                    height={serviceImages.macbook.height}
+                    sizes="(min-width: 1024px) 384px, 85vw"
                     className="relative object-contain w-full drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
                     priority
                   />
@@ -103,9 +108,12 @@ export default function LaptopRepairsPage() {
             <div className="rounded-xl bg-card border border-border p-6 flex gap-4">
               <div className="w-1 rounded-full bg-accent shrink-0" />
               <div>
-                <p className="text-[13px] font-semibold text-foreground mb-1">Your data is safe with us</p>
+                <p className="text-[13px] font-semibold text-foreground mb-1">Back up before repair</p>
                 <p className="text-[13px] text-muted-foreground">
-                  We never access your personal files without consent. Before any repair, we&apos;ll advise on backup options. Data protection is part of every job.
+                  Routine hardware work does not normally require access to
+                  personal files. Back up important data where possible, and
+                  provide explicit consent before any data-access or recovery
+                  work.
                 </p>
               </div>
             </div>
@@ -150,10 +158,11 @@ export default function LaptopRepairsPage() {
           <div className="pt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Ready to get your laptop fixed?</h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Book online or walk in. Complex repairs booked in advance preferred.
+              Request a preferred time so the team can confirm the appropriate
+              assessment and any parts required.
             </p>
             <Button asChild className="btn-primary h-10 rounded-lg px-8 text-[13px]">
-              <Link href="/book">Book a Repair</Link>
+              <Link href="/book">Request a Repair</Link>
             </Button>
           </div>
         </div>

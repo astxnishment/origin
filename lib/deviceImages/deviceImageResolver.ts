@@ -2,13 +2,12 @@
  * deviceImageResolver — central source of truth for device image logic.
  *
  * Resolves to one of three image strategies:
- *   "apple-cdn"  → fetch real photo from img.appledb.dev
+ *   "apple-local"→ use a stable local device image
  *   "pixel-svg"  → render an inline Pixel SVG icon
  *   "samsung-svg"→ render an inline Samsung category SVG icon
  *   "generic-svg"→ render a generic DeviceIcon SVG fallback
  */
 
-import { getAppleDeviceImage, appleImageUrl } from "@/lib/deviceImages/appleDeviceImages";
 import { getPixelDeviceImage, type PixelVariant } from "@/lib/deviceImages/googlePixelDeviceImages";
 import { getSamsungVariant, type SamsungVariant } from "@/lib/deviceImages/samsungGenericImages";
 import type { DeviceType as DeviceIconType } from "@/components/DeviceIcon";
@@ -17,10 +16,10 @@ import type { DeviceType as DeviceIconType } from "@/components/DeviceIcon";
 
 export type ResolvedImage =
   | {
-      strategy: "apple-cdn";
-      url256: string; // high-res for cards
-      url64:  string; // small for dropdowns
-      fallbackSrc: string; // local SVG if CDN fails
+      strategy: "apple-local";
+      src: string;
+      width: number;
+      height: number;
     }
   | {
       strategy: "pixel-photo";
@@ -43,14 +42,6 @@ export type ResolvedImage =
       iconType: DeviceIconType;
     };
 
-// ── Fallback SVG paths per Apple device category ──────────────────────────────
-
-const APPLE_FALLBACKS: Record<string, string> = {
-  apple_iphone:  "/images/services/iphone-device.svg",
-  apple_ipad:    "/images/services/ipad-device.svg",
-  apple_macbook: "/images/services/macbook-device.svg",
-};
-
 // ── Main resolver ─────────────────────────────────────────────────────────────
 
 export interface ResolverInput {
@@ -72,21 +63,28 @@ export function resolveDeviceImage({
 
   // ── Apple ──────────────────────────────────────────────────────────────────
   if (brand === "Apple") {
-    const device = getAppleDeviceImage(model);
-    if (device) {
+    if (category === "tablet" || deviceTypeId === "ipad") {
       return {
-        strategy: "apple-cdn",
-        url256: appleImageUrl(device, 256, true),
-        url64:  appleImageUrl(device, 64, true),
-        fallbackSrc: APPLE_FALLBACKS[deviceTypeId] ?? "/images/services/iphone-device.svg",
+        strategy: "apple-local",
+        src: "/images/services/ipad.webp",
+        width: 698,
+        height: 800,
       };
     }
-    // Apple device found in pricing but not in image map → generic SVG.
-    // Key off the broad category (reliable) rather than deviceTypeId strings.
-    const iconType: DeviceIconType =
-      category === "tablet" || deviceTypeId === "ipad"    ? "ipad"    :
-      category === "laptop" || deviceTypeId === "macbook" ? "macbook" : "iphone";
-    return { strategy: "generic-svg", iconType };
+    if (category === "laptop" || deviceTypeId === "macbook") {
+      return {
+        strategy: "apple-local",
+        src: "/images/services/macbook.webp",
+        width: 1076,
+        height: 658,
+      };
+    }
+    return {
+      strategy: "apple-local",
+      src: "/images/services/iphone.webp",
+      width: 969,
+      height: 1200,
+    };
   }
 
   // ── Samsung ────────────────────────────────────────────────────────────────

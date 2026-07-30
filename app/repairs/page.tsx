@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
 import DeviceImage from "@/components/DeviceImage";
 import { DeviceIcon, type DeviceType as DeviceIconType } from "@/components/DeviceIcon";
+import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
 type Choice = {
   name: string;
@@ -24,7 +25,7 @@ type Choice = {
 
 export const metadata: Metadata = {
   title: "Device Repairs Leeds | Phones, Laptops, Consoles, PCs",
-  description: "Expert repairs for phones, tablets, all kinds of laptops, consoles, custom PC builds, upgrades, liquid damage and data recovery. Walk in or book online. Leeds LS2 8GL.",
+  description: "Repair services in Leeds for phones, tablets, laptops, consoles and custom PCs, including assessment-led liquid damage, board repair and data recovery.",
 };
 
 const categories: Array<{
@@ -58,7 +59,7 @@ const categories: Array<{
     choices: [
       { name: "iPad", note: "Pro, Air, mini & standard", href: "/quote?device=ipad", brand: "Apple", model: 'iPad Pro 11" M4', deviceTypeId: "ipad" },
       { name: "Samsung Galaxy Tab", note: "Tab S, Tab A series", href: "/quote?device=galaxy-tab", image: serviceImages.samsungGalaxyTab },
-      { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/book", image: serviceImages.androidLogo },
+      { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/contact", image: serviceImages.androidLogo },
     ],
   },
   {
@@ -91,12 +92,11 @@ const categories: Array<{
     tagline: "Gaming PCs, workstation builds and performance upgrades",
     image: serviceImages.customPc,
     repairs: [
-      { name: "Custom PC Build", time: "1–3 days", from: "£99" },
-      { name: "GPU Upgrade", time: "Same day", from: "£39" },
-      { name: "SSD / NVMe Upgrade", time: "60 min", from: "£49" },
-      { name: "RAM Upgrade", time: "30 min", from: "£29" },
-      { name: "Cooling Upgrade", time: "1–2 hrs", from: "£49" },
-      { name: "Cable Management", time: "1–2 hrs", from: "£49" },
+      { name: "Custom PC Build", time: "1–3 days estimate", from: getSpecialistPriceLabel("desktop", "custom-pc-build") },
+      { name: "GPU / Cooling Upgrade", time: "Parts dependent", from: getSpecialistPriceLabel("desktop", "gpu-cooling-upgrade") },
+      { name: "SSD / RAM Upgrade", time: "Parts dependent", from: getSpecialistPriceLabel("desktop", "ssd-ram-upgrade") },
+      { name: "No Power Repair", time: "Fault dependent", from: getSpecialistPriceLabel("desktop", "no-power-repair") },
+      { name: "Hardware Diagnostics", time: "Assessment required", from: getSpecialistPriceLabel("desktop", "hardware-diagnostics") },
     ],
   },
   {
@@ -105,12 +105,10 @@ const categories: Array<{
     tagline: "All liquid-damaged devices, SSDs, hard drives & lost files",
     image: serviceImages.dataRecoveryLiquidDamage,
     repairs: [
-      { name: "Phone Data Recovery", time: "2–7 days", from: "£79" },
-      { name: "Liquid Damage Assessment", time: "Same day", from: "£29" },
-      { name: "Hard Drive Recovery", time: "3–10 days", from: "£99" },
-      { name: "SSD Recovery", time: "24–48 hrs", from: "£99" },
-      { name: "RAID Recovery", time: "48–72 hrs", from: "£149" },
-      { name: "Board-Level Recovery", time: "2–7 days", from: "£129" },
+      { name: "Data Recovery Assessment", time: "2–10 days estimate", from: getSpecialistPriceLabel("data-recovery", "data-recovery") },
+      { name: "Liquid Damage Assessment", time: "Condition dependent", from: "Assessment required" },
+      { name: "Phone Board Recovery", time: "2–7 days estimate", from: getSpecialistPriceLabel("phone", "data-recovery") },
+      { name: "Laptop / Drive Recovery", time: "3–10 days estimate", from: getSpecialistPriceLabel("laptop", "data-recovery") },
     ],
   },
 ];
@@ -133,7 +131,7 @@ export default function RepairsPage() {
               Repairs
             </p>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5 max-w-lg">
-              Every device.<br />Every repair.
+              Repair, without the guesswork.
             </h1>
             <p className="text-[15px] text-muted-foreground max-w-md leading-relaxed">
               Phones, tablets, all kinds of laptops, consoles, custom PCs, liquid damage and board-level repairs.
@@ -252,11 +250,12 @@ export default function RepairsPage() {
               Not sure what&apos;s wrong?
             </h2>
             <p className="text-muted-foreground text-[15px] mb-8 max-w-sm mx-auto">
-              Walk in — we diagnose for free with no obligation.
+              Send the model and symptoms so the team can confirm the right
+              assessment.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                <Link href="/book">Book a Repair</Link>
+                <Link href="/book">Request a Repair</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <Link href="/contact">Contact Us</Link>

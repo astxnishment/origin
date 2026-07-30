@@ -4,79 +4,87 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
-import { REPAIR_PRICING } from "@/lib/repairPricing";
 import { SamsungCategoryIcon } from "@/components/SamsungCategoryIcon";
+import {
+  getSpecialistPriceLabel,
+  getStartingPriceLabel,
+  getVisibleModels,
+} from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Samsung Repair Leeds | Galaxy S, A Series",
   description:
-    "Professional Samsung repairs in Leeds. Galaxy S and A-series. Screen, battery, charging port and more. Same-day service, 12-month warranty on eligible repairs.",
+    "Samsung Galaxy repairs in Leeds for visible catalogue models. Compare screen, battery and charging-port options, times and repair-specific warranties.",
 };
 
-function cheapestSamsungPrice(repairType: string): number {
-  const prices = REPAIR_PRICING.filter(
-    (r) => r.brand === "Samsung" && r.repairType === repairType && r.minPrice !== null
-  ).map((r) => r.minPrice!);
-  return prices.length > 0 ? Math.min(...prices) : 0;
+function samsungPrice(repairTypeIds: string[]): string {
+  return getStartingPriceLabel({
+    brand: "Samsung",
+    category: "phone",
+    repairTypeIds,
+  });
 }
 
 const repairTypes = [
   {
     name: "Screen replacement",
-    price: `from £${cheapestSamsungPrice("Screen Replacement")}`,
-    time: "60 min",
+    price: samsungPrice(["screen-replacement"]),
+    time: "Model and part dependent",
   },
   {
     name: "Battery replacement",
-    price: `from £${cheapestSamsungPrice("Battery Replacement")}`,
-    time: "45–60 min",
+    price: samsungPrice(["battery-replacement"]),
+    time: "Model dependent",
   },
   {
     name: "Charging port",
-    price: `from £${cheapestSamsungPrice("Charging Port Replacement")}`,
-    time: "60 min",
+    price: samsungPrice([
+      "charging-port-replacement",
+      "charging-port-repair",
+    ]),
+    time: "Fault dependent",
   },
   {
     name: "Back cover",
-    price: `from £${cheapestSamsungPrice("Back Cover Replacement")}`,
-    time: "45–90 min",
+    price: samsungPrice(["back-cover-replacement", "back-glass"]),
+    time: "Model dependent",
   },
   {
     name: "Water damage",
-    price: "diagnostic from £29",
-    time: "Same day",
+    price: samsungPrice([
+      "water-damage-diagnostic",
+      "liquid-damage-diagnostic",
+    ]),
+    time: "Assessment required",
   },
   {
     name: "Motherboard repair",
-    price: "from £79",
+    price: getSpecialistPriceLabel("phone", "motherboard-logic-board"),
     time: "1–5 days",
   },
   {
     name: "No power repair",
-    price: "from £79",
+    price: getSpecialistPriceLabel("phone", "no-power-repair"),
     time: "1–5 days",
   },
 ];
 
 const guarantees = [
-  "Galaxy S and A series covered",
-  "12-month warranty on eligible repairs",
-  "Same-day on most models",
-  "Fixed price quotes",
-  "Free diagnostic assessment",
-  "Data protection guaranteed",
+  "Visible Galaxy S and A models listed",
+  "Warranty shown with each part option",
+  "Repair time estimated before approval",
+  "Price agreed before repair",
+  "Part type explained before repair",
+  "Backup recommended before repair",
 ];
 
-// Samsung models from v3 REPAIR_PRICING — grouped by series
 const samsungModels = (() => {
-  const seen = new Set<string>();
+  const models = getVisibleModels("Samsung", "phone");
   const sSeries: string[] = [];
   const aSeries: string[] = [];
-  for (const row of REPAIR_PRICING) {
-    if (row.brand !== "Samsung" || seen.has(row.model)) continue;
-    seen.add(row.model);
-    if (row.model.includes("S2") || row.model.startsWith("Galaxy S")) sSeries.push(row.model);
-    else aSeries.push(row.model);
+  for (const model of models) {
+    if (model.includes("S2") || model.startsWith("Galaxy S")) sSeries.push(model);
+    else aSeries.push(model);
   }
   return [
     { label: "Galaxy S Series", models: sSeries },
@@ -104,8 +112,9 @@ export default function SamsungRepairsPage() {
                   Samsung repair, done right.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  Full coverage for Galaxy S and A-series. {totalModels} models supported.
-                  12-month warranty on eligible repairs.
+                  {totalModels} visible Galaxy S and A-series models are
+                  currently listed. Part option, availability and warranty are
+                  confirmed for the selected repair.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {guarantees.map((g) => (
@@ -120,7 +129,7 @@ export default function SamsungRepairsPage() {
                     asChild
                     className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
-                    <Link href="/book">Book Samsung Repair</Link>
+                    <Link href="/book">Request Samsung Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
@@ -199,13 +208,13 @@ export default function SamsungRepairsPage() {
               Ready to get your Samsung fixed?
             </h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Book online or walk in. Most repairs done the same day.
+              Request a preferred time and the team will confirm availability.
             </p>
             <Button
               asChild
               className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
-              <Link href="/book">Book a Repair</Link>
+              <Link href="/book">Request a Repair</Link>
             </Button>
           </div>
         </div>

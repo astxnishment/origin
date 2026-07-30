@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import FullCalculator from "@/components/FullCalculator";
 
 export const metadata: Metadata = {
-  title: "Repair Quote — Leeds & Mail-in",
+  title: "Repair Quote — Leeds",
   description:
-    "Get an estimate for phone, tablet, laptop, console, custom PC, liquid damage, motherboard and data recovery work. Visit us in Leeds or post your device.",
+    "Get an estimate for phone, tablet, laptop, console, custom PC, liquid damage, motherboard and data recovery work in Leeds.",
 };
 
 export default function QuotePage() {

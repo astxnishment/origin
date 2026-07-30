@@ -1,33 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Package, ShieldCheck, Truck } from "lucide-react";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Mail-in Device Repair UK | Origin Repairs Leeds",
   description:
-    "Ship your phone, tablet, laptop, console or custom PC to Origin Repairs for assessment and repair. Tracked postal repairs with fixed quote approval before work starts.",
+    "Request mail-in assessment for a phone, tablet, laptop, console or custom PC. Shipping instructions and the quote process are confirmed before dispatch.",
 };
 
 const steps = [
   {
-    title: "Book mail-in repair",
-    body: "Tell us what device you are sending and what is wrong. We will reply with the next steps and your repair reference.",
+    title: "Request mail-in repair",
+    body: "Tell us what device you want to send and what is wrong. This is a request, not acceptance of the parcel or repair.",
   },
   {
-    title: "Pack it safely",
-    body: "Use tracked postage, padding, and include your name, phone number, return address and repair reference inside the parcel.",
+    title: "Wait for acceptance",
+    body: "The team confirms whether mail-in is appropriate and sends the current packing, address and postage instructions.",
   },
   {
-    title: "We assess first",
+    title: "Pack and send",
+    body: "After acceptance, follow the supplied instructions, use suitable padding and keep the carrier tracking details.",
+  },
+  {
+    title: "Assessment first",
     body: "Once it arrives, we inspect it and confirm the exact quote before any repair work starts.",
-  },
-  {
-    title: "Repair and return",
-    body: "After approval and payment, we repair, test and ship the device back using tracked delivery.",
   },
 ];
 
@@ -41,6 +42,8 @@ const devices = [
 ];
 
 export default function MailInRepairPage() {
+  if (!FEATURES.mailInEnabled) notFound();
+
   return (
     <>
       <Navbar />
@@ -56,13 +59,14 @@ export default function MailInRepairPage() {
                 Ship your device to us for repair.
               </h1>
               <p className="mb-8 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-                Not local to Leeds? Send your phone, tablet, laptop, console or PC to Origin Repairs.
-                We assess it, confirm the price, repair after approval, then return it tracked.
+                Not local to Leeds? Request a mail-in assessment for your
+                phone, tablet, laptop, console or PC. Wait for acceptance and
+                current shipping instructions before sending anything.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
                   <Link href="/book?method=mail-in" className="flex items-center gap-2">
-                    Start Mail-in Repair <ArrowRight className="h-3.5 w-3.5" />
+                    Request Mail-in Repair <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="h-10 rounded-lg border-border px-6 text-[13px] hover:bg-muted">
@@ -75,19 +79,14 @@ export default function MailInRepairPage() {
               <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-surface">
                 <Package className="h-5 w-5 text-[color:var(--icon-fg)]" />
               </div>
-              <p className="mb-2 text-[13px] font-semibold text-foreground">Ship to</p>
-              <address className="not-italic text-[15px] font-semibold leading-relaxed text-foreground">
-                Origin Repairs
-                <br />
-                76 Cookridge Street
-                <br />
-                Leeds, LS2 8GL
-                <br />
-                United Kingdom
-              </address>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">
+                Do not ship before acceptance
+              </p>
               <p className="mt-5 text-[12px] leading-relaxed text-muted-foreground">
-                Book first so we can match your parcel to your repair. Use tracked postage and keep
-                your tracking number until the repair is complete.
+                A submitted form does not create a repair reference or confirm
+                that a parcel can be accepted. The team will send the current
+                address, packing and return-postage terms after reviewing the
+                request.
               </p>
             </div>
           </section>
@@ -120,7 +119,7 @@ export default function MailInRepairPage() {
 
             <div className="grid grid-cols-1 gap-3">
               {[
-                { icon: Truck, title: "Tracked postage both ways", body: "We recommend insured tracked shipping. Return postage is confirmed with your quote." },
+                { icon: Truck, title: "Carrier terms confirmed first", body: "Outbound risk, insurance, tracking and return postage are explained before dispatch." },
                 { icon: ShieldCheck, title: "Quote before repair", body: "We do not begin work until you approve the final price after assessment." },
                 { icon: Package, title: "Pack with padding", body: "Remove cases/accessories unless needed for the fault, and protect screens and corners well." },
               ].map(({ icon: Icon, title, body }) => (
@@ -138,10 +137,11 @@ export default function MailInRepairPage() {
           <section className="pt-16 text-center">
             <h2 className="mb-3 text-2xl font-semibold sm:text-3xl">Ready to send it in?</h2>
             <p className="mx-auto mb-8 max-w-sm text-[15px] text-muted-foreground">
-              Start with a mail-in booking and we will send the repair reference and shipping instructions.
+              Send a request first. The team will confirm whether the device
+              can be accepted and provide current instructions.
             </p>
             <Button asChild className="btn-primary h-10 rounded-lg px-8 text-[13px]">
-              <Link href="/book?method=mail-in">Book Mail-in Repair</Link>
+              <Link href="/book?method=mail-in">Request Mail-in Repair</Link>
             </Button>
           </section>
         </div>

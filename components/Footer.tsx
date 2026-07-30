@@ -1,11 +1,14 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES, TRUST } from "@/lib/constants";
+import { WARRANTY_NOTICE } from "@/lib/warranty";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
 const services = [
   { href: "/repairs/phones", label: "Phone Repair" },
-  { href: "/mail-in", label: "Mail-in Repairs" },
+  ...(FEATURES.mailInEnabled
+    ? [{ href: "/mail-in", label: "Mail-in Repairs" }]
+    : []),
   { href: "/repairs/ipad", label: "iPad Repair" },
   { href: "/repairs/laptops", label: "Laptop Repair" },
   { href: "/repairs/consoles", label: "Console Repair" },
@@ -19,7 +22,9 @@ const company = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/faq", label: "FAQ" },
-  { href: "/book", label: "Book Repair" },
+  ...(FEATURES.bookingEnabled
+    ? [{ href: "/book", label: "Request Repair" }]
+    : []),
 ];
 
 const legal = [
@@ -41,27 +46,35 @@ export default function Footer() {
               <Logo variant="dark" heightClass="h-10" className="hidden dark:block" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              Professional device repair in Leeds. Every repair backed by a 12-month warranty.
+              Professional device repair in Leeds. {WARRANTY_NOTICE}
             </p>
-            <div className="flex items-center gap-3">
-              <a
-                href={BUSINESS.googleReviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Google ↗
-              </a>
-              <span className="text-border">·</span>
-              <a
-                href={BUSINESS.trustpilotUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Trustpilot ↗
-              </a>
-            </div>
+            {(TRUST.googleBusinessUrl || TRUST.trustpilotUrl) && (
+              <div className="flex items-center gap-3">
+                {TRUST.googleBusinessUrl && (
+                  <a
+                    href={TRUST.googleBusinessUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Google profile ↗
+                  </a>
+                )}
+                {TRUST.googleBusinessUrl && TRUST.trustpilotUrl && (
+                  <span className="text-border">·</span>
+                )}
+                {TRUST.trustpilotUrl && (
+                  <a
+                    href={TRUST.trustpilotUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Trustpilot ↗
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Services */}

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingForm from "./BookingForm";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
+import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
   getDeviceById,
   slugToBrand,
@@ -14,9 +16,9 @@ import {
 import { Phone, Mail, MapPin, Clock, Package } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Book a Repair — Leeds | Origin Repairs",
+  title: "Request a Repair — Leeds | Origin Repairs",
   description:
-    "Book your device repair online at Origin Repairs, Leeds. Select your device, choose a time slot and we'll confirm within the hour. Walk-ins also welcome at 76 Cookridge Street.",
+    "Request a device repair assessment in Leeds. Select your device, preferred time and part option, and Origin Repairs will confirm availability.",
 };
 
 interface PageProps {
@@ -24,6 +26,7 @@ interface PageProps {
     brand?: string;
     model?: string;
     repair?: string;
+    tier?: string;
     method?: string;
     device?: string;
     deviceName?: string;
@@ -32,14 +35,21 @@ interface PageProps {
 }
 
 export default async function BookRepairPage({ searchParams }: PageProps) {
-  // Read query params server-side — no useSearchParams needed, no Suspense needed
+  if (!FEATURES.bookingEnabled) notFound();
+
   const params = await searchParams;
-  const prefillModel = params.model ? getDeviceById(params.model) : undefined;
+  const brandFromUrl = slugToBrand(params.brand ?? "") ?? undefined;
+  const prefillModel = params.model
+    ? getDeviceById(params.model, brandFromUrl)
+    : undefined;
   const prefillBrand: Brand | undefined =
-    prefillModel?.brand ?? slugToBrand(params.brand ?? "") ?? undefined;
+    prefillModel?.brand ?? brandFromUrl;
   const prefillRepair: RepairType | undefined =
     slugToRepairType(params.repair ?? "") ?? undefined;
-  const prefillServiceMethod = params.method === "mail-in" ? "mail-in" : "drop-off";
+  const prefillServiceMethod =
+    FEATURES.mailInEnabled && params.method === "mail-in"
+      ? "mail-in"
+      : "drop-off";
 
   return (
     <>
@@ -50,14 +60,14 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
           {/* ── Static header — always SSR'd, visible without JS ── */}
           <div className="pt-10 pb-10">
             <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Book a Repair
+              Repair Request
             </p>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
-              Schedule your repair.
+              Tell us what needs fixing.
             </h1>
             <p className="text-[15px] text-muted-foreground max-w-md">
-              Fill in the form and we&apos;ll confirm the next step by email within the hour.
-              Walk in, book ahead, or ship your device to us.
+              Choose your device, repair and preferred time. The team will
+              check availability and contact you with the next step.
             </p>
           </div>
 
@@ -69,6 +79,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                 prefillBrand={prefillBrand}
                 prefillModelId={prefillModel?.id}
                 prefillRepair={prefillRepair}
+                prefillPartTierId={params.tier}
                 prefillServiceMethod={prefillServiceMethod}
                 prefillDeviceType={params.device}
                 prefillDeviceName={params.deviceName}
@@ -100,7 +111,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
             <aside className="space-y-6">
               <div className="rounded-xl border border-border bg-card p-6 space-y-5">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Visit or post
+                  Contact details
                 </p>
 
                 <a
@@ -155,15 +166,17 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                   </div>
                 </div>
 
-                <Link href="/mail-in" className="group flex items-start gap-3">
-                  <Package className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-[12px] text-muted-foreground">Mail-in repairs</p>
-                    <p className="text-[14px] font-medium text-foreground transition-colors group-hover:text-primary">
-                      Ship your device to us tracked
-                    </p>
-                  </div>
-                </Link>
+                {FEATURES.mailInEnabled && (
+                  <Link href="/mail-in" className="group flex items-start gap-3">
+                    <Package className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-[12px] text-muted-foreground">Mail-in repairs</p>
+                      <p className="text-[14px] font-medium text-foreground transition-colors group-hover:text-primary">
+                        View packing and postage guidance
+                      </p>
+                    </div>
+                  </Link>
+                )}
               </div>
 
               <div className="rounded-xl border border-border bg-card p-6 space-y-3">
@@ -171,11 +184,10 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                   What to expect
                 </p>
                 {[
-                  "Free assessment — no charge if you don't proceed",
-                  "Fixed price confirmed before any work starts",
-                  "12-month warranty on eligible repairs",
-                  "Most screen & battery repairs completed same day",
-                  "Walk-ins welcome — no appointment needed for most repairs",
+                  "Your preferred time is a request until the team confirms it",
+                  "The price is agreed before repair work begins",
+                  "Repair time is estimated from the selected service",
+                  WARRANTY_NOTICE,
                 ].map((item) => (
                   <div key={item} className="flex gap-2.5 text-[13px] text-muted-foreground">
                     <span className="text-green-500 font-bold mt-0.5 flex-shrink-0">✓</span>

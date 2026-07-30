@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import PricingTable from "@/components/PricingTable";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { FEATURES } from "@/lib/constants";
+import { WARRANTY_NOTICE } from "@/lib/warranty";
 
 export const metadata: Metadata = {
   title: "Repair Pricing Leeds | Transparent Fixed Quotes",
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Are prices fixed or estimates?",
-    a: "We give a fixed quote before any work begins. The price you're quoted is the price you pay.",
+    a: "Online prices are estimates. The final repair scope and price are confirmed for approval before repair work begins.",
   },
   {
     q: "Is the assessment free?",
@@ -23,11 +25,15 @@ const faqs = [
   },
   {
     q: "What if I don't proceed with the repair?",
-    a: "No charge. You're never obligated to go ahead after a quote.",
+    a: "You are not required to approve a repair quote. Any diagnostic or assessment charge is explained before that work begins.",
   },
   {
     q: "Do you do motherboard repairs?",
     a: "Yes. We handle board-level faults such as no power, charging IC issues, liquid damage, short circuits and selected Face ID or biometric faults.",
+  },
+  {
+    q: "What warranty applies?",
+    a: WARRANTY_NOTICE,
   },
 ];
 
@@ -86,7 +92,8 @@ export default function PricingPage() {
           <div className="pt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Get your exact quote now</h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Use our calculator for an instant estimate, or walk in for a free assessment.
+              Use the calculator for a catalogue estimate, or contact the team
+              when the model or fault needs assessment.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
@@ -97,13 +104,15 @@ export default function PricingPage() {
                   Quote calculator <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted"
-              >
-                <Link href="/book">Book a Repair</Link>
-              </Button>
+              {FEATURES.bookingEnabled && (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted"
+                >
+                  <Link href="/book">Request a Repair</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

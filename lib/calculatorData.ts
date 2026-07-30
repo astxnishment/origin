@@ -1,16 +1,19 @@
-import { REPAIR_PRICING } from "@/lib/repairPricing";
-import { GOOGLE_PIXEL_DEVICE_TYPES } from "@/lib/deviceData";
+import {
+  CATALOGUE_BRANDS,
+  PUBLIC_REPAIR_CATALOGUE,
+  getModelEntries,
+  getSpecialistEntry,
+  isRepairSupported as catalogueSupportsRepair,
+  selectRecommendedTier,
+  slugify,
+  type CatalogueBrand,
+  type CatalogueCategory,
+  type RepairCatalogueEntry,
+} from "@/lib/repairCatalogue";
 
-// ── Brands ────────────────────────────────────────────────────────
-export const BRANDS = [
-  "Apple",
-  "Samsung",
-  "Google Pixel",
-] as const;
+export const BRANDS = CATALOGUE_BRANDS;
+export type Brand = CatalogueBrand;
 
-export type Brand = (typeof BRANDS)[number];
-
-// ── Repair types (display names used in UI) ───────────────────────
 export const REPAIR_TYPES = [
   "Screen replacement",
   "Battery replacement",
@@ -36,27 +39,59 @@ export const REPAIR_TYPES = [
 ] as const;
 
 export type RepairType = (typeof REPAIR_TYPES)[number];
+export type DeviceCategory = "phone" | "tablet" | "laptop";
 
-// Map UI repair type → Excel repair_type value (v3 workbook names)
-const REPAIR_TYPE_MAP: Partial<Record<RepairType, string>> = {
-  "Screen replacement": "Screen Replacement",
-  "Battery replacement": "Battery Replacement",
-  "Back glass": "Back Glass Replacement",
-  "Charging port": "Charging Port Replacement",
-  "Camera repair": "Camera Lens Replacement",
-  "Speaker / microphone": "Speaker / Earpiece Replacement",
-  "Water damage diagnostics": "Water Damage Diagnostic",
-  "Liquid damage repair": "Liquid Damage Repair",
-  "Data recovery": "Data Recovery Assessment",
-  "Motherboard / logic board": "Motherboard Repair",
-  "No power repair": "No Power Repair",
-  "Face ID / biometric repair": "Face ID / Biometric Repair",
+const SOURCE_REPAIR_IDS: Record<RepairType, string[]> = {
+  "Screen replacement": ["screen-replacement"],
+  "Battery replacement": ["battery-replacement"],
+  "Back glass": ["back-glass-replacement", "back-glass"],
+  "Charging port": [
+    "charging-port-replacement",
+    "charging-port-repair",
+    "charging-usb-c-port-repair",
+  ],
+  "Camera repair": ["camera-lens-replacement", "camera-repair"],
+  "Speaker / microphone": [
+    "speaker-earpiece-replacement",
+    "speaker-repair",
+  ],
+  "Water damage diagnostics": [
+    "water-damage-diagnostic",
+    "liquid-damage-diagnostic",
+  ],
+  "Liquid damage repair": ["liquid-damage-repair"],
+  "Data recovery": ["data-recovery", "data-recovery-assessment"],
+  "Motherboard / logic board": [
+    "motherboard-repair",
+    "logic-board-repair",
+    "motherboard-board-level-repair",
+    "motherboard-logic-board-repair",
+  ],
+  "No power repair": ["no-power-repair"],
+  "Face ID / biometric repair": [
+    "face-id-biometric-repair",
+    "face-id-biometric-repair",
+  ],
+  "Keyboard / trackpad repair": [
+    "keyboard-replacement",
+    "trackpad-repair",
+    "keyboard-trackpad-repair",
+  ],
+  "SSD / RAM upgrade": ["ssd-ram-upgrade"],
+  "HDMI port repair": ["hdmi-port-repair"],
+  "Overheating / fan service": ["overheating-fan-service"],
+  "Software / OS issue": ["software-issue", "software-os-issue"],
+  "Custom PC build": ["custom-pc-build"],
+  "GPU / cooling upgrade": ["gpu-cooling-upgrade"],
+  "Hardware diagnostics": ["hardware-diagnostics"],
+  "Other repair": ["other-repair"],
 };
 
 export interface DeviceModel {
   id: string;
   name: string;
   brand: Brand;
+  category: DeviceCategory;
   tier: "flagship" | "mid" | "budget" | "older";
 }
 
@@ -66,246 +101,210 @@ export interface RepairPrice {
   estimatedTime: string;
   warranty: string;
   inspectionRequired?: boolean;
+  catalogueId?: string;
+  partTierId?: string;
+  partTier?: string;
+  partOrigin?: string;
+  supported?: boolean;
 }
 
-// ── Build model lists from pricing data ───────────────────────────
-function modelId(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+function modelTier(name: string): DeviceModel["tier"] {
+  if (/pro|max|ultra|fold|air/i.test(name)) return "flagship";
+  if (/se|mini| a\d/i.test(name)) return "budget";
+  return "mid";
 }
 
-function modelsFromPricing(brandName: Brand): DeviceModel[] {
-  const seen = new Set<string>();
-  const result: DeviceModel[] = [];
-  for (const row of REPAIR_PRICING) {
-    if (row.brand !== brandName || seen.has(row.model)) continue;
-    seen.add(row.model);
-    const name = row.model;
-    const tier: DeviceModel["tier"] =
-      name.includes("Pro") || name.includes("Ultra") || name.includes("Air")
-        ? "flagship"
-        : name.includes("SE") || name.includes(" A ")
-        ? "budget"
-        : "mid";
-    result.push({ id: modelId(name), name, brand: brandName, tier });
+const deviceMap = new Map<string, DeviceModel>();
+for (const entry of PUBLIC_REPAIR_CATALOGUE) {
+  if (
+    entry.source === "specialist" ||
+    !CATALOGUE_BRANDS.includes(entry.brand as Brand) ||
+    !["phone", "tablet", "laptop"].includes(entry.category)
+  ) {
+    continue;
   }
-  return result;
+
+  deviceMap.set(`${entry.brand}:${entry.modelId}`, {
+    id: entry.modelId,
+    name: entry.model,
+    brand: entry.brand as Brand,
+    category: entry.category as DeviceCategory,
+    tier: modelTier(entry.model),
+  });
 }
 
-export const APPLE_DEVICES: DeviceModel[] = modelsFromPricing("Apple");
-export const SAMSUNG_DEVICES: DeviceModel[] = modelsFromPricing("Samsung");
-
-// Build Pixel models from deviceData (not repairPricing — Pixel not in spreadsheet)
-export const PIXEL_DEVICES: DeviceModel[] = GOOGLE_PIXEL_DEVICE_TYPES.flatMap((dt) =>
-  dt.models.map((m) => ({
-    id: modelId(m.name),
-    name: m.name,
-    brand: "Google Pixel" as Brand,
-    tier: (m.name.includes("Pro") || m.name.includes("Fold")
-      ? "flagship"
-      : m.name.includes("a")
-      ? "mid"
-      : "mid") as DeviceModel["tier"],
-  }))
+export const ALL_DEVICES = [...deviceMap.values()];
+export const APPLE_DEVICES = ALL_DEVICES.filter((d) => d.brand === "Apple");
+export const SAMSUNG_DEVICES = ALL_DEVICES.filter((d) => d.brand === "Samsung");
+export const PIXEL_DEVICES = ALL_DEVICES.filter(
+  (d) => d.brand === "Google Pixel"
 );
 
-export const ALL_DEVICES: DeviceModel[] = [...APPLE_DEVICES, ...SAMSUNG_DEVICES, ...PIXEL_DEVICES];
-
 export function getModelsByBrand(brand: Brand): DeviceModel[] {
-  return ALL_DEVICES.filter((d) => d.brand === brand);
+  return ALL_DEVICES.filter((device) => device.brand === brand);
 }
-
-// Map UI repair type → deviceData repair ID (for Pixel / Samsung lookup via deviceData)
-const REPAIR_ID_MAP: Partial<Record<RepairType, string>> = {
-  "Screen replacement":      "screen",
-  "Battery replacement":     "battery",
-  "Back glass":              "back-glass",
-  "Charging port":           "charging-port",
-  "Camera repair":           "camera",
-  "Speaker / microphone":    "speaker",
-  "Water damage diagnostics":"water",
-  "Liquid damage repair":     "liquid-repair",
-  "Data recovery":           "data-recovery",
-  "Motherboard / logic board":"motherboard",
-  "No power repair":          "no-power",
-  "Face ID / biometric repair":"face-id",
-};
-
-export type DeviceCategory = "phone" | "tablet" | "laptop";
 
 export function deviceCategory(device: DeviceModel): DeviceCategory {
-  if (/macbook|galaxy book/i.test(device.name)) return "laptop";
-  if (/ipad|tab/i.test(device.name)) return "tablet";
-  return "phone";
+  return device.category;
 }
 
-function advancedRepairQuote(device: DeviceModel, repairType: RepairType): RepairPrice | null {
-  const category = deviceCategory(device);
-  const phoneBoard = { minPrice: 79, maxPrice: 249, estimatedTime: "1-5 days", warranty: "3 months" };
-  const tabletBoard = { minPrice: 99, maxPrice: 299, estimatedTime: "1-5 days", warranty: "3 months" };
-  const laptopBoard = { minPrice: 129, maxPrice: 399, estimatedTime: "2-7 days", warranty: "3 months" };
-
-  if (repairType === "Motherboard / logic board" || repairType === "No power repair") {
-    return category === "laptop" ? laptopBoard : category === "tablet" ? tabletBoard : phoneBoard;
-  }
-
-  if (repairType === "Liquid damage repair") {
-    if (category === "laptop") return { minPrice: 129, maxPrice: 399, estimatedTime: "2-7 days", warranty: "3 months" };
-    if (category === "tablet") return { minPrice: 89, maxPrice: 279, estimatedTime: "1-5 days", warranty: "3 months" };
-    return { minPrice: 79, maxPrice: 249, estimatedTime: "1-5 days", warranty: "3 months" };
-  }
-
-  if (repairType === "Data recovery") {
-    if (category === "laptop") return { minPrice: 99, maxPrice: 499, estimatedTime: "3-10 days", warranty: "N/A" };
-    if (category === "tablet") return { minPrice: 99, maxPrice: 299, estimatedTime: "2-7 days", warranty: "N/A" };
-    return { minPrice: 79, maxPrice: 299, estimatedTime: "2-7 days", warranty: "N/A" };
-  }
-
-  if (repairType === "Face ID / biometric repair" && category === "phone") {
-    return device.brand === "Apple"
-      ? { minPrice: 79, maxPrice: 199, estimatedTime: "1-3 days", warranty: "3 months" }
-      : { minPrice: 59, maxPrice: 179, estimatedTime: "1-3 days", warranty: "3 months" };
-  }
-
-  if (repairType === "Keyboard / trackpad repair" && category === "laptop") {
-    return { minPrice: 99, maxPrice: 249, estimatedTime: "1-3 days", warranty: "6 months" };
-  }
-
-  if (repairType === "SSD / RAM upgrade" && category === "laptop") {
-    return { minPrice: 69, maxPrice: 249, estimatedTime: "Same day", warranty: "12 months on supplied parts" };
-  }
-
-  if (repairType === "Overheating / fan service") {
-    return { minPrice: 49, maxPrice: 89, estimatedTime: "Same day", warranty: "3 months" };
-  }
-
-  if (repairType === "Software / OS issue") {
-    return { minPrice: 39, maxPrice: 99, estimatedTime: "Same day", warranty: "1 month" };
-  }
-
-  if (repairType === "Hardware diagnostics") {
-    return { minPrice: 29, maxPrice: 79, estimatedTime: "Same day assessment", warranty: "Diagnostic only" };
-  }
-
-  return null;
+export function repairTypeToSlug(repairType: RepairType): string {
+  return slugify(repairType);
 }
 
-// ── Price lookup ──────────────────────────────────────────────────
-export function getRepairQuote(device: DeviceModel, repairType: RepairType): RepairPrice {
-  const excelType = REPAIR_TYPE_MAP[repairType];
+function repairIds(repairType: RepairType): string[] {
+  return SOURCE_REPAIR_IDS[repairType];
+}
 
-  // Google Pixel: use pricing from deviceData.ts (not repairPricing spreadsheet)
-  if (device.brand === "Google Pixel") {
-    const repairId = REPAIR_ID_MAP[repairType];
-    const pixelModel = GOOGLE_PIXEL_DEVICE_TYPES
-      .flatMap((dt) => dt.models)
-      .find((m) => m.id === device.id || m.name === device.name);
-    const repair = pixelModel?.repairs.find((r) => r.id === repairId);
-    if (repair?.price) {
-      return {
-        minPrice: repair.price.from,
-        maxPrice: repair.price.to ?? repair.price.from,
-        estimatedTime: repair.time,
-        warranty: repair.warranty,
-      };
-    }
-    const advanced = advancedRepairQuote(device, repairType);
-    if (advanced) return advanced;
-    return { minPrice: 0, maxPrice: 0, estimatedTime: "Contact us", warranty: "12 months", inspectionRequired: true };
+export function getRepairTiers(
+  device: DeviceModel,
+  repairType: RepairType
+): RepairCatalogueEntry[] {
+  const ids = repairIds(repairType);
+  return getModelEntries(device.id).filter(
+    (entry) => entry.brand === device.brand && ids.includes(entry.repairTypeId)
+  );
+}
+
+export function isRepairSupported(
+  deviceId: string,
+  repairTypeId: string
+): boolean {
+  const device = getDeviceById(deviceId);
+  if (!device) return false;
+
+  const repairType = REPAIR_TYPES.find(
+    (candidate) => repairTypeToSlug(candidate) === repairTypeId
+  );
+  if (!repairType) return false;
+
+  if (
+    repairIds(repairType).some((id) =>
+      catalogueSupportsRepair(deviceId, id)
+    )
+  ) {
+    return true;
   }
 
-  // Find the cheapest non-inspection row for this model + repair type
-  const rows = excelType
-    ? REPAIR_PRICING.filter(
-        (r) => r.model === device.name && r.repairType === excelType
-      )
-    : [];
+  return Boolean(
+    getSpecialistEntry(
+      device.category as CatalogueCategory,
+      repairTypeToSlug(repairType)
+    )
+  );
+}
 
-  const fixed = rows.filter((r) => r.minPrice !== null);
-  if (fixed.length > 0) {
-    const row = fixed.sort((a, b) => (a.minPrice ?? 0) - (b.minPrice ?? 0))[0];
-    return {
-      minPrice: row.minPrice!,
-      maxPrice: row.maxPrice!,
-      estimatedTime: row.timeEstimate,
-      warranty: row.warrantyMonths > 0 ? `${row.warrantyMonths} months` : "After inspection",
-    };
-  }
+export function getSupportedRepairTypes(
+  device: DeviceModel
+): RepairType[] {
+  return REPAIR_TYPES.filter((repairType) => {
+    const direct = getRepairTiers(device, repairType).length > 0;
+    const specialist = getSpecialistEntry(
+      device.category,
+      repairTypeToSlug(repairType)
+    );
+    return direct || Boolean(specialist);
+  });
+}
 
-  const inspRow = rows.find((r) => r.minPrice === null);
-  if (inspRow) {
+export function getRepairQuote(
+  device: DeviceModel,
+  repairType: RepairType,
+  partTierId?: string
+): RepairPrice {
+  const tiers = getRepairTiers(device, repairType);
+  const selected = partTierId
+    ? tiers.find((entry) => entry.partTierId === partTierId)
+    : selectRecommendedTier(tiers);
+  const entry =
+    selected ??
+    getSpecialistEntry(device.category, repairTypeToSlug(repairType));
+
+  if (!entry) {
     return {
       minPrice: 0,
       maxPrice: 0,
-      estimatedTime: inspRow.timeEstimate,
-      warranty: "After inspection",
+      estimatedTime: "Confirmed after assessment",
+      warranty: "Confirmed after inspection",
       inspectionRequired: true,
+      supported: false,
     };
   }
 
-  const advanced = advancedRepairQuote(device, repairType);
-  if (advanced) return advanced;
-
-  // No data: generic placeholder
   return {
-    minPrice: 0,
-    maxPrice: 0,
-    estimatedTime: "Contact us",
-    warranty: "12 months",
-    inspectionRequired: true,
+    minPrice: entry.minPrice ?? 0,
+    maxPrice: entry.maxPrice ?? 0,
+    estimatedTime: entry.estimatedTime,
+    warranty: entry.warranty,
+    inspectionRequired: entry.inspectionRequired,
+    catalogueId: entry.id,
+    partTierId: entry.partTierId,
+    partTier: entry.partTier,
+    partOrigin: entry.partOrigin,
+    supported: true,
   };
 }
 
-// ── Slug helpers ──────────────────────────────────────────────────
-export function repairTypeToSlug(repairType: RepairType): string {
-  return repairType
-    .toLowerCase()
-    .replace(/\s*\/\s*/g, "-")
-    .replace(/\s+/g, "-")
-    .replace(/-{2,}/g, "-");
+export function slugToRepairType(
+  slug: string
+): RepairType | undefined {
+  return REPAIR_TYPES.find((repairType) => repairTypeToSlug(repairType) === slug);
 }
 
-export function slugToRepairType(slug: string): RepairType | undefined {
-  return REPAIR_TYPES.find((r) => repairTypeToSlug(r) === slug);
-}
-
-export function buildRepairSlug(device: DeviceModel, repairType: RepairType): string {
+export function buildRepairSlug(
+  device: DeviceModel,
+  repairType: RepairType
+): string {
   return `${device.id}-${repairTypeToSlug(repairType)}-leeds`;
 }
 
-export function parseRepairSlug(slug: string): { device: DeviceModel; repairType: RepairType } | null {
+export function parseRepairSlug(
+  slug: string
+): { device: DeviceModel; repairType: RepairType } | null {
   for (const repairType of REPAIR_TYPES) {
-    const repairSlug = repairTypeToSlug(repairType);
-    const suffix = `-${repairSlug}-leeds`;
-    if (slug.endsWith(suffix)) {
-      const deviceId = slug.slice(0, slug.length - suffix.length);
-      const device = ALL_DEVICES.find((d) => d.id === deviceId);
-      if (device) return { device, repairType };
+    const suffix = `-${repairTypeToSlug(repairType)}-leeds`;
+    if (!slug.endsWith(suffix)) continue;
+
+    const deviceId = slug.slice(0, slug.length - suffix.length);
+    const device = getDeviceById(deviceId);
+    if (
+      device &&
+      isRepairSupported(device.id, repairTypeToSlug(repairType))
+    ) {
+      return { device, repairType };
     }
   }
+
   return null;
 }
 
 export function brandToSlug(brand: Brand): string {
-  return brand.toLowerCase().replace(/\s+/g, "-");
+  return slugify(brand);
 }
 
 export function slugToBrand(slug: string): Brand | undefined {
-  return BRANDS.find((b) => brandToSlug(b) === slug);
+  return BRANDS.find((brand) => brandToSlug(brand) === slug);
 }
 
-export function getDeviceById(id: string): DeviceModel | undefined {
-  return ALL_DEVICES.find((d) => d.id === id);
+export function getDeviceById(
+  id: string,
+  brand?: Brand
+): DeviceModel | undefined {
+  return ALL_DEVICES.find(
+    (device) => device.id === id && (!brand || device.brand === brand)
+  );
 }
 
-export function buildBookingHref(device: DeviceModel, repairType: RepairType): string {
+export function buildBookingHref(
+  device: DeviceModel,
+  repairType: RepairType,
+  partTierId?: string
+): string {
   const params = new URLSearchParams({
     brand: brandToSlug(device.brand),
     model: device.id,
     repair: repairTypeToSlug(repairType),
   });
+  if (partTierId) params.set("tier", partTierId);
   return `/book?${params.toString()}`;
 }

@@ -6,6 +6,10 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
+import {
+  getSpecialistPriceLabel,
+  getStartingPriceLabel,
+} from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Phone Repair Leeds | iPhone, Samsung, Google Pixel",
@@ -14,16 +18,16 @@ export const metadata: Metadata = {
 };
 
 const repairTypes = [
-  { name: "Screen replacement", price: "from £39", time: "45-90 min" },
-  { name: "Battery replacement", price: "from £24", time: "30-60 min" },
-  { name: "Charging port", price: "from £54", time: "1-2 hrs" },
-  { name: "Back glass / cover", price: "from £44", time: "1-2 hrs" },
-  { name: "Camera repair", price: "from £49", time: "60 min" },
-  { name: "Speaker / microphone", price: "from £35", time: "45 min" },
-  { name: "Liquid damage", price: "diagnostic from £29", time: "Same day" },
-  { name: "Motherboard repair", price: "from £79", time: "1-5 days" },
-  { name: "No power repair", price: "from £79", time: "1-5 days" },
-  { name: "Data recovery", price: "from £79", time: "2-7 days" },
+  { name: "Screen replacement", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["screen-replacement"] }), time: "Model and part dependent" },
+  { name: "Battery replacement", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["battery-replacement"] }), time: "Model dependent" },
+  { name: "Charging port", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["charging-port-replacement", "charging-port-repair"] }), time: "Fault dependent" },
+  { name: "Back glass / cover", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["back-glass-replacement", "back-cover-replacement", "back-glass"] }), time: "Model dependent" },
+  { name: "Camera repair", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["camera-lens-replacement", "camera-repair"] }), time: "Model dependent" },
+  { name: "Speaker / microphone", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["speaker-earpiece-replacement", "speaker-repair"] }), time: "Fault dependent" },
+  { name: "Liquid damage", price: getSpecialistPriceLabel("phone", "liquid-damage-repair"), time: "Assessment required" },
+  { name: "Motherboard repair", price: getSpecialistPriceLabel("phone", "motherboard-logic-board"), time: "1–5 days estimate" },
+  { name: "No power repair", price: getSpecialistPriceLabel("phone", "no-power-repair"), time: "1–5 days estimate" },
+  { name: "Data recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate" },
 ];
 
 const guarantees = [
@@ -32,7 +36,7 @@ const guarantees = [
   "Liquid damage assessment",
   "Data handled carefully",
   "Clear quote before repair",
-  "12-month warranty where eligible",
+  "Warranty shown with the selected repair",
 ];
 
 const brands = [
@@ -77,7 +81,7 @@ export default function PhoneRepairsPage() {
                 </ul>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                    <Link href="/book">Book Phone Repair</Link>
+                    <Link href="/book">Request Phone Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
@@ -134,11 +138,12 @@ export default function PhoneRepairsPage() {
               Not sure what phone or fault you have?
             </h2>
             <p className="text-muted-foreground text-[15px] mb-8 max-w-sm mx-auto">
-              Bring it in and we&apos;ll check it before quoting.
+              Send the device details and fault symptoms so the team can
+              confirm the appropriate assessment.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                <Link href="/book">Book a Repair</Link>
+                <Link href="/book">Request a Repair</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted">
                 <Link href="/contact">Contact Us</Link>

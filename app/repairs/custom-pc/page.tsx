@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 import { serviceImages } from "@/lib/serviceImages";
+import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Custom PC Builds & Upgrades Leeds | Gaming PCs",
@@ -14,14 +15,12 @@ export const metadata: Metadata = {
 };
 
 const services = [
-  { name: "Custom PC build", price: "from £99", time: "1-3 days" },
-  { name: "Gaming PC consultation", price: "free", time: "Same day" },
-  { name: "GPU upgrade", price: "from £39", time: "Same day" },
-  { name: "RAM upgrade", price: "from £29", time: "30 min" },
-  { name: "SSD / NVMe upgrade", price: "from £49", time: "60 min" },
-  { name: "Cooling upgrade", price: "from £49", time: "1-2 hrs" },
-  { name: "Cable management", price: "from £49", time: "1-2 hrs" },
-  { name: "Windows install & setup", price: "from £39", time: "60 min" },
+  { name: "Custom PC build labour", price: getSpecialistPriceLabel("desktop", "custom-pc-build"), time: "1–3 days estimate" },
+  { name: "GPU / cooling upgrade", price: getSpecialistPriceLabel("desktop", "gpu-cooling-upgrade"), time: "Parts dependent" },
+  { name: "SSD / RAM upgrade", price: getSpecialistPriceLabel("desktop", "ssd-ram-upgrade"), time: "Parts dependent" },
+  { name: "No-power diagnostic", price: getSpecialistPriceLabel("desktop", "no-power-repair"), time: "Fault dependent" },
+  { name: "Software / OS work", price: getSpecialistPriceLabel("desktop", "software-os-issue"), time: "Scope dependent" },
+  { name: "Hardware diagnostics", price: getSpecialistPriceLabel("desktop", "hardware-diagnostics"), time: "Assessment required" },
 ];
 
 const supported = [
@@ -114,6 +113,10 @@ export default function CustomPcPage() {
             <h2 className="text-xl font-semibold mb-2">What we handle</h2>
             <p className="text-[13px] text-muted-foreground mb-8">
               Bring your parts, ask us to source parts, or come in with a performance problem and we will map the best upgrade path.
+              Labour, components and any operating-system licence are quoted
+              separately. Manufacturer warranty remains with the component
+              supplier; customer-supplied parts are not covered as parts by
+              Origin Repairs.
             </p>
             <div className="flex flex-wrap gap-2">
               {supported.map((item) => (

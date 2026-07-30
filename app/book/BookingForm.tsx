@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -12,36 +11,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DeviceIcon, type DeviceType } from "@/components/DeviceIcon";
+import type { DeviceType } from "@/components/DeviceIcon";
 import {
   BRANDS,
   REPAIR_TYPES,
   getModelsByBrand,
   getRepairQuote,
+  getRepairTiers,
+  getSupportedRepairTypes,
   getDeviceById,
   deviceCategory,
   type Brand,
   type RepairType,
   type DeviceCategory,
 } from "@/lib/calculatorData";
-import { BUSINESS } from "@/lib/constants";
-import { Check, Clock, Shield, ArrowRight, AlertCircle, Package, Store } from "lucide-react";
-
-// ── Time slots available for booking ─────────────────────────────
-// Mon–Fri 9am–6pm, Sat 10am–4pm, Sun closed (see BUSINESS.hours).
-const WEEKDAY_SLOTS = [
-  "9:00am", "10:00am", "11:00am", "12:00pm",
-  "1:00pm", "2:00pm", "3:00pm", "4:00pm", "5:00pm",
-];
-const SATURDAY_SLOTS = ["10:00am", "11:00am", "12:00pm", "1:00pm", "2:00pm", "3:00pm"];
-
-function slotsForDate(dateStr: string): string[] {
-  if (!dateStr) return WEEKDAY_SLOTS;
-  const day = new Date(`${dateStr}T12:00:00`).getDay();
-  if (day === 0) return []; // Sunday — closed
-  if (day === 6) return SATURDAY_SLOTS;
-  return WEEKDAY_SLOTS;
-}
+import { BUSINESS, FEATURES } from "@/lib/constants";
+import { ArrowLeft, ArrowRight, AlertCircle } from "lucide-react";
+import TurnstileField, {
+  TURNSTILE_ENABLED,
+} from "@/components/TurnstileField";
+import {
+  AppointmentRequestStep,
+  BookingSuccess,
+  CustomerDetailsStep,
+  DeviceSelectionStep,
+  Field,
+  QuoteSummary,
+  RepairSelectionStep,
+  ServiceMethodStep,
+  slotsForDate,
+  type ServiceMethod,
+} from "./BookingSteps";
 
 const BRAND_ICON_TYPE: Record<Brand, DeviceType> = {
   Apple:          "iphone",
@@ -66,20 +66,18 @@ const DEVICE_TYPE_OPTIONS: DeviceTypeOption[] = [
   { id: "laptop",  label: "Laptop",              category: "laptop", icon: "laptop"  },
   { id: "console", label: "Game console",        category: null,     icon: "console", placeholder: "e.g. PlayStation 5, Xbox Series X, Switch OLED" },
   { id: "desktop", label: "Desktop / Custom PC", category: null,     icon: "laptop",  placeholder: "e.g. Custom gaming PC, Dell OptiPlex" },
-  { id: "other",   label: "Other device",        category: null,     icon: "iphone",  placeholder: "Tell us the make & model" },
 ];
 
 interface Props {
   prefillBrand?: Brand;
   prefillModelId?: string;
   prefillRepair?: RepairType;
+  prefillPartTierId?: string;
   prefillServiceMethod?: ServiceMethod;
   prefillDeviceType?: string;
   prefillDeviceName?: string;
   prefillIssue?: string;
 }
-
-type ServiceMethod = "drop-off" | "mail-in";
 
 // ── Validation ────────────────────────────────────────────────────
 function validateForm(data: {
@@ -88,7 +86,9 @@ function validateForm(data: {
   deviceType: string; isCatalog: boolean;
   brand: Brand | ""; modelId: string; deviceName: string;
   repairType: RepairType | "";
+  partTierId: string; tierRequired: boolean;
   date: string; time: string;
+  consentToContact: boolean;
 }): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!data.name.trim()) errors.name = "Please enter your name.";
@@ -105,12 +105,16 @@ function validateForm(data: {
     errors.deviceName = "Please tell us the make & model.";
   }
   if (!data.repairType) errors.repair = "Please select a repair type.";
+  if (data.tierRequired && !data.partTierId)
+    errors.partTier = "Please select a part option.";
   if (!data.date) errors.date = "Please select a preferred date.";
   else if (slotsForDate(data.date).length === 0)
     errors.date = "We're closed on Sundays — please pick another day.";
   if (!data.time) errors.time = "Please select a preferred time.";
   else if (data.date && !slotsForDate(data.date).includes(data.time))
     errors.time = "That time isn't available on the selected day.";
+  if (!data.consentToContact)
+    errors.consentToContact = "Consent is required so we can contact you.";
   return errors;
 }
 
@@ -137,20 +141,28 @@ const REPAIRS_BY_DEVICE: Record<string, readonly RepairType[]> = {
   console: [
     "HDMI port repair", "Charging port", "No power repair",
     "Motherboard / logic board", "Overheating / fan service",
-    "Liquid damage repair", "Software / OS issue", "Hardware diagnostics", "Other repair",
+    "Liquid damage repair", "Software / OS issue",
   ],
   desktop: [
     "Custom PC build", "GPU / cooling upgrade", "SSD / RAM upgrade",
     "No power repair", "Motherboard / logic board", "Overheating / fan service",
-    "Software / OS issue", "Data recovery", "Hardware diagnostics", "Other repair",
+    "Software / OS issue", "Data recovery", "Hardware diagnostics",
   ],
-  other: REPAIR_TYPES,
 };
+
+const BOOKING_STEPS = ["Repair", "Visit", "Details"] as const;
+const STEP_ERROR_KEYS = [
+  ["deviceType", "brand", "model", "deviceName", "repair", "partTier"],
+  ["serviceMethod", "returnAddress", "date", "time"],
+  ["name", "email", "phone", "consentToContact", "turnstileToken"],
+] as const;
+const DRAFT_STORAGE_KEY = "origin-booking-draft";
 
 export default function BookingForm({
   prefillBrand,
   prefillModelId,
   prefillRepair,
+  prefillPartTierId,
   prefillServiceMethod = "drop-off",
   prefillDeviceType,
   prefillDeviceName,
@@ -158,12 +170,22 @@ export default function BookingForm({
 }: Props) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [serviceMethod, setServiceMethod] = useState<ServiceMethod>(prefillServiceMethod);
+  const [serviceMethod, setServiceMethod] = useState<ServiceMethod>(
+    FEATURES.mailInEnabled ? prefillServiceMethod : "drop-off"
+  );
 
   // Device selection. Infer the device type from a prefilled model if present,
   // otherwise default to "phone" when a brand was prefilled, else force a choice.
   const prefillCategory = prefillModelId
-    ? deviceCategory(getDeviceById(prefillModelId) ?? { id: "", name: "", brand: "Apple", tier: "mid" })
+    ? deviceCategory(
+        getDeviceById(prefillModelId) ?? {
+          id: "",
+          name: "",
+          brand: "Apple",
+          category: "phone",
+          tier: "mid",
+        }
+      )
     : null;
   const [deviceType, setDeviceType] = useState<string>(
     prefillCategory ?? prefillDeviceType ?? (prefillBrand ? "phone" : "")
@@ -172,6 +194,7 @@ export default function BookingForm({
   const [modelId, setModelId] = useState<string>(prefillModelId ?? "");
   const [deviceName, setDeviceName] = useState<string>(prefillDeviceName ?? "");
   const [repairType, setRepairType] = useState<RepairType | "">(prefillRepair ?? "");
+  const [partTierId, setPartTierId] = useState(prefillPartTierId ?? "");
 
   const deviceTypeOption = DEVICE_TYPE_OPTIONS.find((d) => d.id === deviceType);
   const selectedCategory = deviceTypeOption?.category ?? null;
@@ -190,34 +213,171 @@ export default function BookingForm({
   const [time, setTime] = useState("");
   const [returnAddress, setReturnAddress] = useState("");
   const [issue, setIssue] = useState(prefillIssue ?? "");
+  const [website, setWebsite] = useState("");
+  const [consentToContact, setConsentToContact] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+  const [currentStep, setCurrentStep] = useState(0);
+  const startedAt = useRef(0);
+  const idempotencyKey = useRef("");
+  const stepPanelRef = useRef<HTMLDivElement>(null);
+  const draftHydrated = useRef(false);
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+    idempotencyKey.current = crypto.randomUUID();
+
+    if (!prefillBrand && !prefillModelId && !prefillDeviceType) {
+      try {
+        const draft = JSON.parse(
+          sessionStorage.getItem(DRAFT_STORAGE_KEY) ?? "{}"
+        ) as Partial<{
+          serviceMethod: ServiceMethod;
+          deviceType: string;
+          brand: Brand;
+          modelId: string;
+          deviceName: string;
+          repairType: RepairType;
+          partTierId: string;
+          date: string;
+          time: string;
+          currentStep: number;
+        }>;
+
+        /* eslint-disable react-hooks/set-state-in-effect */
+        if (draft.serviceMethod && FEATURES.mailInEnabled) {
+          setServiceMethod(draft.serviceMethod);
+        }
+        if (draft.deviceType) setDeviceType(draft.deviceType);
+        if (draft.brand) setBrand(draft.brand);
+        if (draft.modelId) setModelId(draft.modelId);
+        if (draft.deviceName) setDeviceName(draft.deviceName);
+        if (draft.repairType) setRepairType(draft.repairType);
+        if (draft.partTierId) setPartTierId(draft.partTierId);
+        if (draft.date) setDate(draft.date);
+        if (draft.time) setTime(draft.time);
+        if (typeof draft.currentStep === "number") {
+          setCurrentStep(Math.min(1, Math.max(0, draft.currentStep)));
+        }
+        /* eslint-enable react-hooks/set-state-in-effect */
+      } catch {
+        sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+      }
+    }
+
+    draftHydrated.current = true;
+  }, [prefillBrand, prefillDeviceType, prefillModelId]);
+
+  useEffect(() => {
+    if (!draftHydrated.current) return;
+    sessionStorage.setItem(
+      DRAFT_STORAGE_KEY,
+      JSON.stringify({
+        serviceMethod,
+        deviceType,
+        brand,
+        modelId,
+        deviceName,
+        repairType,
+        partTierId,
+        date,
+        time,
+        currentStep: Math.min(currentStep, 1),
+      })
+    );
+  }, [
+    brand,
+    currentStep,
+    date,
+    deviceName,
+    deviceType,
+    modelId,
+    partTierId,
+    repairType,
+    serviceMethod,
+    time,
+  ]);
+
+  useEffect(() => {
+    stepPanelRef.current?.focus();
+  }, [currentStep]);
 
   const models = brand && isCatalog
     ? getModelsByBrand(brand).filter((m) => deviceCategory(m) === selectedCategory)
     : [];
   const selectedModel = modelId && isCatalog ? getDeviceById(modelId) : undefined;
-  const quote =
+  const repairTiers =
     selectedModel && repairType
-      ? getRepairQuote(selectedModel, repairType as RepairType)
+      ? getRepairTiers(selectedModel, repairType as RepairType)
+      : [];
+  const effectivePartTierId =
+    repairTiers.length === 1 ? repairTiers[0].partTierId : partTierId;
+  const quote =
+    selectedModel &&
+    repairType &&
+    (repairTiers.length <= 1 || effectivePartTierId)
+      ? getRepairQuote(
+          selectedModel,
+          repairType as RepairType,
+          effectivePartTierId
+        )
       : null;
-  const availableRepairs = REPAIRS_BY_DEVICE[deviceType] ?? REPAIR_TYPES;
+  const availableRepairs = selectedModel
+    ? getSupportedRepairTypes(selectedModel)
+    : REPAIRS_BY_DEVICE[deviceType] ?? REPAIR_TYPES;
 
   const today = new Date().toISOString().split("T")[0];
 
-  // ── Submit handler ──────────────────────────────────────────────
-  // TO CONNECT EMAIL:
-  //   1. Add RESEND_API_KEY to .env.local  (get a free key at resend.com)
-  //   2. The API route at /api/booking already sends emails via Resend
-  //   3. Alternatively replace the fetch() below with Formspree/EmailJS
+  function currentValidationErrors(): Record<string, string> {
+    return validateForm({
+      name,
+      email,
+      phone,
+      serviceMethod,
+      returnAddress,
+      deviceType,
+      isCatalog,
+      brand,
+      modelId,
+      deviceName,
+      repairType,
+      partTierId: effectivePartTierId ?? "",
+      tierRequired: repairTiers.length > 1,
+      date,
+      time,
+      consentToContact,
+    });
+  }
+
+  function moveToStep(nextStep: number) {
+    if (nextStep > currentStep) {
+      const allErrors = currentValidationErrors();
+      const stepErrors = Object.fromEntries(
+        STEP_ERROR_KEYS[currentStep]
+          .filter((key) => allErrors[key])
+          .map((key) => [key, allErrors[key]])
+      );
+      if (Object.keys(stepErrors).length > 0) {
+        setErrors(stepErrors);
+        const firstErrorId = Object.keys(stepErrors)[0];
+        requestAnimationFrame(() =>
+          document.getElementById(firstErrorId)?.focus()
+        );
+        return;
+      }
+    }
+
+    setErrors({});
+    setCurrentStep(Math.min(BOOKING_STEPS.length - 1, Math.max(0, nextStep)));
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateForm({
-      name, email, phone,
-      serviceMethod, returnAddress,
-      deviceType, isCatalog,
-      brand, modelId, deviceName,
-      repairType, date, time,
-    });
+    const validationErrors = currentValidationErrors();
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      validationErrors.turnstileToken = "Complete the spam check.";
+    }
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       // Scroll to first error
@@ -228,6 +388,7 @@ export default function BookingForm({
 
     setErrors({});
     setStatus("sending");
+    setResponseMessage("");
 
     try {
       const response = await fetch("/api/booking", {
@@ -237,270 +398,165 @@ export default function BookingForm({
           name, email, phone, issue, date, time,
           serviceMethod,
           returnAddress: serviceMethod === "mail-in" ? returnAddress : "",
-          deviceType: deviceTypeOption?.label ?? "",
+          deviceType,
           brand: isCatalog ? brand : "",
           model: isCatalog ? (selectedModel?.name ?? "") : deviceName,
           modelId: isCatalog ? modelId : "",
           repair: repairType,
-          estimatedPrice: quote && !quote.inspectionRequired ? `£${quote.minPrice}–£${quote.maxPrice}` : "TBC after assessment",
-          estimatedTime: quote?.estimatedTime ?? "",
-          warranty: quote?.warranty ?? "12 months on eligible repairs",
+          partTierId: effectivePartTierId ?? "",
+          catalogueId: quote?.catalogueId ?? "",
+          consentToContact,
+          website,
+          formStartedAt: startedAt.current,
+          idempotencyKey: idempotencyKey.current,
+          turnstileToken,
         }),
       });
+      const result = (await response.json()) as {
+        error?: string;
+        message?: string;
+        fields?: Record<string, string[]>;
+      };
 
       if (response.ok) {
+        sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+        setResponseMessage(
+          result.message ??
+            "Repair request received. The team will confirm availability."
+        );
         setStatus("sent");
       } else {
+        if (result.fields) {
+          setErrors(
+            Object.fromEntries(
+              Object.entries(result.fields).map(([key, messages]) => [
+                key,
+                messages[0] ?? "",
+              ])
+            )
+          );
+        }
+        setResponseMessage(
+          result.error ??
+            "We could not send the request. Please try again."
+        );
         setStatus("error");
       }
     } catch {
+      setResponseMessage(
+        "We could not send the request. Please try again or contact us directly."
+      );
       setStatus("error");
     }
   };
 
-  // ── Success state ───────────────────────────────────────────────
   if (status === "sent") {
     return (
-      <div className="flex flex-col gap-5 py-12">
-        <div className="w-12 h-12 rounded-full bg-green-500/15 flex items-center justify-center">
-          <Check className="h-5 w-5 text-green-500" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-2">Booking received.</h2>
-          <p className="text-[15px] text-muted-foreground">
-            Check your email for confirmation. We&apos;ll be in touch within the hour to confirm
-            {serviceMethod === "mail-in" ? " your mail-in instructions." : " your slot."}
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-6 space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-            What happens next
-          </p>
-          {(serviceMethod === "mail-in"
-            ? [
-                `Ship your device tracked to ${BUSINESS.address}`,
-                "Include your name, phone number, return address and booking reference",
-                "We assess it and confirm the quote before any work begins",
-                "Repair completed and returned by tracked delivery",
-              ]
-            : [
-                `Come to ${BUSINESS.address}`,
-                "Free assessment to confirm the fault and exact price",
-                "Price agreed before any work begins",
-                "Repair carried out — 12-month warranty on eligible repairs",
-              ]
-          ).map((step, i) => (
-            <div key={i} className="flex gap-3">
-              <span className="text-[12px] font-semibold text-primary mt-0.5 flex-shrink-0">
-                {i + 1}.
-              </span>
-              <p className="text-[13px] text-muted-foreground">{step}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-            <Link href="/">Back to home</Link>
-          </Button>
-          <Button asChild variant="outline" className="rounded-xl h-10 px-6 text-[13px] border-border">
-            <a href={`tel:${BUSINESS.phone}`}>Call {BUSINESS.phoneDisplay}</a>
-          </Button>
-        </div>
-      </div>
+      <BookingSuccess
+        responseMessage={responseMessage}
+        serviceMethod={serviceMethod}
+        warranty={quote?.warranty}
+      />
     );
   }
 
-  // ── Form ────────────────────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-10">
+    <form onSubmit={handleSubmit} noValidate className="space-y-8">
+      <nav aria-label="Repair request progress">
+        <ol className="grid grid-cols-3 gap-2">
+          {BOOKING_STEPS.map((label, index) => (
+            <li key={label}>
+              <div
+                className={`h-1 rounded-full ${
+                  index <= currentStep ? "bg-foreground" : "bg-border"
+                }`}
+              />
+              <p
+                className={`mt-2 text-[11px] font-medium ${
+                  index === currentStep
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {index + 1}. {label}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </nav>
 
-      {/* ── Quote summary banner (when prefilled from calculator) ── */}
-      {quote && selectedModel && (
+      {Object.values(errors).some(Boolean) && (
         <div
-          className="overflow-hidden rounded-lg"
-          style={{
-            background: "var(--soft-bg)",
-            border: "1px solid var(--control-border)",
-          }}
+          role="alert"
+          className="rounded-md border border-destructive/30 bg-destructive/10 p-4"
         >
-          <div className="flex items-center justify-between gap-4 px-5 py-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex-shrink-0 opacity-90">
-                <DeviceIcon device={BRAND_ICON_TYPE[selectedModel.brand]} size={44} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Your quote
-                </p>
-                <p className="font-semibold text-foreground truncate text-[14px]">
-                  {selectedModel.name}
-                </p>
-                <p className="text-[12px] text-muted-foreground">{repairType}</p>
-              </div>
-            </div>
-            <div className="text-right flex-shrink-0">
-              {quote.inspectionRequired ? (
-                <p className="text-base font-bold text-foreground leading-none">Inspection required</p>
-              ) : (
-                <p className="text-2xl font-bold text-foreground leading-none">
-                  £{quote.minPrice}
-                  <span className="text-muted-foreground font-semibold">–£{quote.maxPrice}</span>
-                </p>
-              )}
-              <p className="text-[11px] text-muted-foreground mt-1">est. incl. parts &amp; labour</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 divide-x divide-border border-t border-border text-[12px]">
-            <div className="px-3 py-2 flex items-center justify-center gap-1.5">
-              <Clock className="h-3 w-3 text-[color:var(--icon-fg)] flex-shrink-0" />
-              <span className="font-medium text-foreground">{quote.estimatedTime}</span>
-            </div>
-            <div className="px-3 py-2 flex items-center justify-center gap-1.5">
-              <Shield className="h-3 w-3 text-green-400 flex-shrink-0" />
-              <span className="font-medium text-green-400">12-month warranty</span>
-            </div>
-            <div className="px-3 py-2 flex items-center justify-center gap-1.5">
-              <Check className="h-3 w-3 text-[color:var(--icon-fg)] flex-shrink-0" />
-              <span className="font-medium text-foreground">Free assess.</span>
-            </div>
-          </div>
+          <p className="text-[13px] font-semibold text-destructive">
+            Check the highlighted fields before submitting.
+          </p>
+          <ul className="mt-2 space-y-1 text-[12px] text-destructive">
+            {Object.entries(errors)
+              .filter(([, message]) => Boolean(message))
+              .map(([field, message]) => (
+                <li key={field}>
+                  <a href={`#${field}`} className="underline">
+                    {message}
+                  </a>
+                </li>
+              ))}
+          </ul>
         </div>
       )}
 
-      {/* ── Section 1: Your details ─────────────────────────────── */}
-      <section aria-labelledby="details-heading">
-        <h2
-          id="details-heading"
-          className="text-[13px] font-semibold text-foreground mb-5 flex items-center gap-2"
-        >
-          <span
-            className="w-5 h-5 rounded-full border border-border flex items-center justify-center text-[11px]"
-            aria-hidden="true"
-          >
-            1
-          </span>
-          Your details
-        </h2>
+      {currentStep === 2 && quote && selectedModel && (
+        <QuoteSummary
+          model={selectedModel}
+          repair={repairType}
+          quote={quote}
+          icon={BRAND_ICON_TYPE[selectedModel.brand]}
+        />
+      )}
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Full name" id="name" required error={errors.name}>
-              <Input
-                id="name"
-                name="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Jane Smith"
-                autoComplete="name"
-                className="bg-card border-border h-10 rounded-xl text-[13px]"
-                aria-describedby={errors.name ? "name-error" : undefined}
-              />
-            </Field>
+      <div ref={stepPanelRef} tabIndex={-1} className="space-y-8 outline-none">
+      {currentStep === 2 && (
+        <CustomerDetailsStep
+          name={name}
+          email={email}
+          phone={phone}
+          errors={errors}
+          onName={setName}
+          onEmail={setEmail}
+          onPhone={setPhone}
+        />
+      )}
 
-            <Field label="Email" id="email" required error={errors.email}>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jane@example.com"
-                autoComplete="email"
-                className="bg-card border-border h-10 rounded-xl text-[13px]"
-                aria-describedby={errors.email ? "email-error" : undefined}
-              />
-            </Field>
-          </div>
+      {currentStep === 1 && (
+        <>
+          <ServiceMethodStep
+            value={serviceMethod}
+            returnAddress={returnAddress}
+            errors={errors}
+            onChange={(value) => {
+              setServiceMethod(value);
+              setErrors((previous) => ({
+                ...previous,
+                returnAddress: "",
+              }));
+            }}
+            onReturnAddress={(value) => {
+              setReturnAddress(value);
+              setErrors((previous) => ({
+                ...previous,
+                returnAddress: "",
+              }));
+            }}
+          />
+          <div className="h-px bg-border" />
+        </>
+      )}
 
-          <Field label="Phone number" id="phone" required error={errors.phone}>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="07xxx xxxxxx"
-              autoComplete="tel"
-              className="bg-card border-border h-10 rounded-xl text-[13px] max-w-xs"
-              aria-describedby={errors.phone ? "phone-error" : undefined}
-            />
-          </Field>
-
-          <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              How will we receive it?
-            </p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {[
-                { value: "drop-off" as const, title: "Visit the shop", body: "Walk in or book a time at our Leeds workshop.", icon: Store },
-                { value: "mail-in" as const, title: "Mail-in repair", body: "Ship your device to us using tracked postage.", icon: Package },
-              ].map(({ value, title, body, icon: Icon }) => {
-                const active = serviceMethod === value;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => {
-                      setServiceMethod(value);
-                      setErrors((prev) => ({ ...prev, returnAddress: "" }));
-                    }}
-                    className="rounded-xl border p-4 text-left transition-colors hover:bg-surface"
-                    style={{
-                      borderColor: active ? "var(--control-border-hover)" : "var(--border)",
-                      background: active ? "var(--selection-bg)" : "var(--card)",
-                    }}
-                  >
-                    <div className="mb-2 flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-[color:var(--icon-fg)]" />
-                      <span className="text-[13px] font-semibold text-foreground">{title}</span>
-                    </div>
-                    <p className="text-[12px] leading-relaxed text-muted-foreground">{body}</p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {serviceMethod === "mail-in" && (
-            <Field label="Return address" id="returnAddress" required error={errors.returnAddress}>
-              <Textarea
-                id="returnAddress"
-                name="returnAddress"
-                value={returnAddress}
-                onChange={(e) => {
-                  setReturnAddress(e.target.value);
-                  setErrors((prev) => ({ ...prev, returnAddress: "" }));
-                }}
-                placeholder="Your return shipping address"
-                rows={3}
-                className="bg-card border-border rounded-xl text-[13px] resize-none"
-                aria-describedby={errors.returnAddress ? "returnAddress-error" : undefined}
-              />
-            </Field>
-          )}
-        </div>
-      </section>
-
-      <div className="h-px bg-border" />
-
-      {/* ── Section 2: Device ───────────────────────────────────── */}
-      <section aria-labelledby="device-heading">
-        <h2
-          id="device-heading"
-          className="text-[13px] font-semibold text-foreground mb-5 flex items-center gap-2"
-        >
-          <span
-            className="w-5 h-5 rounded-full border border-border flex items-center justify-center text-[11px]"
-            aria-hidden="true"
-          >
-            2
-          </span>
-          Your device
-        </h2>
-
-        <div className="space-y-4">
+      {currentStep === 0 && (
+        <>
+        <DeviceSelectionStep>
           {/* Device type — the first thing we ask, drives the rest */}
           <Field label="Device type" id="deviceType" required error={errors.deviceType}>
             <Select
@@ -511,6 +567,7 @@ export default function BookingForm({
                 setModelId("");
                 setDeviceName("");
                 setRepairType("");
+                setPartTierId("");
                 setErrors((prev) => ({
                   ...prev, deviceType: "", brand: "", model: "", deviceName: "", repair: "",
                 }));
@@ -544,7 +601,14 @@ export default function BookingForm({
                     setBrand(v as Brand);
                     setModelId("");
                     setRepairType("");
-                    setErrors((prev) => ({ ...prev, brand: "", model: "", repair: "" }));
+                    setPartTierId("");
+                    setErrors((prev) => ({
+                      ...prev,
+                      brand: "",
+                      model: "",
+                      repair: "",
+                      partTier: "",
+                    }));
                   }}
                 >
                   <SelectTrigger
@@ -570,7 +634,14 @@ export default function BookingForm({
                   value={modelId}
                   onValueChange={(v) => {
                     setModelId(v);
-                    setErrors((prev) => ({ ...prev, model: "" }));
+                    setRepairType("");
+                    setPartTierId("");
+                    setErrors((prev) => ({
+                      ...prev,
+                      model: "",
+                      repair: "",
+                      partTier: "",
+                    }));
                   }}
                   disabled={!brand}
                 >
@@ -599,7 +670,12 @@ export default function BookingForm({
                   value={repairType}
                   onValueChange={(v) => {
                     setRepairType(v as RepairType);
-                    setErrors((prev) => ({ ...prev, repair: "" }));
+                    setPartTierId("");
+                    setErrors((prev) => ({
+                      ...prev,
+                      repair: "",
+                      partTier: "",
+                    }));
                   }}
                   disabled={!modelId}
                 >
@@ -635,6 +711,7 @@ export default function BookingForm({
                     setErrors((prev) => ({ ...prev, deviceName: "" }));
                   }}
                   placeholder={deviceTypeOption?.placeholder ?? "Tell us the make & model"}
+                  maxLength={120}
                   className="bg-card border-border h-10 rounded-xl text-[13px]"
                   aria-describedby={errors.deviceName ? "deviceName-error" : undefined}
                 />
@@ -669,124 +746,113 @@ export default function BookingForm({
               </Field>
             </div>
           ) : null}
+        </DeviceSelectionStep>
 
-          {/* Live price preview */}
-          {quote ? (
-            <p className="text-[12px] text-muted-foreground">
-              Estimated price:{" "}
-              <span className="text-foreground font-semibold">
-                £{quote.minPrice}–£{quote.maxPrice}
-              </span>{" "}
-              · {quote.estimatedTime} · exact quote confirmed free before we start
-            </p>
-          ) : brand && modelId && repairType ? (
-            <p className="text-[12px] text-muted-foreground">
-              We&apos;ll need to inspect this device for an exact quote — free assessment, no
-              obligation.
-            </p>
-          ) : null}
+        <div className="h-px bg-border" />
 
-          {/* Issue description */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="issue"
-              className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-            >
-              Issue description{" "}
-              <span className="font-normal normal-case text-muted-foreground/70">(optional)</span>
-            </label>
-            <Textarea
-              id="issue"
-              name="issue"
-              value={issue}
-              onChange={(e) => setIssue(e.target.value)}
-              placeholder="e.g. Cracked screen, won't charge, dropped in water…"
-              rows={3}
-              className="bg-card border-border rounded-xl text-[13px] resize-none"
-            />
-          </div>
-        </div>
-      </section>
+        <RepairSelectionStep
+          tiers={isCatalog ? repairTiers : []}
+          partTierId={partTierId}
+          issue={issue}
+          error={errors.partTier}
+          onTier={(value) => {
+            setPartTierId(value);
+            setErrors((previous) => ({
+              ...previous,
+              partTier: "",
+            }));
+          }}
+          onIssue={setIssue}
+        />
+        </>
+      )}
 
-      <div className="h-px bg-border" />
+      {currentStep === 1 && (
+        <AppointmentRequestStep
+          serviceMethod={serviceMethod}
+          date={date}
+          time={time}
+          today={today}
+          errors={errors}
+          onDate={(next) => {
+            setDate(next);
+            if (time && !slotsForDate(next).includes(time)) setTime("");
+            setErrors((previous) => ({
+              ...previous,
+              date:
+                slotsForDate(next).length === 0
+                  ? "Sunday requests are unavailable."
+                  : "",
+            }));
+          }}
+          onTime={(value) => {
+            setTime(value);
+            setErrors((previous) => ({ ...previous, time: "" }));
+          }}
+        />
+      )}
 
-      {/* ── Section 3: Date & time ──────────────────────────────── */}
-      <section aria-labelledby="schedule-heading">
-        <h2
-          id="schedule-heading"
-          className="text-[13px] font-semibold text-foreground mb-5 flex items-center gap-2"
-        >
-          <span
-            className="w-5 h-5 rounded-full border border-border flex items-center justify-center text-[11px]"
-            aria-hidden="true"
-          >
-            3
+      {currentStep === 2 && (
+        <>
+        <div className="border-t border-border pt-6">
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Review and consent
+          </p>
+        <label className="flex items-start gap-3 text-[12px] leading-relaxed text-muted-foreground">
+          <input
+            id="consentToContact"
+            type="checkbox"
+            checked={consentToContact}
+            onChange={(event) => {
+              setConsentToContact(event.target.checked);
+              setErrors((previous) => ({
+                ...previous,
+                consentToContact: "",
+              }));
+            }}
+            className="mt-0.5 h-4 w-4"
+          />
+          <span>
+            I agree that Origin Repairs may use these details to contact me
+            about this repair request. See the{" "}
+            <Link href="/privacy" className="text-foreground underline">
+              privacy policy
+            </Link>
+            .
           </span>
-          {serviceMethod === "mail-in" ? "Expected send date" : "Preferred date & time"}
-        </h2>
-
-        <div className="space-y-5">
-          <Field label={serviceMethod === "mail-in" ? "Expected send date" : "Date"} id="date" required error={errors.date}>
-            <Input
-              id="date"
-              name="date"
-              type="date"
-              value={date}
-              min={today}
-              onChange={(e) => {
-                const next = e.target.value;
-                setDate(next);
-                // Drop a selected time that isn't offered on the new day
-                if (time && !slotsForDate(next).includes(time)) setTime("");
-                setErrors((prev) => ({
-                  ...prev,
-                  date: slotsForDate(next).length === 0
-                    ? "We're closed on Sundays — please pick another day."
-                    : "",
-                }));
-              }}
-              className="bg-card border-border h-10 rounded-xl text-[13px] max-w-xs"
-              aria-describedby={errors.date ? "date-error" : undefined}
-            />
-          </Field>
-
-          <fieldset>
-            <legend className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              {serviceMethod === "mail-in" ? "Best time to contact you" : "Time"} <span className="text-destructive ml-0.5">*</span>
-            </legend>
-            {errors.time && (
-              <p id="time-error" role="alert" className="text-[12px] text-destructive mb-2 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" /> {errors.time}
-              </p>
-            )}
-            {slotsForDate(date).length === 0 && (
-              <p className="text-[12px] text-muted-foreground mb-2">
-                We&apos;re closed on Sundays. Open Mon–Fri 9am–6pm, Sat 10am–4pm.
-              </p>
-            )}
-            <div className="flex flex-wrap gap-2">
-              {slotsForDate(date).map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => {
-                    setTime(slot);
-                    setErrors((prev) => ({ ...prev, time: "" }));
-                  }}
-                  aria-pressed={time === slot}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors ${
-                    time === slot
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card border-border text-foreground hover:border-primary/60"
-                  }`}
-                >
-                  {slot}
-                </button>
-              ))}
-            </div>
-          </fieldset>
+        </label>
+        {errors.consentToContact && (
+          <p
+            id="consentToContact-error"
+            role="alert"
+            className="mt-1 text-[12px] text-destructive"
+          >
+            {errors.consentToContact}
+          </p>
+        )}
         </div>
-      </section>
+
+      <div
+        className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden"
+        aria-hidden="true"
+      >
+        <label htmlFor="website">Website</label>
+        <input
+          id="website"
+          name="website"
+          value={website}
+          onChange={(event) => setWebsite(event.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
+      <TurnstileField onToken={setTurnstileToken} />
+      {errors.turnstileToken && (
+        <p role="alert" className="text-[12px] text-destructive">
+          {errors.turnstileToken}
+        </p>
+      )}
 
       {/* ── Error banner ────────────────────────────────────────── */}
       {status === "error" && (
@@ -796,16 +862,15 @@ export default function BookingForm({
         >
           <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
           <p className="text-[13px] text-destructive">
-            Something went wrong sending your booking. Please try again, or call us directly on{" "}
+            {responseMessage} Call{" "}
             <a href={`tel:${BUSINESS.phone}`} className="underline font-medium">
               {BUSINESS.phoneDisplay}
             </a>
-            .
+            {" "}if the problem continues.
           </p>
         </div>
       )}
 
-      {/* ── Submit ──────────────────────────────────────────────── */}
       <Button
         type="submit"
         disabled={status === "sending"}
@@ -815,55 +880,45 @@ export default function BookingForm({
           "Sending…"
         ) : (
           <>
-            Confirm Booking Request
+            Request Repair Slot
             <ArrowRight className="h-4 w-4" />
           </>
         )}
       </Button>
 
       <p className="text-[12px] text-muted-foreground text-center">
-        We&apos;ll confirm by email within the hour. Walk-ins also welcome — no booking needed for most repairs.
+        This request does not reserve a time. The team will confirm
+        availability and the final quote.
       </p>
-
-      {/* ── Backend setup note (remove once Resend is connected) ─ */}
-      {/*
-        TO ENABLE EMAIL CONFIRMATIONS:
-        1. Sign up at https://resend.com (free tier covers this volume)
-        2. Add RESEND_API_KEY=re_xxx to your .env.local file
-        3. The route at /api/booking sends a confirmation to the customer
-           and a notification to tech@originrepairs.co.uk
-        4. Test with: curl -X POST /api/booking -d '{"name":"Test","email":"..."}'
-      */}
-    </form>
-  );
-}
-
-// ── Helper: labelled field with error display ─────────────────────
-function Field({
-  label, id, required, error, children,
-}: {
-  label: string;
-  id: string;
-  required?: boolean;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <label
-        htmlFor={id}
-        className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-      >
-        {label}
-        {required && <span className="text-destructive ml-0.5">*</span>}
-      </label>
-      {children}
-      {error && (
-        <p id={`${id}-error`} role="alert" className="text-[12px] text-destructive flex items-center gap-1">
-          <AlertCircle className="h-3 w-3 flex-shrink-0" />
-          {error}
-        </p>
+        </>
       )}
-    </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 border-t border-border pt-6">
+        {currentStep > 0 ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => moveToStep(currentStep - 1)}
+            className="h-11 rounded-md px-5"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+        ) : (
+          <span />
+        )}
+        {currentStep < BOOKING_STEPS.length - 1 && (
+          <Button
+            type="button"
+            onClick={() => moveToStep(currentStep + 1)}
+            className="h-11 rounded-md px-6"
+          >
+            Continue
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </form>
   );
 }

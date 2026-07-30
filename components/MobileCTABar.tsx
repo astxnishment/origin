@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { Phone, Calculator, CalendarCheck } from "lucide-react";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 
 export default function MobileCTABar() {
   return (
-    <div
+    <nav
+      aria-label="Quick repair actions"
       className="fixed bottom-0 inset-x-0 z-40 md:hidden"
       style={{
         background: "var(--chrome-bg)",
@@ -34,18 +35,20 @@ export default function MobileCTABar() {
           <span className="text-[10px] text-muted-foreground leading-none">Instant price</span>
         </Link>
 
-        <Link
-          href="/book"
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
-          style={{ background: "var(--soft-bg-strong)" }}
-        >
-          <CalendarCheck className="h-5 w-5 text-[color:var(--icon-fg)]" />
-          <span className="text-[11px] font-semibold text-foreground leading-none">Book Repair</span>
-          <span className="text-[10px] text-muted-foreground leading-none">Same day</span>
-        </Link>
+        {FEATURES.bookingEnabled && (
+          <Link
+            href="/book"
+            className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
+            style={{ background: "var(--soft-bg-strong)" }}
+          >
+            <CalendarCheck className="h-5 w-5 text-[color:var(--icon-fg)]" />
+            <span className="text-[11px] font-semibold text-foreground leading-none">Request Repair</span>
+            <span className="text-[10px] text-muted-foreground leading-none">Check availability</span>
+          </Link>
+        )}
       </div>
       {/* Safe area spacer for iOS home indicator */}
       <div className="h-safe-area-inset-bottom" style={{ height: "env(safe-area-inset-bottom, 0px)" }} />
-    </div>
+    </nav>
   );
 }

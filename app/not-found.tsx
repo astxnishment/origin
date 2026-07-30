@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Home, Wrench, MessageCircle } from "lucide-react";
+import { FEATURES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Page Not Found | Origin Repairs",
@@ -87,12 +88,14 @@ export default function NotFound() {
                 Back to homepage
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-11 px-7 text-sm border-border hover:bg-surface">
-              <Link href="/book" className="flex items-center gap-2">
-                Book a repair
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+            {FEATURES.bookingEnabled && (
+              <Button asChild variant="outline" className="h-11 px-7 text-sm border-border hover:bg-surface">
+                <Link href="/book" className="flex items-center gap-2">
+                  Request a repair
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Quick links */}
@@ -109,7 +112,7 @@ export default function NotFound() {
                 { href: "/repairs/ipad",          label: "iPad Repairs",          icon: Wrench },
                 { href: "/repairs/laptops",       label: "Laptop Repairs",        icon: Wrench },
                 { href: "/repairs/consoles",      label: "Console Repairs",       icon: Wrench },
-                { href: "/quote",                 label: "Get Instant Quote",     icon: ArrowRight },
+                { href: "/quote",                 label: "Get an Estimate",       icon: ArrowRight },
                 { href: "/contact",               label: "Contact Us",            icon: MessageCircle },
               ].map(({ href, label, icon: Icon }) => (
                 <Link

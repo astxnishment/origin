@@ -13,17 +13,17 @@ import {
 } from "@/components/ui/sheet";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
-import { AuthMenu, AuthMenuMobile } from "@/components/AuthMenu";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 
-// Primary nav — Contact lives in the footer to keep the header uncluttered
 const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
-  { href: "/mail-in", label: "Mail-in" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/quote",   label: "Quote"   },
-  { href: "/track",   label: "Track Repair" },
-  { href: "/about",   label: "About"   },
+  { href: "/quote", label: "Get a Quote" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  ...(FEATURES.mailInEnabled
+    ? [{ href: "/mail-in", label: "Mail-in" }]
+    : []),
 ];
 
 const PHONE = BUSINESS.phoneDisplay;
@@ -70,13 +70,14 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right side — theme icon · account icon · CTA */}
+        {/* Right side */}
         <div className="hidden md:flex items-center gap-1.5 justify-self-end">
           <ThemeToggle />
-          <AuthMenu />
-          <Button asChild className="btn-primary ml-2 h-10 whitespace-nowrap px-5 text-[13px]">
-            <Link href="/book">Book Repair</Link>
-          </Button>
+          {FEATURES.bookingEnabled && (
+            <Button asChild className="btn-primary ml-2 h-10 whitespace-nowrap px-5 text-[13px]">
+              <Link href="/book">Request Repair</Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile — phone icon + hamburger */}
@@ -117,18 +118,15 @@ export default function Navbar() {
                   ))}
                 </nav>
 
-                {/* Account */}
-                <div className="pt-5 border-t border-border pb-5">
-                  <AuthMenuMobile onNavigate={() => setSheetOpen(false)} />
-                </div>
-
                 {/* Mobile CTAs */}
                 <div className="pt-5 border-t border-border space-y-2.5">
-                  <SheetClose asChild>
-                    <Button asChild className="w-full btn-primary h-11">
-                      <Link href="/book">Book a Repair</Link>
-                    </Button>
-                  </SheetClose>
+                  {FEATURES.bookingEnabled && (
+                    <SheetClose asChild>
+                      <Button asChild className="w-full btn-primary h-11">
+                        <Link href="/book">Request a Repair</Link>
+                      </Button>
+                    </SheetClose>
+                  )}
                   <SheetClose asChild>
                     <Button asChild variant="outline" className="w-full h-11 border-border text-sm">
                       <Link href="/quote">Get Instant Quote</Link>

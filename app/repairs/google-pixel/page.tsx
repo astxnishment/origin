@@ -5,33 +5,43 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
-import { GOOGLE_PIXEL_DEVICE_TYPES } from "@/lib/deviceData";
+import {
+  getStartingPriceLabel,
+  getVisibleModels,
+} from "@/lib/serviceCatalogue";
 
 export const metadata: Metadata = {
   title: "Google Pixel Repair Leeds | Screen, Battery & More",
   description:
-    "Expert Google Pixel repairs in Leeds. Pixel 6, 7, 8, 9 and Pro models. Screen replacement, battery, charging port, back glass and more. Same-day service, 12-month warranty.",
+    "Google Pixel repairs in Leeds for visible catalogue models. Compare screen, battery, port and back-glass estimates with repair-specific warranty terms.",
 };
 
+function pixelPrice(repairTypeIds: string[]): string {
+  return getStartingPriceLabel({
+    brand: "Google Pixel",
+    category: "phone",
+    repairTypeIds,
+  });
+}
+
 const repairTypes = [
-  { name: "Screen replacement",  price: "from £119", time: "60–90 min"  },
-  { name: "Battery replacement", price: "from £69",  time: "45–60 min"  },
-  { name: "Charging port",       price: "from £69",  time: "60 min"     },
-  { name: "Back glass",          price: "from £49",  time: "60–90 min"  },
-  { name: "Water damage",        price: "from £29",  time: "24–48 hrs"  },
+  { name: "Screen replacement", price: pixelPrice(["screen-replacement"]), time: "Model dependent" },
+  { name: "Battery replacement", price: pixelPrice(["battery-replacement"]), time: "Model dependent" },
+  { name: "Charging port", price: pixelPrice(["charging-port-replacement", "charging-port-repair"]), time: "Fault dependent" },
+  { name: "Back glass", price: pixelPrice(["back-glass", "back-glass-replacement"]), time: "Model dependent" },
+  { name: "Water damage", price: pixelPrice(["water-damage-diagnostics", "water-damage-diagnostic", "liquid-damage-repair"]), time: "Assessment required" },
 ];
 
 const guarantees = [
-  "Pixel 6, 7, 8 and 9 series covered",
-  "12-month warranty on eligible repairs",
-  "Same-day on most models",
-  "Fixed price quotes",
-  "Free diagnostic assessment",
-  "Data protection guaranteed",
+  "Visible Pixel models listed below",
+  "Warranty shown with the selected repair",
+  "Repair time estimated before approval",
+  "Price agreed before repair",
+  "Part type confirmed before repair",
+  "Backup recommended before repair",
 ];
 
-// All models from deviceData
-const allModels = GOOGLE_PIXEL_DEVICE_TYPES.flatMap((dt) => dt.models.map((m) => m.name));
+const allModels = getVisibleModels("Google Pixel", "phone");
 const totalModels = allModels.length;
 
 // Group by generation
@@ -61,8 +71,9 @@ export default function GooglePixelRepairsPage() {
                   Google Pixel repair, done right.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  Full coverage for Pixel 6, 7, 8 and 9 series. {totalModels} models supported.
-                  12-month warranty on eligible repairs.
+                  {totalModels} visible Pixel models are currently listed.
+                  Price, part type, availability and warranty are confirmed for
+                  the selected repair.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {guarantees.map((g) => (
@@ -77,7 +88,7 @@ export default function GooglePixelRepairsPage() {
                     asChild
                     className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
-                    <Link href="/book">Book Pixel Repair</Link>
+                    <Link href="/book">Request Pixel Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
                     <Link href="/quote" className="flex items-center gap-2">
@@ -159,13 +170,13 @@ export default function GooglePixelRepairsPage() {
               Ready to get your Pixel fixed?
             </h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Book online or walk in. Most repairs done the same day.
+              Request a preferred time and the team will confirm availability.
             </p>
             <Button
               asChild
               className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
-              <Link href="/book">Book a Repair</Link>
+              <Link href="/book">Request a Repair</Link>
             </Button>
           </div>
         </div>
