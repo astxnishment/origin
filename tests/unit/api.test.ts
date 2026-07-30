@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { NextRequest } from "next/server";
 import { POST as contactPost } from "@/app/api/contact/route";
 import { POST as bookingPost } from "@/app/api/booking/route";
+import { publicAuthOrigin } from "@/app/api/auth/magic-link/route";
 
 const futureDate = new Date();
 futureDate.setUTCDate(futureDate.getUTCDate() + 14);
@@ -19,6 +20,13 @@ function request(path: string, body: unknown) {
 }
 
 describe("form APIs", () => {
+  it("uses the active trusted Vercel origin for account links", () => {
+    const request = new NextRequest(
+      "https://origin-peach.vercel.app/api/auth/magic-link"
+    );
+    expect(publicAuthOrigin(request)).toBe("https://origin-peach.vercel.app");
+  });
+
   it("returns field errors for an invalid contact request", async () => {
     const response = await contactPost(request("/api/contact", {}));
     expect(response.status).toBe(400);
