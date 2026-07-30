@@ -1,0 +1,33 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_SITE_URL: https://originrepairs.co.uk
+      SITE_INDEXING_ENABLED: "false"
+      EMAILS_ENABLED: "false"
+      NEXT_PUBLIC_BOOKING_ENABLED: "true"
+      NEXT_PUBLIC_WALK_INS_ENABLED: "false"
+      NEXT_PUBLIC_MAIL_IN_ENABLED: "false"
+      NEXT_PUBLIC_TRACKING_ENABLED: "false"
+      NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test:unit
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --project=desktop
