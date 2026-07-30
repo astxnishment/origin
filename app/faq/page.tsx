@@ -6,6 +6,11 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+} from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
@@ -129,46 +134,45 @@ export default async function FAQPage() {
         }}
       />
       <Navbar />
-      <main className="pt-24 pb-24">
-        <div className="max-w-4xl mx-auto px-5 sm:px-8">
-          <div className="pt-10 pb-14 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              FAQ
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5 max-w-lg">
-              Questions answered.
-            </h1>
-            <p className="text-[15px] text-muted-foreground max-w-md">
+      <main className="pb-24 pt-24">
+        <PageContainer size="narrow">
+          <PageIntro
+            eyebrow="FAQ"
+            title="Questions answered."
+            description={
+              <>
               Need help with a specific device?{" "}
               <a href={BUSINESS.phoneHref} className="text-primary hover:underline">
                 Call us
               </a>
               .
-            </p>
-          </div>
+              </>
+            }
+            className="lg:grid-cols-1"
+          />
 
-          <div className="py-14 space-y-14">
+          <PageSection className="space-y-14">
             {categories.map(({ name, faqs }) => (
               <section key={name}>
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-6">
+                <h2 className="eyebrow mb-5 text-muted-foreground">
                   {name}
                 </h2>
-                <div className="space-y-0 divide-y divide-border border-t border-border">
+                <div className="overflow-hidden rounded-lg border border-border bg-card">
                   {faqs.map(({ q, a }) => (
-                    <details key={q} className="group py-0">
-                      <summary className="flex items-center justify-between gap-4 py-4 cursor-pointer list-none select-none hover:text-primary transition-colors">
-                        <span className="text-[14px] font-medium text-foreground group-hover:text-primary transition-colors">
+                    <details key={q} className="group border-b border-border last:border-b-0">
+                      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-surface">
+                        <span className="text-sm font-medium text-foreground">
                           {q}
                         </span>
                         <span
                           aria-hidden="true"
-                          className="text-muted-foreground transition-transform group-open:rotate-45"
+                          className="text-lg text-muted-foreground transition-transform group-open:rotate-45"
                         >
                           +
                         </span>
                       </summary>
-                      <div className="pb-5 pr-8">
-                        <p className="text-[13px] text-muted-foreground leading-relaxed">
+                      <div className="px-5 pb-5 pr-10">
+                        <p className="text-sm leading-6 text-muted-foreground">
                           {a}
                         </p>
                       </div>
@@ -177,9 +181,9 @@ export default async function FAQPage() {
                 </div>
               </section>
             ))}
-          </div>
+          </PageSection>
 
-          <div className="border-t border-border pt-14 text-center">
+          <PageSection bordered={false} className="text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-3">
               Still have questions?
             </h2>
@@ -194,8 +198,8 @@ export default async function FAQPage() {
                 <a href={BUSINESS.phoneHref}>Call {BUSINESS.phoneDisplay}</a>
               </Button>
             </div>
-          </div>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
       <Footer />
     </>

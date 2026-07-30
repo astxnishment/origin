@@ -4,6 +4,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+} from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Repair Terms | Origin Repairs",
@@ -59,27 +64,26 @@ export default function TermsPage() {
     <>
       <Navbar />
       <main className="pb-24 pt-24">
-        <div className="mx-auto max-w-2xl px-5 sm:px-8">
-          <header className="mb-10 border-b border-border pb-10 pt-10">
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-              Legal
-            </p>
-            <h1 className="text-4xl font-semibold tracking-tight">
-              Repair Terms
-            </h1>
-            <p className="mt-4 text-[13px] text-muted-foreground">
+        <PageContainer size="narrow">
+          <PageIntro
+            eyebrow="Legal"
+            title="Repair Terms"
+            description={
+              <>
               Last updated: 29 July 2026
-            </p>
-          </header>
+              </>
+            }
+            className="lg:grid-cols-1"
+          />
 
-          <div className="mb-10 rounded-md border border-border bg-surface p-5 text-[12px] leading-6 text-muted-foreground">
+          <div className="panel-muted my-10 p-5 text-[12px] leading-6 text-muted-foreground">
             Draft launch terms. The business identity, payment, uncollected
             device procedure and final wording must be reviewed by a qualified
             UK legal professional before production use.
           </div>
 
-          <div className="space-y-8 text-[14px] leading-relaxed text-muted-foreground">
-            <section>
+          <PageSection bordered={false} className="space-y-10 pt-0 text-[14px] leading-7 text-muted-foreground">
+            <section className="border-b border-border pb-10">
               <h2 className="mb-3 text-[16px] font-semibold text-foreground">
                 Service provider
               </h2>
@@ -92,7 +96,7 @@ export default function TermsPage() {
             </section>
 
             {sections.map((section, index) => (
-              <section key={section.title}>
+              <section key={section.title} className="border-b border-border pb-10">
                 <h2 className="mb-3 text-[16px] font-semibold text-foreground">
                   {index + 2}. {section.title}
                 </h2>
@@ -109,7 +113,7 @@ export default function TermsPage() {
             ))}
 
             {FEATURES.mailInEnabled && (
-              <section>
+              <section className="border-b border-border pb-10">
                 <h2 className="mb-3 text-[16px] font-semibold text-foreground">
                   Mail-in repairs
                 </h2>
@@ -145,8 +149,8 @@ export default function TermsPage() {
                 .
               </p>
             </section>
-          </div>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
       <Footer />
     </>

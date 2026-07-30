@@ -9,6 +9,11 @@ import { serviceImages } from "@/lib/serviceImages";
 import DeviceImage from "@/components/DeviceImage";
 import { DeviceIcon, type DeviceType as DeviceIconType } from "@/components/DeviceIcon";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+} from "@/components/layout/PageContainer";
 
 type Choice = {
   name: string;
@@ -123,27 +128,29 @@ export default function RepairsPage() {
     <>
       <Navbar />
 
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          {/* Header */}
-          <div className="pt-10 pb-16">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Repairs
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5 max-w-lg">
-              Repair, without the guesswork.
-            </h1>
-            <p className="text-[15px] text-muted-foreground max-w-md leading-relaxed">
+      <main className="pb-16 pt-20 sm:pb-24 sm:pt-24">
+        <PageContainer>
+          <PageIntro
+            eyebrow="Repairs"
+            title="Repair, without the guesswork."
+            description={
+              <>
               Phones, tablets, all kinds of laptops, consoles, custom PCs, liquid damage and board-level repairs.
-            </p>
-          </div>
+              </>
+            }
+          />
 
           {/* Repair type pills */}
-          <div className="flex flex-wrap gap-2 mb-16">
+          <div
+            role="region"
+            aria-label="Repair types"
+            tabIndex={0}
+            className="-mx-4 mb-10 mt-8 flex snap-x gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-scrollbar]:hidden sm:mx-0 sm:mb-16 sm:mt-10 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+          >
             {repairTypes.map((label) => (
               <span
                 key={label}
-                className="px-3 py-1.5 rounded-full border border-border text-[12px] text-muted-foreground"
+                className="shrink-0 snap-start rounded-full border border-border px-3 py-1.5 text-[12px] text-muted-foreground"
               >
                 {label}
               </span>
@@ -151,31 +158,33 @@ export default function RepairsPage() {
           </div>
 
           {/* Device categories — pick your device first, pricing follows */}
-          <div className="space-y-14">
+          <div className="space-y-10 sm:space-y-14">
             {categories.map(({ device, href, tagline, image, prompt, choices, repairs }) => (
-              <div key={device} className="section-border pt-10 first:border-0 first:pt-0">
-                <div className="flex items-center justify-between gap-4 mb-6">
-                  <div className="flex items-center gap-5">
+              <div key={device} className="section-border pt-8 first:border-0 first:pt-0 sm:pt-10">
+                <div className="mb-5 flex items-start justify-between gap-2 sm:mb-6 sm:items-center sm:gap-4">
+                  <div className="flex min-w-0 items-center gap-3 sm:gap-5">
                     {/* Device image thumbnail */}
-                    <div className="w-16 h-16 rounded-xl bg-surface border border-border flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-surface sm:h-16 sm:w-16 sm:rounded-xl">
                       <Image
                         src={image.src}
                         alt={image.alt}
                         width={image.width}
                         height={image.height}
-                        className="object-contain w-12 h-12"
+                        className="h-10 w-10 object-contain sm:h-12 sm:w-12"
                       />
                     </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-foreground">{device}</h2>
-                      <p className="text-[13px] text-muted-foreground mt-0.5">{prompt ?? tagline}</p>
+                    <div className="min-w-0">
+                      <h2 className="text-lg font-semibold leading-snug text-foreground sm:text-xl">{device}</h2>
+                      <p className="mt-0.5 line-clamp-2 text-[12px] leading-snug text-muted-foreground sm:text-[13px]">{prompt ?? tagline}</p>
                     </div>
                   </div>
                   <Link
                     href={href}
-                    className="text-[13px] text-primary hover:underline underline-offset-4 whitespace-nowrap flex items-center gap-1 flex-shrink-0"
+                    aria-label={`View all ${device}`}
+                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md text-primary transition-colors hover:bg-surface sm:h-auto sm:w-auto sm:gap-1 sm:rounded-none sm:text-[13px] sm:hover:bg-transparent sm:hover:underline sm:underline-offset-4"
                   >
-                    View all <ArrowRight className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">View all</span>
+                    <ArrowRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   </Link>
                 </div>
 
@@ -183,15 +192,15 @@ export default function RepairsPage() {
                   <div
                     className={`grid grid-cols-1 sm:grid-cols-2 ${
                       choices.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
-                    } gap-px bg-border rounded-xl overflow-hidden`}
+                    } gap-px overflow-hidden rounded-lg bg-border sm:rounded-xl`}
                   >
                     {choices.map((c) => (
                       <Link
                         key={c.name}
                         href={c.href}
-                        className="group bg-card p-5 flex items-center gap-4 hover:bg-surface transition-colors"
+                        className="group flex min-h-20 items-center gap-3 bg-card p-4 transition-colors hover:bg-surface sm:gap-4 sm:p-5"
                       >
-                        <div className="w-16 h-14 flex-shrink-0 flex items-center justify-center">
+                        <div className="flex h-12 w-14 flex-shrink-0 items-center justify-center sm:h-14 sm:w-16">
                           {c.image ? (
                             <Image
                               src={c.image.src}
@@ -223,11 +232,11 @@ export default function RepairsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+                  <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-border sm:grid-cols-2 sm:rounded-xl lg:grid-cols-3">
                     {repairs?.map(({ name, time, from }) => (
                       <div
                         key={name}
-                        className="bg-card p-5 flex justify-between items-center hover:bg-surface transition-colors"
+                        className="flex min-h-20 items-center justify-between gap-3 bg-card p-4 transition-colors hover:bg-surface sm:p-5"
                       >
                         <div>
                           <p className="text-[13px] font-medium text-foreground">{name}</p>
@@ -245,7 +254,7 @@ export default function RepairsPage() {
           </div>
 
           {/* CTA */}
-          <div className="mt-20 pt-16 border-t border-border text-center">
+          <PageSection bordered={false} className="mt-14 text-center sm:mt-20">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-3">
               Not sure what&apos;s wrong?
             </h2>
@@ -261,8 +270,8 @@ export default function RepairsPage() {
                 <Link href="/contact">Contact Us</Link>
               </Button>
             </div>
-          </div>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
 
       <Footer />

@@ -4,18 +4,22 @@ import { BUSINESS, FEATURES, TRUST } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
-const services = [
+const repairs = [
   { href: "/repairs/phones", label: "Phone Repair" },
-  ...(FEATURES.mailInEnabled
-    ? [{ href: "/mail-in", label: "Mail-in Repairs" }]
-    : []),
   { href: "/repairs/ipad", label: "iPad Repair" },
   { href: "/repairs/laptops", label: "Laptop Repair" },
   { href: "/repairs/consoles", label: "Console Repair" },
   { href: "/repairs/custom-pc", label: "Custom PC Builds" },
   { href: "/repairs/data-recovery", label: "Data & Liquid Damage" },
+];
+
+const services = [
   { href: "/pricing", label: "Pricing" },
   { href: "/quote", label: "Get a Quote" },
+  ...(FEATURES.mailInEnabled
+    ? [{ href: "/mail-in", label: "Mail-in Repairs" }]
+    : []),
+  { href: "/track", label: "Track a Repair" },
 ];
 
 const company = [
@@ -35,17 +39,17 @@ const legal = [
 
 export default function Footer() {
   return (
-    <footer className="section-border bg-surface/50">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
+    <footer className="section-border bg-surface/45">
+      <div className="page-container py-12 sm:py-14">
         {/* Top grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
+        <div className="mb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:mb-12 lg:grid-cols-6 lg:gap-8">
           {/* Brand */}
-          <div className="md:col-span-1">
+          <div className="col-span-2 lg:col-span-2 lg:pr-10">
             <Link href="/" aria-label="Origin Repairs — home" className="inline-block mb-6 transition-opacity duration-200 hover:opacity-70">
               <Logo variant="light" heightClass="h-10" className="block dark:hidden" />
               <Logo variant="dark" heightClass="h-10" className="hidden dark:block" />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+            <p className="mb-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
               Professional device repair in Leeds. {WARRANTY_NOTICE}
             </p>
             {(TRUST.googleBusinessUrl || TRUST.trustpilotUrl) && (
@@ -77,15 +81,32 @@ export default function Footer() {
             )}
           </div>
 
+          {/* Repairs */}
+          <div>
+            <p className="mb-5 text-xs font-semibold uppercase tracking-widest text-foreground">Repairs</p>
+            <ul className="space-y-3">
+              {repairs.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Services */}
           <div>
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-5">Services</p>
+            <p className="mb-5 text-xs font-semibold uppercase tracking-widest text-foreground">Services</p>
             <ul className="space-y-3">
               {services.map(({ href, label }) => (
                 <li key={href}>
                   <Link
                     href={href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {label}
                   </Link>
@@ -112,7 +133,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="col-span-2 lg:col-span-1">
             <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-5">Contact</p>
             <ul className="space-y-4">
               <li className="flex items-start gap-2">
@@ -159,8 +180,8 @@ export default function Footer() {
         </div>
 
         {/* Legal links */}
-        <div className="pt-8 border-t border-border">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="border-t border-border pt-7">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Origin Repairs. All rights reserved.</p>
             <div className="flex flex-wrap gap-x-5 gap-y-2">
               {legal.map(({ href, label }) => (
@@ -170,14 +191,6 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          <a
-            href={BUSINESS.googleMapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-block text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            76 Cookridge Street, Leeds, LS2 8GL, UK
-          </a>
         </div>
       </div>
     </footer>

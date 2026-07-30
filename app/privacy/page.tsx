@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS } from "@/lib/constants";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+} from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Privacy Notice | Origin Repairs",
@@ -14,26 +19,25 @@ export default function PrivacyPage() {
     <>
       <Navbar />
       <main className="pb-24 pt-24">
-        <div className="mx-auto max-w-2xl px-5 sm:px-8">
-          <header className="mb-10 border-b border-border pb-10 pt-10">
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-              Legal
-            </p>
-            <h1 className="text-4xl font-semibold tracking-tight">
-              Privacy Notice
-            </h1>
-            <p className="mt-4 text-[13px] text-muted-foreground">
+        <PageContainer size="narrow">
+          <PageIntro
+            eyebrow="Legal"
+            title="Privacy Notice"
+            description={
+              <>
               Last updated: 29 July 2026
-            </p>
-          </header>
+              </>
+            }
+            className="lg:grid-cols-1"
+          />
 
-          <div className="mb-10 rounded-md border border-border bg-surface p-5 text-[12px] leading-6 text-muted-foreground">
+          <div className="panel-muted my-10 p-5 text-[12px] leading-6 text-muted-foreground">
             Draft launch notice. The owner must confirm the legal data
             controller identity, retention schedule and processor agreements,
             then obtain qualified UK privacy review before production use.
           </div>
 
-          <div className="space-y-8 text-[14px] leading-relaxed text-muted-foreground">
+          <PageSection bordered={false} className="space-y-10 pt-0 text-[14px] leading-7 text-muted-foreground">
             <PolicySection title="Who controls the data">
               <p>
                 {BUSINESS.name}, {BUSINESS.address}, is the contact point for
@@ -141,8 +145,8 @@ export default function PrivacyPage() {
                 pre-existing storage failure can be guaranteed.
               </p>
             </PolicySection>
-          </div>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
       <Footer />
     </>
@@ -157,7 +161,7 @@ function PolicySection({
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    <section className="border-b border-border pb-10 last:border-b-0">
       <h2 className="mb-3 text-[16px] font-semibold text-foreground">
         {title}
       </h2>

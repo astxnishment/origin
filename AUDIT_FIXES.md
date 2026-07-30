@@ -45,9 +45,9 @@ qualified professional.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
 - `npm run test:unit`: 25 tests passed across 7 files.
-- `npm run test:e2e`: 38 checks passed across desktop, 320px mobile,
-  390px mobile and tablet; 2 desktop/tablet checks intentionally skipped
-  because they test the mobile-only action bar.
+- `npm run test:e2e`: 40 checks passed across desktop, 320px mobile,
+  390px mobile and tablet; 4 desktop/tablet checks intentionally skipped
+  because they cover mobile-only layout, form sizing and the fixed action bar.
 - `npm run build`: passed and generated 451 pages.
 - Automated axe checks: no automatically detectable violations on major pages.
 - `npm audit --omit=dev`: 0 known production vulnerabilities.

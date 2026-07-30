@@ -575,7 +575,7 @@ export default function BookingForm({
             >
               <SelectTrigger
                 id="deviceType"
-                className="bg-card border-border h-10 rounded-xl text-[13px] sm:max-w-xs"
+                className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10 sm:max-w-xs"
                 aria-describedby={errors.deviceType ? "deviceType-error" : undefined}
               >
                 <SelectValue placeholder="What are you bringing in?" />
@@ -613,7 +613,7 @@ export default function BookingForm({
                 >
                   <SelectTrigger
                     id="brand"
-                    className="bg-card border-border h-10 rounded-xl text-[13px]"
+                    className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
                     aria-describedby={errors.brand ? "brand-error" : undefined}
                   >
                     <SelectValue placeholder="Select a brand" />
@@ -647,7 +647,7 @@ export default function BookingForm({
                 >
                   <SelectTrigger
                     id="model"
-                    className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
+                    className="h-11 rounded-xl border-border bg-card text-[13px] disabled:opacity-50 sm:h-10"
                     aria-describedby={errors.model ? "model-error" : undefined}
                   >
                     <SelectValue
@@ -681,7 +681,7 @@ export default function BookingForm({
                 >
                   <SelectTrigger
                     id="repair"
-                    className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
+                    className="h-11 rounded-xl border-border bg-card text-[13px] disabled:opacity-50 sm:h-10"
                     aria-describedby={errors.repair ? "repair-error" : undefined}
                   >
                     <SelectValue
@@ -712,7 +712,7 @@ export default function BookingForm({
                   }}
                   placeholder={deviceTypeOption?.placeholder ?? "Tell us the make & model"}
                   maxLength={120}
-                  className="bg-card border-border h-10 rounded-xl text-[13px]"
+                  className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
                   aria-describedby={errors.deviceName ? "deviceName-error" : undefined}
                 />
               </Field>
@@ -728,7 +728,7 @@ export default function BookingForm({
                 >
                   <SelectTrigger
                     id="repair"
-                    className="bg-card border-border h-10 rounded-xl text-[13px] disabled:opacity-50"
+                    className="h-11 rounded-xl border-border bg-card text-[13px] disabled:opacity-50 sm:h-10"
                     aria-describedby={errors.repair ? "repair-error" : undefined}
                   >
                     <SelectValue

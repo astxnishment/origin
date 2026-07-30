@@ -80,7 +80,7 @@ export default function InteractiveMap() {
         </div>
       )}
 
-      <div className="relative min-h-[380px]">
+      <div className="relative min-h-[320px] sm:min-h-[380px]">
         {mapLoaded ? (
           <iframe
             key={selected.id}
@@ -103,7 +103,7 @@ export default function InteractiveMap() {
             <Button
               type="button"
               onClick={() => setMapLoaded(true)}
-              className="mt-5 h-10 rounded-md px-5 text-[13px]"
+              className="mt-5 h-11 rounded-md px-5 text-[13px] sm:h-10"
             >
               Load map
             </Button>
@@ -133,7 +133,7 @@ export default function InteractiveMap() {
         </div>}
 
         {mapLoaded && <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2 sm:left-auto sm:flex-row">
-          <Button asChild className="btn-primary h-10 px-4 text-[13px]">
+          <Button asChild className="btn-primary h-11 px-4 text-[13px] sm:h-10">
             <a
               href={selected.href}
               target="_blank"
@@ -144,7 +144,7 @@ export default function InteractiveMap() {
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           </Button>
-          <Button asChild className="btn-secondary h-10 px-4 text-[13px]">
+          <Button asChild className="btn-secondary h-11 px-4 text-[13px] sm:h-10">
             <a href={BUSINESS.phoneHref} className="flex items-center gap-2">
               <Phone className="h-3.5 w-3.5" />
               Call

@@ -152,7 +152,7 @@ export default function ContactForm() {
         <Button
           type="button"
           variant="outline"
-          className="mt-2 h-10 rounded-xl border-border px-6 text-[13px]"
+          className="mt-2 h-11 rounded-xl border-border px-6 text-[13px] sm:h-10"
           onClick={resetForm}
         >
           Send another message
@@ -172,7 +172,7 @@ export default function ContactForm() {
             onChange={handleChange}
             maxLength={100}
             autoComplete="name"
-            className="h-10 rounded-xl border-border bg-card text-[13px]"
+            className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
           />
         </FormField>
         <FormField label="Email" id="email" required error={errors.email}>
@@ -184,7 +184,7 @@ export default function ContactForm() {
             onChange={handleChange}
             maxLength={254}
             autoComplete="email"
-            className="h-10 rounded-xl border-border bg-card text-[13px]"
+            className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
           />
         </FormField>
       </div>
@@ -199,7 +199,7 @@ export default function ContactForm() {
             onChange={handleChange}
             maxLength={25}
             autoComplete="tel"
-            className="h-10 rounded-xl border-border bg-card text-[13px]"
+            className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
           />
         </FormField>
         <FormField label="Device" id="device" error={errors.device}>
@@ -210,7 +210,7 @@ export default function ContactForm() {
             onChange={handleChange}
             maxLength={120}
             placeholder="e.g. iPhone 15 Pro"
-            className="h-10 rounded-xl border-border bg-card text-[13px]"
+            className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
           />
         </FormField>
       </div>

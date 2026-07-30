@@ -4,6 +4,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PricingTable from "@/components/PricingTable";
 import { Button } from "@/components/ui/button";
+import {
+  PageContainer,
+  PageIntro,
+  SectionHeading,
+} from "@/components/layout/PageContainer";
 import { ArrowRight } from "lucide-react";
 import { FEATURES } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
@@ -42,63 +47,61 @@ export default function PricingPage() {
     <>
       <Navbar />
 
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          {/* Header */}
-          <div className="pt-10 pb-10 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Pricing
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
-              Repair prices.
-            </h1>
-            <p className="text-[14px] text-muted-foreground leading-relaxed max-w-lg">
-              Search your model or choose a device category. We confirm the final
-              price before any work starts.
-            </p>
-          </div>
+      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+        <PageContainer>
+          <PageIntro
+            eyebrow="Pricing"
+            title="Repair prices."
+            description="Search your model or choose a device category. We confirm the final price before any work starts."
+          />
 
           {/* Price table */}
-          <div className="py-10 border-b border-border">
-            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Find your price</h2>
-                <p className="max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
-                  Model repairs, consoles, custom PCs and specialist work.
-                </p>
-              </div>
-              <Link href="/quote" className="flex items-center gap-1.5 text-[12px] font-semibold text-foreground hover:underline">
-                Build a device quote
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
+          <section className="section-compact border-b border-border">
+            <SectionHeading
+              title="Find your price"
+              description="Model repairs, consoles, custom PCs and specialist work."
+              action={
+                <Link
+                  href="/quote"
+                  className="hidden items-center gap-1.5 text-[12px] font-semibold text-foreground hover:underline sm:flex"
+                >
+                  Build a device quote
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              }
+            />
             <PricingTable />
-          </div>
+          </section>
 
           {/* FAQ */}
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-8">Pricing FAQ</h2>
-            <div className="space-y-6">
+          <section className="section-compact border-b border-border">
+            <h2 className="section-title text-[clamp(1.5rem,2.2vw,2rem)]">
+              Pricing questions
+            </h2>
+            <div className="mt-8 divide-y divide-border border-y border-border">
               {faqs.map(({ q, a }) => (
-                <div key={q} className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div
+                  key={q}
+                  className="grid gap-2 py-5 md:grid-cols-2 md:gap-10"
+                >
                   <p className="text-[14px] font-medium text-foreground">{q}</p>
                   <p className="text-[13px] text-muted-foreground leading-relaxed">{a}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
           {/* CTA */}
-          <div className="pt-16 text-center">
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Get your exact quote now</h2>
-            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
+          <section className="section-standard text-center">
+            <h2 className="section-title">Build your repair quote.</h2>
+            <p className="mx-auto mb-8 mt-4 max-w-sm text-[15px] text-muted-foreground">
               Use the calculator for a catalogue estimate, or contact the team
               when the model or fault needs assessment.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 asChild
-                className="btn-primary h-10 rounded-lg px-6 text-[13px]"
+                className="btn-primary h-12 px-6 text-[13px]"
               >
                 <Link href="/quote" className="flex items-center gap-2">
                   Quote calculator <ArrowRight className="h-3.5 w-3.5" />
@@ -108,14 +111,14 @@ export default function PricingPage() {
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-xl h-10 px-6 text-[13px] border-border hover:bg-muted"
+                  className="btn-secondary h-12 px-6 text-[13px]"
                 >
                   <Link href="/book">Request a Repair</Link>
                 </Button>
               )}
             </div>
-          </div>
-        </div>
+          </section>
+        </PageContainer>
       </main>
 
       <Footer />

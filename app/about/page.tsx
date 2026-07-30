@@ -5,6 +5,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+  SectionHeading,
+} from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "About — Leeds Device Repair Specialists",
@@ -36,28 +42,26 @@ export default function AboutPage() {
     <>
       <Navbar />
 
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          {/* Header */}
-          <div className="pt-10 pb-16 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              About ORIGIN
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end">
-              <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
-                The repair shop that doesn&apos;t feel like one.
-              </h1>
-              <p className="text-[15px] text-muted-foreground leading-relaxed">
+      <main className="pb-24 pt-24">
+        <PageContainer>
+          <PageIntro
+            eyebrow="About Origin"
+            title="Clear repair advice, without the guesswork."
+            description={
+              <>
                 Origin Repairs is an independent Leeds device-repair business.
                 We assess the fault, explain the available repair and part
                 options, and agree the price before authorised work begins.
-              </p>
-            </div>
-          </div>
+              </>
+            }
+          />
 
-          {/* Story */}
-          <div className="py-16 border-b border-border">
-            <div className="max-w-3xl space-y-4 text-[15px] text-muted-foreground leading-relaxed">
+          <PageSection>
+            <SectionHeading
+              eyebrow="Our approach"
+              title="Assessment comes first."
+            />
+            <div className="max-w-3xl space-y-4 text-[15px] leading-7 text-muted-foreground">
               <p>
                 Our published catalogue covers phones, tablets, laptops, game
                 consoles, custom PCs, liquid-damage assessment and data-recovery
@@ -72,27 +76,28 @@ export default function AboutPage() {
               </p>
               <p>{WARRANTY_NOTICE}</p>
             </div>
-          </div>
+          </PageSection>
 
-          {/* Values */}
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-10">What we stand for</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border rounded-xl overflow-hidden">
+          <PageSection>
+            <SectionHeading title="What we stand for" />
+            <div className="grid grid-cols-1 overflow-hidden rounded-lg border border-border sm:grid-cols-2">
               {values.map(({ title, desc }) => (
-                <div key={title} className="bg-card p-7 hover:bg-surface transition-colors">
-                  <h3 className="text-[14px] font-semibold text-foreground mb-2">{title}</h3>
-                  <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
+                <div
+                  key={title}
+                  className="border-b border-border bg-card p-6 last:border-b-0 sm:min-h-40 sm:border-r sm:[&:nth-child(2n)]:border-r-0 sm:[&:nth-last-child(-n+2)]:border-b-0"
+                >
+                  <h3 className="card-title mb-2">{title}</h3>
+                  <p className="text-sm leading-6 text-muted-foreground">{desc}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </PageSection>
 
-          {/* Contact details */}
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-8">Find us</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <PageSection>
+            <SectionHeading title="Find us" />
+            <div className="panel-muted grid grid-cols-1 gap-8 p-6 sm:grid-cols-3 sm:p-8">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Location</p>
+                <p className="eyebrow mb-2 text-muted-foreground">Location</p>
                 <a
                   href={BUSINESS.googleMapsUrl}
                   target="_blank"
@@ -106,7 +111,7 @@ export default function AboutPage() {
                 </a>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Hours</p>
+                <p className="eyebrow mb-2 text-muted-foreground">Hours</p>
                 <div className="text-[14px] text-foreground space-y-0.5">
                   <p>Mon–Fri: 9am–6pm</p>
                   <p>Sat: 10am–4pm</p>
@@ -114,7 +119,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Contact</p>
+                <p className="eyebrow mb-2 text-muted-foreground">Contact</p>
                 <div className="text-[14px] space-y-1">
                   <a href={`tel:${BUSINESS.phone}`} className="block text-foreground hover:text-primary transition-colors">
                     {BUSINESS.phoneDisplay}
@@ -125,10 +130,9 @@ export default function AboutPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </PageSection>
 
-          {/* CTA */}
-          <div className="pt-16 text-center">
+          <PageSection bordered={false} className="text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-3">
               Discuss your repair.
             </h2>
@@ -147,8 +151,8 @@ export default function AboutPage() {
                 <Link href="/contact">Contact Us</Link>
               </Button>
             </div>
-          </div>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
 
       <Footer />

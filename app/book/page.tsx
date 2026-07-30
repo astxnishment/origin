@@ -4,6 +4,10 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingForm from "./BookingForm";
+import {
+  PageContainer,
+  PageIntro,
+} from "@/components/layout/PageContainer";
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
@@ -55,25 +59,17 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
     <>
       <Navbar />
 
-      <main className="pt-24 pb-32">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          {/* ── Static header — always SSR'd, visible without JS ── */}
-          <div className="pt-10 pb-10">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Repair Request
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
-              Tell us what needs fixing.
-            </h1>
-            <p className="text-[15px] text-muted-foreground max-w-md">
-              Choose your device, repair and preferred time. The team will
-              check availability and contact you with the next step.
-            </p>
-          </div>
+      <main className="pb-20 pt-16 md:pb-28 md:pt-[72px]">
+        <PageContainer>
+          <PageIntro
+            eyebrow="Repair request"
+            title="Tell us what needs fixing."
+            description="Choose your device, repair and preferred time. The team will check availability and contact you with the next step."
+          />
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 items-start gap-8 py-8 sm:py-12 lg:grid-cols-[minmax(0,1.7fr)_minmax(300px,0.8fr)] lg:gap-10">
             {/* ── Client form ── */}
-            <div>
+            <div className="panel bg-card p-5 sm:p-8">
               {/* No Suspense — BookingForm is SSR'd as a client component */}
               <BookingForm
                 prefillBrand={prefillBrand}
@@ -88,7 +84,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
 
               {/* noscript fallback — visible only when JS is disabled */}
               <noscript>
-                <div className="mt-8 p-6 rounded-xl border border-border bg-card text-center">
+                <div className="mt-8 border-t border-border p-6 text-center">
                   <p className="text-[14px] text-foreground font-semibold mb-2">
                     JavaScript is required to use the online booking form.
                   </p>
@@ -108,9 +104,9 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
             </div>
 
             {/* ── Static info sidebar — always visible, no JS needed ── */}
-            <aside className="space-y-6">
-              <div className="rounded-xl border border-border bg-card p-6 space-y-5">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            <aside className="panel-muted p-5 sm:p-6">
+              <div className="space-y-5">
+                <p className="eyebrow">
                   Contact details
                 </p>
 
@@ -179,8 +175,8 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
                 )}
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-6 space-y-3">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+              <div className="mt-7 space-y-3 border-t border-border pt-6">
+                <p className="eyebrow">
                   What to expect
                 </p>
                 {[
@@ -197,7 +193,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
               </div>
             </aside>
           </div>
-        </div>
+        </PageContainer>
       </main>
 
       <Footer />

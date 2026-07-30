@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetTitle,
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
@@ -18,7 +20,7 @@ import { BUSINESS, FEATURES } from "@/lib/constants";
 const NAV_LINKS = [
   { href: "/repairs", label: "Repairs" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/quote", label: "Get a Quote" },
+  { href: "/quote", label: "Quote" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   ...(FEATURES.mailInEnabled
@@ -36,15 +38,15 @@ export default function Navbar() {
   return (
     <header className="glass fixed top-0 inset-x-0 z-50">
       {/* 1fr | auto | 1fr keeps the nav mathematically centred in the container */}
-      <div className="max-w-6xl mx-auto grid h-[72px] grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 sm:px-8">
+      <div className="page-container grid h-16 grid-cols-[1fr_auto] items-center gap-3 md:h-[72px] md:grid-cols-[1fr_auto_1fr] md:gap-6">
 
         <Link
           href="/"
           aria-label="Origin Repairs — home"
           className="shrink-0 justify-self-start transition-opacity duration-200 hover:opacity-75"
         >
-          <Logo variant="light" heightClass="h-10 sm:h-11" className="block dark:hidden" />
-          <Logo variant="dark" heightClass="h-10 sm:h-11" className="hidden dark:block" />
+          <Logo variant="light" heightClass="h-9 sm:h-11" className="block dark:hidden" />
+          <Logo variant="dark" heightClass="h-9 sm:h-11" className="hidden dark:block" />
         </Link>
 
         {/* Desktop nav — centred column */}
@@ -80,28 +82,25 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile — phone icon + hamburger */}
+        {/* Mobile */}
         <div className="flex md:hidden items-center gap-1">
-          <a
-            href={PHONE_HREF}
-            aria-label="Call us"
-            className="h-10 w-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
-          >
-            <Phone className="h-4 w-4" />
-          </a>
-          <ThemeToggle />
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Button variant="ghost" size="icon" className="h-11 w-11">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-card border-border w-80 p-0">
-              <div className="flex flex-col h-full p-6">
-                <div className="mb-8">
+            <SheetContent side="right" className="w-[min(20rem,calc(100vw-12px))] border-border bg-card p-0">
+              <SheetTitle className="sr-only">Site navigation</SheetTitle>
+              <SheetDescription className="sr-only">
+                Browse repair services, pricing and contact options.
+              </SheetDescription>
+              <div className="flex h-full flex-col p-6">
+                <div className="mb-7 flex items-center justify-between">
                   <Logo variant="light" heightClass="h-8" className="block dark:hidden" />
                   <Logo variant="dark" heightClass="h-8" className="hidden dark:block" />
+                  <ThemeToggle />
                 </div>
 
                 {/* Nav links */}
@@ -119,22 +118,22 @@ export default function Navbar() {
                 </nav>
 
                 {/* Mobile CTAs */}
-                <div className="pt-5 border-t border-border space-y-2.5">
+                <div className="space-y-2.5 border-t border-border pt-5">
                   {FEATURES.bookingEnabled && (
                     <SheetClose asChild>
                       <Button asChild className="w-full btn-primary h-11">
-                        <Link href="/book">Request a Repair</Link>
+                        <Link href="/book">Book a Repair</Link>
                       </Button>
                     </SheetClose>
                   )}
                   <SheetClose asChild>
-                    <Button asChild variant="outline" className="w-full h-11 border-border text-sm">
+                    <Button asChild className="btn-secondary h-11 w-full text-sm">
                       <Link href="/quote">Get Instant Quote</Link>
                     </Button>
                   </SheetClose>
                   <a
                     href={PHONE_HREF}
-                    className="flex items-center justify-center gap-2 w-full h-10 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex h-11 w-full items-center justify-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                   >
                     <Phone className="h-3.5 w-3.5" />
                     {PHONE}

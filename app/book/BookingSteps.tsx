@@ -100,13 +100,13 @@ export function BookingSuccess({
         ))}
       </div>
       <div className="flex flex-wrap gap-3">
-        <Button asChild className="h-10 rounded-md px-6 text-[13px]">
+        <Button asChild className="h-11 rounded-md px-6 text-[13px] sm:h-10">
           <Link href="/">Back to home</Link>
         </Button>
         <Button
           asChild
           variant="outline"
-          className="h-10 rounded-md border-border px-6 text-[13px]"
+          className="h-11 rounded-md border-border px-6 text-[13px] sm:h-10"
         >
           <a href={BUSINESS.phoneHref}>Call {BUSINESS.phoneDisplay}</a>
         </Button>
@@ -199,7 +199,7 @@ export function CustomerDetailsStep({
             onChange={(event) => onName(event.target.value)}
             maxLength={100}
             autoComplete="name"
-            className="h-10 rounded-md border-border bg-card text-[13px]"
+            className="h-11 rounded-md border-border bg-card text-[13px] sm:h-10"
           />
         </Field>
         <Field label="Email" id="email" required error={errors.email}>
@@ -211,7 +211,7 @@ export function CustomerDetailsStep({
             onChange={(event) => onEmail(event.target.value)}
             maxLength={254}
             autoComplete="email"
-            className="h-10 rounded-md border-border bg-card text-[13px]"
+            className="h-11 rounded-md border-border bg-card text-[13px] sm:h-10"
           />
         </Field>
         <Field label="Phone number" id="phone" required error={errors.phone}>
@@ -223,7 +223,7 @@ export function CustomerDetailsStep({
             onChange={(event) => onPhone(event.target.value)}
             maxLength={25}
             autoComplete="tel"
-            className="h-10 rounded-md border-border bg-card text-[13px]"
+            className="h-11 rounded-md border-border bg-card text-[13px] sm:h-10"
           />
         </Field>
       </div>
@@ -479,7 +479,7 @@ export function AppointmentRequestStep({
           value={date}
           min={today}
           onChange={(event) => onDate(event.target.value)}
-          className="h-10 max-w-xs rounded-md border-border bg-card text-[13px]"
+          className="h-11 max-w-xs rounded-md border-border bg-card text-[13px] sm:h-10"
         />
       </Field>
       <fieldset className="mt-5">
@@ -501,14 +501,14 @@ export function AppointmentRequestStep({
             Sunday requests are unavailable.
           </p>
         )}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
           {slots.map((slot) => (
             <button
               key={slot}
               type="button"
               onClick={() => onTime(slot)}
               aria-pressed={time === slot}
-              className={`min-h-9 rounded-md border px-3 text-[12px] font-medium ${
+              className={`min-h-11 w-full rounded-md border px-2 text-[12px] font-medium ${
                 time === slot
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card hover:bg-surface"

@@ -157,31 +157,43 @@ export default function PricingTable() {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="border-b border-border bg-surface p-4 sm:p-5">
+    <div className="panel overflow-hidden">
+      <div className="border-b border-border bg-surface/70 p-3 sm:p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) =>
-                updateFilter(() => setQuery(event.target.value))
-              }
-              placeholder="Search device, repair or part quality"
-              aria-label="Search price table"
-              className="h-10 w-full rounded-md border border-border bg-card pl-9 pr-3 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-[color:var(--control-border-hover)]"
-            />
+          <div className="flex min-w-0 flex-1 gap-2">
+            <div className="relative min-w-0 flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) =>
+                  updateFilter(() => setQuery(event.target.value))
+                }
+                placeholder="Search model or repair"
+                aria-label="Search price table"
+                className="h-11 w-full rounded-md border border-border bg-card pl-9 pr-3 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-[color:var(--control-border-hover)] sm:h-10"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={downloadCsv}
+              disabled={!hasSelection}
+              title="Download filtered prices as CSV"
+              aria-label="Download filtered prices as CSV"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:bg-surface disabled:opacity-35 sm:h-10 sm:w-10"
+            >
+              <Download className="h-4 w-4" />
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:flex">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex">
             <select
               value={category}
               onChange={(event) =>
                 updateFilter(() => setCategory(event.target.value))
               }
               aria-label="Filter by category"
-              className="h-10 min-w-36 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none"
+              className="col-span-2 h-11 min-w-0 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none sm:col-span-1 sm:h-10 lg:min-w-36"
             >
               <option>Choose category</option>
               {categories.map((item) => (
@@ -195,7 +207,7 @@ export default function PricingTable() {
                 updateFilter(() => setBrand(event.target.value))
               }
               aria-label="Filter by brand"
-              className="h-10 min-w-32 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none"
+              className="h-11 min-w-0 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none sm:h-10 lg:min-w-32"
             >
               <option>All brands</option>
               {brands
@@ -211,7 +223,7 @@ export default function PricingTable() {
                 updateFilter(() => setRepair(event.target.value))
               }
               aria-label="Filter by repair"
-              className="h-10 min-w-40 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none"
+              className="h-11 min-w-0 rounded-md border border-border bg-card px-3 text-[12px] text-foreground outline-none sm:h-10 lg:min-w-40"
             >
               <option>All repairs</option>
               {repairs.map((item) => (
@@ -220,16 +232,6 @@ export default function PricingTable() {
             </select>
           </div>
 
-          <button
-            type="button"
-            onClick={downloadCsv}
-            disabled={!hasSelection}
-            title="Download filtered prices as CSV"
-            aria-label="Download filtered prices as CSV"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:bg-surface disabled:opacity-35"
-          >
-            <Download className="h-4 w-4" />
-          </button>
         </div>
 
         <div className="mt-3 flex min-h-6 items-center justify-between gap-3">
@@ -254,16 +256,16 @@ export default function PricingTable() {
 
       {!hasSelection && (
         <div className="p-4 sm:p-5">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+          <p className="eyebrow mb-3">
             Choose a category
           </p>
-          <div className="grid overflow-hidden rounded-md border border-border sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 overflow-hidden rounded-md border border-border lg:grid-cols-3">
             {categories.map((item) => (
               <button
                 key={item}
                 type="button"
                 onClick={() => updateFilter(() => setCategory(item))}
-                className="min-h-14 border-b border-border px-4 py-3 text-left text-[13px] font-semibold text-foreground transition-colors hover:bg-surface sm:border-r lg:[&:nth-child(3n)]:border-r-0"
+                className="min-h-14 border-b border-r border-border px-3 py-3 text-left text-[13px] font-semibold text-foreground transition-colors hover:bg-surface even:border-r-0 lg:px-4 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(3n)]:border-r-0"
               >
                 {item}
               </button>

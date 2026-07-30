@@ -298,17 +298,32 @@ export default function FullCalculator() {
   const canRequestOnline =
     FEATURES.bookingEnabled &&
     (Boolean(model) || category === "console" || category === "desktop");
+  const completedSteps = [
+    Boolean(category),
+    Boolean(deviceChoice),
+    Boolean(resolvedDeviceName),
+    Boolean(repair),
+  ].filter(Boolean).length;
+  const quoteDisplay = quote
+    ? quote.inspectionRequired
+      ? quote.minPrice > 0
+        ? `£${quote.minPrice}–£${quote.maxPrice}`
+        : "Quote required"
+      : quote.minPrice === quote.maxPrice
+        ? `£${quote.minPrice}`
+        : `£${quote.minPrice}–£${quote.maxPrice}`
+    : null;
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="grid lg:grid-cols-[1fr_320px]">
-        <div className="p-5 sm:p-7 lg:p-8">
-          <div className="mb-7 flex items-center justify-between gap-4">
+    <div className="panel overflow-hidden">
+      <div className="grid lg:grid-cols-[minmax(0,1.62fr)_minmax(320px,1fr)]">
+        <div className="bg-card p-5 sm:p-7 lg:p-8">
+          <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                {category ? "Build your quote" : "Start here"}
+              <p className="eyebrow">
+                Step {Math.min(completedSteps + 1, 4)} of 4
               </p>
-              <h2 className="mt-1 text-xl font-semibold">
+              <h2 className="mt-2 text-xl font-semibold">
                 {!category
                   ? "What needs repairing?"
                   : !deviceChoice
@@ -330,6 +345,25 @@ export default function FullCalculator() {
                 Start over
               </button>
             )}
+          </div>
+          <div
+            className="mb-7 grid grid-cols-4 gap-1.5"
+            aria-label={`${completedSteps} of 4 quote steps completed`}
+            aria-valuemax={4}
+            aria-valuemin={0}
+            aria-valuenow={completedSteps}
+            role="progressbar"
+          >
+            {[1, 2, 3, 4].map((step) => (
+              <span
+                key={step}
+                className={`h-1 rounded-full ${
+                  step <= completedSteps
+                    ? "bg-foreground"
+                    : "bg-foreground/10"
+                }`}
+              />
+            ))}
           </div>
 
           {!category && (
@@ -517,76 +551,94 @@ export default function FullCalculator() {
             )}
 
           {isReady && quote && category && repair && (
-            <div>
+            <div className="border-t border-border pt-6">
               <button
                 type="button"
                 onClick={() => setRepair(null)}
-                className="mb-5 flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground"
+                className="mb-4 flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Change repair
               </button>
-
-              <div className="rounded-lg border border-border bg-surface p-5 sm:p-6">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Estimated price</p>
-                <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-                  <div>
-                    <p className="text-3xl font-semibold tracking-tight">
-                      {quote.inspectionRequired
-                        ? quote.minPrice > 0
-                          ? `£${quote.minPrice}-£${quote.maxPrice}`
-                          : "Quote required"
-                        : quote.minPrice === quote.maxPrice
-                          ? `£${quote.minPrice}`
-                          : `£${quote.minPrice}-£${quote.maxPrice}`}
-                    </p>
-                    <p className="mt-1 text-[13px] text-muted-foreground">{resolvedDeviceName} · {repair}</p>
-                  </div>
-                  <span className="rounded-md border border-border bg-card px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                    Confirmed after assessment
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-lg border border-border">
-                <div className="bg-card p-4">
-                  <Clock className="mb-2 h-4 w-4 text-[color:var(--icon-fg)]" />
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Typical time</p>
-                  <p className="mt-1 text-[13px] font-semibold">{quote.estimatedTime}</p>
-                </div>
-                <div className="border-l border-border bg-card p-4">
-                  <ShieldCheck className="mb-2 h-4 w-4 text-[color:var(--accent)]" />
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Warranty</p>
-                  <p className="mt-1 text-[13px] font-semibold">{quote.warranty}</p>
-                </div>
-              </div>
-
-              <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-                This is an estimate, not a final price. We confirm the fault, parts and fixed price before work starts.
-                Warranty applies to eligible repairs where a fault is caused by our installation or a part we supplied.
+              <p className="text-[15px] font-semibold text-foreground">
+                Your estimate is ready.
+              </p>
+              <p className="mt-1 max-w-lg text-[13px] leading-5 text-muted-foreground">
+                Review the price, time and warranty in the summary, then choose
+                the service method that suits you.
               </p>
             </div>
           )}
         </div>
 
-        <aside className="border-t border-border bg-surface p-5 sm:p-7 lg:border-l lg:border-t-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Your selection</p>
-          <div className="mt-5 space-y-4">
-            {[
-              ["Device", category ? CATEGORIES.find((item) => item.id === category)?.label : "Not selected"],
-              ["Type", deviceChoice?.label ?? "Not selected"],
-              ["Model", resolvedDeviceName || "Not selected"],
-              ["Repair", repair ?? "Not selected"],
-            ].map(([label, value]) => (
-              <div key={label} className="border-b border-border pb-3 last:border-0">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
-                <p className="mt-1 text-[13px] font-medium text-foreground">{value}</p>
-              </div>
-            ))}
-          </div>
+        <aside className="border-t border-border bg-surface p-5 sm:p-7 lg:self-start lg:border-l lg:border-t-0 lg:p-8">
+          <p className="eyebrow">Your quote</p>
+
+          {completedSteps === 0 ? (
+            <div className="py-10 lg:py-14">
+              <p className="text-lg font-semibold text-foreground">
+                Start with a device.
+              </p>
+              <p className="mt-2 max-w-[30ch] text-[13px] leading-5 text-muted-foreground">
+                Your selected model, repair, estimated price, time and warranty
+                will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-4">
+              {[
+                [
+                  "Device",
+                  category
+                    ? CATEGORIES.find((item) => item.id === category)?.label
+                    : null,
+                ],
+                ["Type", deviceChoice?.label],
+                ["Model", resolvedDeviceName],
+                ["Repair", repair],
+              ]
+                .filter((entry): entry is [string, string] => Boolean(entry[1]))
+                .map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="border-b border-border pb-3 last:border-0"
+                  >
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {label}
+                    </p>
+                    <p className="mt-1 text-[13px] font-medium text-foreground">
+                      {value}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          )}
 
           {isReady ? (
-            <div className="mt-7 space-y-2.5">
+            <div className="mt-7">
+              <div className="border-y border-border py-5">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Estimated price
+                </p>
+                <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+                  {quoteDisplay}
+                </p>
+                <div className="mt-5 space-y-2.5">
+                  <div className="flex items-start gap-2.5 text-[12px]">
+                    <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <span>{quote?.estimatedTime}</span>
+                  </div>
+                  <div className="flex items-start gap-2.5 text-[12px]">
+                    <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <span>{quote?.warranty}</span>
+                  </div>
+                </div>
+                <p className="mt-4 text-[11px] leading-5 text-muted-foreground">
+                  Estimate only. The fault, parts and fixed price are confirmed
+                  before work starts.
+                </p>
+              </div>
+              <div className="mt-5 space-y-2.5">
               {canRequestOnline ? (
                 <Button asChild className="btn-primary h-11 w-full rounded-md">
                   <Link href={bookingBase} className="flex items-center justify-center gap-2">
@@ -609,11 +661,15 @@ export default function FullCalculator() {
                   </Link>
                 </Button>
               )}
+              </div>
             </div>
           ) : (
-            <p className="mt-7 text-[12px] leading-relaxed text-muted-foreground">
-              Complete the choices to see an estimated range and book the next step.
-            </p>
+            completedSteps > 0 && (
+              <p className="mt-7 text-[12px] leading-relaxed text-muted-foreground">
+                Complete the choices to see an estimated range and book the
+                next step.
+              </p>
+            )
           )}
 
           <div className="mt-7 border-t border-border pt-5">

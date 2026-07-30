@@ -68,16 +68,23 @@ test("contact validation is accessible and does not claim success", async ({
 
 test("404 has recovery links", async ({ page }) => {
   await page.goto("/this-route-does-not-exist");
-  await expect(page.getByRole("heading", { name: "Oops — sorry!" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "This page could not be found." })
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Back to homepage" })
   ).toBeVisible();
 });
 
-test("theme toggle changes the document theme", async ({ page }) => {
+test("theme toggle changes the document theme", async ({ page, viewport }) => {
   await page.goto("/");
   const initial = await page.locator("html").getAttribute("data-theme");
-  await page.getByRole("button", { name: /Switch to (light|dark) mode/ }).first().click();
+  if (viewport && viewport.width < 768) {
+    await page.getByRole("button", { name: "Menu" }).click();
+  }
+  await page
+    .getByRole("button", { name: /Switch to (light|dark) mode/ })
+    .click();
   await expect(page.locator("html")).not.toHaveAttribute(
     "data-theme",
     initial ?? ""
@@ -109,11 +116,12 @@ test("mobile fixed bar does not cover the final page content", async ({
   viewport,
 }) => {
   test.skip(!viewport || viewport.width > 430, "Mobile viewport only");
-  await page.goto("/privacy");
+  await page.goto("/repairs");
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   const bar = page.getByRole("navigation", {
     name: "Quick repair actions",
   });
+  await expect(bar).toBeVisible();
   const bodyPadding = await page.locator("body").evaluate((element) =>
     Number.parseFloat(getComputedStyle(element).paddingBottom)
   );
@@ -121,4 +129,53 @@ test("mobile fixed bar does not cover the final page content", async ({
     element.getBoundingClientRect().height
   );
   expect(bodyPadding).toBeGreaterThanOrEqual(Math.min(barHeight, 60));
+
+  for (const path of ["/", "/quote", "/book", "/contact", "/privacy"]) {
+    await page.goto(path);
+    await expect(
+      page.getByRole("navigation", { name: "Quick repair actions" })
+    ).toHaveCount(0);
+  }
+});
+
+test("mobile pages fit the viewport and forms avoid focus zoom", async ({
+  page,
+  viewport,
+}) => {
+  test.skip(!viewport || viewport.width > 430, "Mobile viewport only");
+  const viewportHeight = viewport?.height ?? 844;
+
+  for (const path of [
+    "/",
+    "/repairs",
+    "/pricing",
+    "/quote",
+    "/book",
+    "/contact",
+    "/repairs/phones",
+    "/repairs/laptops",
+    "/repairs/consoles",
+  ]) {
+    await page.goto(path);
+    const layout = await page.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }));
+    expect(layout.scrollWidth, path).toBeLessThanOrEqual(
+      layout.clientWidth + 1
+    );
+  }
+
+  await page.goto("/");
+  const nextSectionTop = await page
+    .locator("main section")
+    .nth(1)
+    .evaluate((element) => element.getBoundingClientRect().top);
+  expect(nextSectionTop).toBeLessThan(viewportHeight);
+
+  await page.goto("/contact");
+  const inputFontSize = await page
+    .getByLabel("Name")
+    .evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+  expect(inputFontSize).toBeGreaterThanOrEqual(16);
 });

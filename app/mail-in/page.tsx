@@ -6,6 +6,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Package, ShieldCheck, Truck } from "lucide-react";
 import { BUSINESS, FEATURES } from "@/lib/constants";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+  SectionHeading,
+} from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Mail-in Device Repair UK | Origin Repairs Leeds",
@@ -48,17 +54,31 @@ export default function MailInRepairPage() {
     <>
       <Navbar />
 
-      <main className="pt-24 pb-24">
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <section className="grid grid-cols-1 gap-12 border-b border-border py-10 lg:grid-cols-[1fr_380px] lg:items-center">
+      <main className="pb-24 pt-24">
+        <PageContainer>
+          <PageIntro
+            eyebrow="Mail-in repairs"
+            title="Ship your device to us for repair."
+            className="lg:grid-cols-[minmax(0,1fr)_360px]"
+            aside={
+              <div className="panel-muted p-5 sm:p-6">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-surface-raised">
+                  <Package className="h-5 w-5 text-[color:var(--icon-fg)]" />
+                </div>
+                <p className="text-sm font-semibold text-foreground">
+                  Do not ship before acceptance
+                </p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  We will send the current address, packing and return-postage
+                  terms after reviewing your request.
+                </p>
+              </div>
+            }
+          />
+          <PageSection className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
             <div>
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-                Mail-in Repairs
-              </p>
-              <h1 className="mb-5 max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
-                Ship your device to us for repair.
-              </h1>
-              <p className="mb-8 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+              <h2 className="section-title mb-4">Start with a request.</h2>
+              <p className="mb-7 max-w-xl text-[15px] leading-7 text-muted-foreground">
                 Not local to Leeds? Request a mail-in assessment for your
                 phone, tablet, laptop, console or PC. Wait for acceptance and
                 current shipping instructions before sending anything.
@@ -75,38 +95,32 @@ export default function MailInRepairPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-surface">
-                <Package className="h-5 w-5 text-[color:var(--icon-fg)]" />
-              </div>
-              <p className="mb-2 text-[13px] font-semibold text-foreground">
-                Do not ship before acceptance
-              </p>
-              <p className="mt-5 text-[12px] leading-relaxed text-muted-foreground">
+            <div className="border-l-2 border-primary pl-5">
+              <p className="eyebrow mb-2">Before dispatch</p>
+              <p className="text-sm leading-6 text-muted-foreground">
                 A submitted form does not create a repair reference or confirm
-                that a parcel can be accepted. The team will send the current
-                address, packing and return-postage terms after reviewing the
-                request.
+                that a parcel can be accepted. Keep the carrier tracking details
+                once we have confirmed the shipment.
               </p>
             </div>
-          </section>
+          </PageSection>
 
-          <section className="border-b border-border py-16">
-            <h2 className="mb-8 text-xl font-semibold">How mail-in repair works</h2>
-            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl bg-border sm:grid-cols-2 lg:grid-cols-4">
+          <PageSection>
+            <SectionHeading title="How mail-in repair works" />
+            <div className="grid grid-cols-1 overflow-hidden rounded-lg border border-border sm:grid-cols-2 lg:grid-cols-4">
               {steps.map(({ title, body }, index) => (
-                <div key={title} className="bg-card p-5">
+                <div key={title} className="border-b border-border bg-card p-5 sm:border-r lg:min-h-56 lg:border-b-0 lg:last:border-r-0">
                   <p className="mb-3 text-[12px] font-semibold text-primary">0{index + 1}</p>
                   <h3 className="mb-2 text-[15px] font-semibold text-foreground">{title}</h3>
                   <p className="text-[13px] leading-relaxed text-muted-foreground">{body}</p>
                 </div>
               ))}
             </div>
-          </section>
+          </PageSection>
 
-          <section className="grid grid-cols-1 gap-10 border-b border-border py-16 lg:grid-cols-2">
+          <PageSection className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
             <div>
-              <h2 className="mb-6 text-xl font-semibold">Devices you can send</h2>
+              <SectionHeading title="Devices you can send" />
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {devices.map((item) => (
                   <div key={item} className="flex items-center gap-2 text-[13px] text-muted-foreground">
@@ -117,13 +131,13 @@ export default function MailInRepairPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="divide-y divide-border border-y border-border">
               {[
                 { icon: Truck, title: "Carrier terms confirmed first", body: "Outbound risk, insurance, tracking and return postage are explained before dispatch." },
                 { icon: ShieldCheck, title: "Quote before repair", body: "We do not begin work until you approve the final price after assessment." },
                 { icon: Package, title: "Pack with padding", body: "Remove cases/accessories unless needed for the fault, and protect screens and corners well." },
               ].map(({ icon: Icon, title, body }) => (
-                <div key={title} className="rounded-xl border border-border bg-card p-5">
+                <div key={title} className="py-5">
                   <div className="mb-3 flex items-center gap-2">
                     <Icon className="h-4 w-4 text-[color:var(--icon-fg)]" />
                     <h3 className="text-[14px] font-semibold text-foreground">{title}</h3>
@@ -132,9 +146,9 @@ export default function MailInRepairPage() {
                 </div>
               ))}
             </div>
-          </section>
+          </PageSection>
 
-          <section className="pt-16 text-center">
+          <PageSection bordered={false} className="text-center">
             <h2 className="mb-3 text-2xl font-semibold sm:text-3xl">Ready to send it in?</h2>
             <p className="mx-auto mb-8 max-w-sm text-[15px] text-muted-foreground">
               Send a request first. The team will confirm whether the device
@@ -143,8 +157,8 @@ export default function MailInRepairPage() {
             <Button asChild className="btn-primary h-10 rounded-lg px-8 text-[13px]">
               <Link href="/book?method=mail-in">Request Mail-in Repair</Link>
             </Button>
-          </section>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
 
       <Footer />

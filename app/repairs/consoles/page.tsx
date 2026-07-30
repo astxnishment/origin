@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Check } from "lucide-react";
+import { PageContainer } from "@/components/layout/PageContainer";
+import {
+  ServiceFinalCTA,
+  ServiceHero,
+  ServiceRepairList,
+  ServiceTags,
+} from "@/components/layout/ServicePage";
 import { serviceImages } from "@/lib/serviceImages";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
@@ -36,143 +40,87 @@ const consoles = [
 ];
 
 const consoleFamilies = [
-  {
-    name: "PlayStation",
-    note: "PS5 and PS4 repairs",
-    image: serviceImages.playstation,
-  },
-  {
-    name: "Xbox",
-    note: "Series X/S and Xbox One repairs",
-    image: serviceImages.xbox,
-  },
-  {
-    name: "Nintendo Switch",
-    note: "Switch, OLED and Lite repairs",
-    image: serviceImages.nintendoSwitch,
-  },
+  { name: "PlayStation", note: "PS5 and PS4", image: serviceImages.playstation },
+  { name: "Xbox", note: "Series X/S and Xbox One", image: serviceImages.xbox },
+  { name: "Nintendo Switch", note: "Switch, OLED and Lite", image: serviceImages.nintendoSwitch },
 ];
 
 const guarantees = [
   "HDMI and USB-C port repair",
   "No power and board-level faults",
-  "Overheating and fan cleaning",
+  "Overheating and fan service",
   "Liquid damage assessment",
-  "Storage upgrades available",
-  "Fixed quote before work starts",
 ];
 
 export default function ConsoleRepairsPage() {
   return (
     <>
       <Navbar />
+      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+        <PageContainer>
+          <ServiceHero
+            eyebrow="Console repairs · Leeds"
+            title="PlayStation, Xbox and Nintendo repair."
+            description="HDMI faults, no power, overheating, storage upgrades, liquid damage and board-level repairs, inspected and quoted before work starts."
+            features={guarantees}
+            image={serviceImages.console.src}
+            imageAlt={serviceImages.console.alt}
+            imageWidth={serviceImages.console.width}
+            imageHeight={serviceImages.console.height}
+            imageClassName="max-h-[450px] max-w-[620px]"
+            primaryAction={{ label: "Get a Console Quote", href: "/quote" }}
+            secondaryAction={{ label: "Book Console Repair", href: "/book" }}
+          />
 
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="pt-10 pb-16 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Console Repairs · Leeds
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
-                  Console repair for PlayStation, Xbox and Nintendo.
-                </h1>
-                <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  HDMI faults, no power, overheating, storage upgrades, liquid damage and board-level repairs. We inspect first and quote before work starts.
-                </p>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
-                  {guarantees.map((g) => (
-                    <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                      <Check className="h-3.5 w-3.5 text-accent shrink-0" />
-                      {g}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                    <Link href="/book">Request Console Repair</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
-                    <Link href="/contact" className="flex items-center gap-2">
-                      Ask about a fault <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center justify-center lg:justify-end">
-                <Image
-                  src={serviceImages.console.src}
-                  alt={serviceImages.console.alt}
-                  width={serviceImages.console.width}
-                  height={serviceImages.console.height}
-                  className="relative max-h-72 w-auto object-contain drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-8">Console families</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+          <section className="section-compact border-b border-border">
+            <h2 className="section-title text-[clamp(1.5rem,2.2vw,2rem)]">
+              Console families
+            </h2>
+            <div className="mt-7 grid gap-3 sm:grid-cols-3">
               {consoleFamilies.map(({ name, note, image }) => (
-                <div key={name} className="bg-card p-5 text-center hover:bg-surface transition-colors">
-                  <div className="mx-auto mb-4 flex h-32 items-center justify-center">
+                <div
+                  key={name}
+                  className="interactive-card flex min-h-52 flex-col items-center justify-between p-5 text-center"
+                >
+                  <div className="flex h-32 w-full items-center justify-center">
                     <Image
                       src={image.src}
                       alt={image.alt}
                       width={image.width}
                       height={image.height}
-                      className="max-h-32 w-auto object-contain drop-shadow-[0_14px_34px_rgba(0,0,0,0.32)]"
+                      sizes="(max-width: 639px) 200px, 28vw"
+                      className="max-h-32 max-w-[90%] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.25)]"
                     />
                   </div>
-                  <p className="text-[14px] font-semibold text-foreground">{name}</p>
-                  <p className="mt-1 text-[12px] text-muted-foreground">{note}</p>
+                  <div>
+                    <p className="text-[15px] font-semibold">{name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{note}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-8">Console repair pricing</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-xl overflow-hidden">
-              {repairTypes.map(({ name, price, time }) => (
-                <div key={name} className="bg-card p-5 hover:bg-surface transition-colors">
-                  <p className="text-[13px] font-medium text-foreground mb-1">{name}</p>
-                  <p className="text-[13px] font-semibold text-primary">{price}</p>
-                  <p className="text-[12px] text-muted-foreground mt-0.5">{time}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ServiceRepairList
+            title="Console repair pricing"
+            description="Complex power, liquid and board-level faults are assessed before a final price is agreed."
+            repairs={repairTypes}
+          />
 
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-2">Consoles supported</h2>
-            <p className="text-[13px] text-muted-foreground mb-8">
-              If it is not listed, bring it in anyway. We inspect most modern consoles and handheld gaming devices.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {consoles.map((consoleName) => (
-                <span key={consoleName} className="px-3 py-1.5 rounded-full bg-surface border border-border text-[12px] text-foreground">
-                  {consoleName}
-                </span>
-              ))}
-            </div>
-          </div>
+          <ServiceTags
+            title="Consoles supported"
+            description="Ask about other modern consoles and handheld gaming devices even when they are not listed."
+            items={consoles}
+          />
 
-          <div className="pt-16 text-center">
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Bring your console in.</h2>
-            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              We will inspect it, explain the fault, and quote before any repair work starts.
-            </p>
-            <Button asChild className="btn-primary h-10 rounded-lg px-8 text-[13px]">
-              <Link href="/contact">Contact Origin Repairs</Link>
-            </Button>
-          </div>
-        </div>
+          <ServiceFinalCTA
+            title="Get the console assessed."
+            description="Tell us the model and symptoms so we can confirm the likely diagnostic and repair route."
+            primaryAction={{ label: "Ask About a Fault", href: "/contact" }}
+            secondaryAction={{ label: "Book a Repair", href: "/book" }}
+          />
+        </PageContainer>
       </main>
-
       <Footer />
     </>
   );

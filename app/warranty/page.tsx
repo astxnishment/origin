@@ -3,6 +3,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+} from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Warranty Terms",
@@ -15,21 +20,20 @@ export default function WarrantyPage() {
     <>
       <Navbar />
       <main className="pt-24 pb-24">
-        <div className="max-w-2xl mx-auto px-5 sm:px-8">
-          <div className="pt-10 pb-10 border-b border-border mb-10">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Legal
-            </p>
-            <h1 className="text-4xl font-semibold tracking-tight mb-4">
-              Warranty Terms
-            </h1>
-            <p className="text-[13px] text-muted-foreground">
+        <PageContainer size="narrow">
+          <PageIntro
+            eyebrow="Legal"
+            title="Warranty Terms"
+            description={
+              <>
               Last updated: 29 July 2026
-            </p>
-          </div>
+              </>
+            }
+            className="lg:grid-cols-1"
+          />
 
-          <div className="prose prose-invert prose-sm max-w-none space-y-8 text-[14px] text-muted-foreground leading-relaxed">
-            <section className="rounded-md border border-border bg-surface p-5">
+          <PageSection bordered={false} className="space-y-10 text-[14px] leading-7 text-muted-foreground">
+            <section className="panel-muted p-5">
               <p className="font-medium text-foreground">{WARRANTY_NOTICE}</p>
               <p className="mt-2 text-[12px]">
                 Draft policy: these terms require review by a qualified UK
@@ -37,7 +41,7 @@ export default function WarrantyPage() {
               </p>
             </section>
 
-            <section>
+            <section className="border-b border-border pb-10">
               <h2 className="text-[16px] font-semibold text-foreground mb-3">
                 1. Repair-specific term
               </h2>
@@ -49,7 +53,7 @@ export default function WarrantyPage() {
               </p>
             </section>
 
-            <section>
+            <section className="border-b border-border pb-10">
               <h2 className="text-[16px] font-semibold text-foreground mb-3">
                 2. Parts and workmanship
               </h2>
@@ -63,7 +67,7 @@ export default function WarrantyPage() {
               </p>
             </section>
 
-            <section>
+            <section className="border-b border-border pb-10">
               <h2 className="text-[16px] font-semibold text-foreground mb-3">
                 3. Repair categories
               </h2>
@@ -101,7 +105,7 @@ export default function WarrantyPage() {
               </ul>
             </section>
 
-            <section>
+            <section className="border-b border-border pb-10">
               <h2 className="text-[16px] font-semibold text-foreground mb-3">
                 4. Subsequent damage
               </h2>
@@ -112,7 +116,7 @@ export default function WarrantyPage() {
               </p>
             </section>
 
-            <section>
+            <section className="border-b border-border pb-10">
               <h2 className="text-[16px] font-semibold text-foreground mb-3">
                 5. Making a claim
               </h2>
@@ -124,7 +128,7 @@ export default function WarrantyPage() {
               </p>
             </section>
 
-            <section>
+            <section className="border-b border-border pb-10">
               <h2 className="text-[16px] font-semibold text-foreground mb-3">
                 6. Statutory rights
               </h2>
@@ -156,8 +160,8 @@ export default function WarrantyPage() {
                 .
               </p>
             </section>
-          </div>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
       <Footer />
     </>

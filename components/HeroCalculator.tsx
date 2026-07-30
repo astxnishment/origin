@@ -120,7 +120,7 @@ export default function HeroCalculator() {
       : "/quote";
 
   return (
-    <div className="w-full overflow-hidden rounded-md border border-border bg-card">
+    <div className="w-full overflow-hidden bg-card">
       <div className="flex min-h-20 items-center justify-between gap-4 border-b border-border px-5 py-4">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -157,7 +157,7 @@ export default function HeroCalculator() {
             >
               <SelectTrigger
                 aria-label="Category"
-                className="h-10 rounded-md border-border bg-surface text-[13px]"
+                className="h-11 rounded-md border-border bg-surface text-[13px] sm:h-10"
               >
                 <SelectValue placeholder="Choose" />
               </SelectTrigger>
@@ -179,7 +179,7 @@ export default function HeroCalculator() {
             >
               <SelectTrigger
                 aria-label="Brand"
-                className="h-10 rounded-md border-border bg-surface text-[13px]"
+                className="h-11 rounded-md border-border bg-surface text-[13px] sm:h-10"
               >
                 <SelectValue placeholder="Choose" />
               </SelectTrigger>
@@ -206,7 +206,8 @@ export default function HeroCalculator() {
               placeholder={brand ? "Search or choose a model" : "Choose a brand first"}
               aria-label="Model"
               autoComplete="off"
-              className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-[13px] outline-none transition-colors focus:border-[color:var(--control-border-hover)] disabled:opacity-50"
+              style={{ caretColor: brand ? "auto" : "transparent" }}
+              className="h-11 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-[13px] outline-none transition-colors focus:border-[color:var(--control-border-hover)] disabled:opacity-50 sm:h-10"
             />
             <datalist id={modelListId}>
               {models.map((device) => (
@@ -227,7 +228,7 @@ export default function HeroCalculator() {
           >
             <SelectTrigger
               aria-label="Repair"
-              className="h-10 rounded-md border-border bg-surface text-[13px]"
+              className="h-11 rounded-md border-border bg-surface text-[13px] sm:h-10"
             >
               <SelectValue placeholder="Choose a repair" />
             </SelectTrigger>
@@ -246,7 +247,7 @@ export default function HeroCalculator() {
             <Select value={partTierId} onValueChange={setPartTierId}>
               <SelectTrigger
                 aria-label="Part option"
-                className="h-10 rounded-md border-border bg-surface text-[13px]"
+                className="h-11 rounded-md border-border bg-surface text-[13px] sm:h-10"
               >
                 <SelectValue placeholder="Compare part options" />
               </SelectTrigger>

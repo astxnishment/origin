@@ -1,10 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
-import { Phone, Calculator, CalendarCheck } from "lucide-react";
-import { BUSINESS, FEATURES } from "@/lib/constants";
+import { usePathname } from "next/navigation";
+import { Calculator, CalendarCheck } from "lucide-react";
+import { FEATURES } from "@/lib/constants";
 
 export default function MobileCTABar() {
+  const pathname = usePathname();
+  const visible =
+    pathname === "/repairs" ||
+    pathname.startsWith("/repairs/") ||
+    pathname === "/pricing" ||
+    pathname === "/about" ||
+    pathname === "/faq";
+
+  useEffect(() => {
+    document.body.classList.toggle("mobile-cta-active", visible);
+    return () => document.body.classList.remove("mobile-cta-active");
+  }, [visible]);
+
+  if (!visible) return null;
+
   return (
     <nav
       aria-label="Quick repair actions"
@@ -15,35 +32,22 @@ export default function MobileCTABar() {
         backdropFilter: "blur(16px)",
       }}
     >
-      <div className="flex divide-x divide-border">
-        <a
-          href={`tel:${BUSINESS.phone}`}
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
-          aria-label={`Call Origin Repairs on ${BUSINESS.phoneDisplay}`}
-        >
-          <Phone className="h-5 w-5 text-[color:var(--icon-fg)]" />
-          <span className="text-[11px] font-semibold text-foreground leading-none">Call</span>
-          <span className="text-[10px] text-muted-foreground leading-none">{BUSINESS.phoneDisplay}</span>
-        </a>
-
+      <div className="grid min-h-16 grid-cols-2 gap-2 p-2">
         <Link
           href="/quote"
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
+          className="btn-primary flex h-12 items-center justify-center gap-2 px-3 text-sm"
         >
-          <Calculator className="h-5 w-5 text-[color:var(--icon-fg)]" />
-          <span className="text-[11px] font-semibold text-foreground leading-none">Get Quote</span>
-          <span className="text-[10px] text-muted-foreground leading-none">Instant price</span>
+          <Calculator className="h-4 w-4" />
+          <span>Get Quote</span>
         </Link>
 
         {FEATURES.bookingEnabled && (
           <Link
             href="/book"
-            className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center active:bg-surface transition-colors"
-            style={{ background: "var(--soft-bg-strong)" }}
+            className="btn-secondary flex h-12 items-center justify-center gap-2 px-3 text-sm"
           >
-            <CalendarCheck className="h-5 w-5 text-[color:var(--icon-fg)]" />
-            <span className="text-[11px] font-semibold text-foreground leading-none">Request Repair</span>
-            <span className="text-[10px] text-muted-foreground leading-none">Check availability</span>
+            <CalendarCheck className="h-4 w-4" />
+            <span>Book Repair</span>
           </Link>
         )}
       </div>

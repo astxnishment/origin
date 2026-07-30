@@ -1,162 +1,116 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Check } from "lucide-react";
+import { PageContainer } from "@/components/layout/PageContainer";
+import {
+  ServiceFinalCTA,
+  ServiceHero,
+  ServiceRepairList,
+} from "@/components/layout/ServicePage";
 import { serviceImages } from "@/lib/serviceImages";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
+import { BUSINESS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Liquid Damage & Data Recovery Leeds | Phones, Laptops, Consoles",
-  description: "Liquid damage repair and data recovery in Leeds for phones, tablets, laptops, consoles, SSDs and hard drives. Assessment first, fixed quote before work.",
+  description:
+    "Liquid damage repair and data recovery in Leeds for phones, tablets, laptops, consoles, SSDs and hard drives. Assessment first, fixed quote before work.",
 };
 
 const recoveryTypes = [
-  { name: "Liquid-damage diagnostic", price: "Assessment required", time: "Condition dependent", desc: "Inspection separates cleaning, parts and board-level work." },
-  { name: "Logical data recovery", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "2–10 days estimate", desc: "File-system, deletion and software-level recovery attempts." },
-  { name: "Device board recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate", desc: "Assessment-led work for a device that does not power on." },
-  { name: "Drive assessment", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "Media dependent", desc: "SSD, hard-drive and removable-media condition is checked first." },
-  { name: "Specialist laboratory referral", price: "Quoted by specialist", time: "Confirmed after assessment", desc: "Physical drive or complex media work may require an external specialist." },
+  { name: "Liquid-damage diagnostic", price: "Assessment required", time: "Condition dependent", note: "Inspection separates cleaning, parts and board-level work." },
+  { name: "Logical data recovery", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "2–10 days estimate", note: "File-system and software-level recovery attempts." },
+  { name: "Device board recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate", note: "Assessment-led work for a device that does not power on." },
+  { name: "Drive assessment", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "Media dependent", note: "SSD, hard-drive and removable-media condition is checked first." },
+  { name: "Specialist laboratory referral", price: "Quoted by specialist", time: "Confirmed after assessment", note: "Physical drive or complex media work may require a specialist." },
 ];
 
 const process = [
-  { step: "1", title: "Assessment first", desc: "We evaluate the damage and give you a fixed quote before recovery work starts." },
-  { step: "2", title: "Consent and scope", desc: "The proposed work, cost, data access and any specialist referral are agreed first." },
-  { step: "3", title: "Recovery attempt", desc: "Recovery is attempted within the agreed scope; no outcome is guaranteed." },
-  { step: "4", title: "Transfer or return", desc: "Any recovered data and the return method are agreed with the customer." },
+  { step: "01", title: "Assessment first", body: "We evaluate the damage and explain the likely recovery route." },
+  { step: "02", title: "Consent and scope", body: "Cost, data access and any specialist referral are agreed first." },
+  { step: "03", title: "Recovery attempt", body: "Work proceeds within the agreed scope; no outcome is promised." },
+  { step: "04", title: "Transfer or return", body: "Recovered data and return arrangements are agreed with you." },
 ];
 
 const guarantees = [
   "Assessment before recovery work",
-  "No recovery outcome promised",
   "Data access requires consent",
   "Price agreed before work",
   "Specialist referral explained first",
-  "Warranty generally not applicable to recovered data",
 ];
 
 export default function DataRecoveryPage() {
   return (
     <>
       <Navbar />
+      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+        <PageContainer>
+          <ServiceHero
+            eyebrow="Liquid damage & data recovery · Leeds"
+            title="Assessment before recovery."
+            description="Phones, tablets, laptops, consoles, SSDs and hard drives are inspected first. Some need cleaning, some need parts and some need board-level recovery."
+            features={guarantees}
+            image={serviceImages.dataRecoveryLiquidDamage.src}
+            imageAlt={serviceImages.dataRecoveryLiquidDamage.alt}
+            imageWidth={serviceImages.dataRecoveryLiquidDamage.width}
+            imageHeight={serviceImages.dataRecoveryLiquidDamage.height}
+            imageClassName="max-h-[470px] max-w-[520px] scale-110"
+            primaryAction={{ label: "Request an Assessment", href: "/contact" }}
+            secondaryAction={{ label: "Book a Drop-off", href: "/book" }}
+          />
 
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          {/* Header */}
-          <div className="pt-10 pb-16 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Liquid Damage & Data Recovery · Leeds
+          <div className="border-b border-border py-7">
+            <p className="text-sm font-semibold text-foreground">
+              Power the device down where safe
             </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
-                  Liquid damage is not one kind of repair.
-                </h1>
-                <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  We inspect phones, tablets, laptops, consoles, SSDs and hard drives after liquid exposure. Some jobs need cleaning, some need parts, some need board-level recovery.
-                </p>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
-                  {guarantees.map((g) => (
-                    <li key={g} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                      <Check className="h-3.5 w-3.5 text-accent shrink-0" />
-                      {g}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                    <Link href="/contact">Request an Assessment</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
-                    <Link href="/book" className="flex items-center gap-2">
-                      Request a time <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-              {/* Hero image */}
-              <div className="flex items-center justify-center lg:justify-end">
-                <div className="relative">
-                  <Image
-                    src={serviceImages.dataRecoveryLiquidDamage.src}
-                    alt={serviceImages.dataRecoveryLiquidDamage.alt}
-                    width={360}
-                    height={360}
-                    className="relative object-contain max-h-64 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
+            <p className="mt-1 max-w-3xl text-[13px] leading-5 text-muted-foreground">
+              Further use or writes may reduce recovery chances. Contact the
+              team on{" "}
+              <a href={BUSINESS.phoneHref} className="text-foreground underline">
+                {BUSINESS.phoneDisplay}
+              </a>{" "}
+              before attempting another repair.
+            </p>
           </div>
 
-          {/* Urgency notice */}
-          <div className="py-8 border-b border-border">
-            <div className="rounded-xl bg-card border border-border p-6 flex gap-4">
-              <div className="w-1 rounded-full bg-primary shrink-0" />
-              <div>
-                <p className="text-[13px] font-semibold text-foreground mb-1">Act quickly to maximise recovery chances</p>
-                <p className="text-[13px] text-muted-foreground">
-                  If a storage device has failed, further writes may reduce the
-                  chance of recovery. Power it down where safe and contact the
-                  team before attempting repairs: <a href="tel:+447768426754" className="text-primary">+44 7768 426754</a>
-                </p>
-              </div>
-            </div>
-          </div>
+          <ServiceRepairList
+            title="Recovery services and pricing"
+            description="Recovery is an attempt rather than a guaranteed outcome. The assessment determines the safest next step."
+            repairs={recoveryTypes}
+          />
 
-          {/* Recovery types */}
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-8">Recovery services &amp; pricing</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
-              {recoveryTypes.map(({ name, price, time, desc }) => (
-                <div key={name} className="bg-card p-6 hover:bg-surface transition-colors">
-                  <p className="text-[13px] font-semibold text-foreground mb-1">{name}</p>
-                  <p className="text-[13px] font-semibold text-primary mb-1">{price}</p>
-                  <p className="text-[12px] text-muted-foreground mb-2">{time}</p>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed">{desc}</p>
+          <section className="section-standard border-b border-border">
+            <h2 className="section-title">The recovery process.</h2>
+            <div className="mt-8 grid border-y border-border md:grid-cols-4">
+              {process.map((item, index) => (
+                <div
+                  key={item.step}
+                  className={`py-6 md:px-5 ${
+                    index > 0
+                      ? "border-t border-border md:border-l md:border-t-0"
+                      : ""
+                  }`}
+                >
+                  <p className="font-mono text-xs text-muted-foreground">
+                    {item.step}
+                  </p>
+                  <h3 className="mt-5 text-base font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
+                    {item.body}
+                  </p>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Process */}
-          <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-10">Our recovery process</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {process.map(({ step, title, desc }) => (
-                <div key={step}>
-                  <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center text-[12px] font-semibold text-foreground mb-4">
-                    {step}
-                  </div>
-                  <h3 className="text-[14px] font-semibold text-foreground mb-1.5">{title}</h3>
-                  <p className="text-[13px] text-muted-foreground leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="pt-16 text-center">
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Don&apos;t give up on your data.</h2>
-            <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
-              Tell us what happened and what data matters. The team will
-              explain the assessment, consent and likely next step.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">
-                <Link href="/contact">Request an Assessment</Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
-                <a href="tel:+447768426754">+44 7768 426754</a>
-              </Button>
-            </div>
-          </div>
-        </div>
+          <ServiceFinalCTA
+            title="Tell us what happened."
+            description="Describe the device, the failure and which data matters so the team can explain the assessment."
+            primaryAction={{ label: "Request an Assessment", href: "/contact" }}
+            secondaryAction={{ label: "Call the Team", href: BUSINESS.phoneHref }}
+          />
+        </PageContainer>
       </main>
-
       <Footer />
     </>
   );

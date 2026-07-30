@@ -220,7 +220,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground pb-[calc(82px+env(safe-area-inset-bottom,0px))] md:pb-0">
+      <body className="flex min-h-full flex-col bg-background text-foreground">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"
@@ -231,7 +231,7 @@ export default async function RootLayout({
           {children}
         </div>
         {process.env.VERCEL_ENV === "preview" && (
-          <div className="fixed bottom-20 left-3 z-[90] rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:bottom-3">
+          <div className="fixed bottom-16 left-3 z-[90] rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:bottom-3">
             Preview
           </div>
         )}

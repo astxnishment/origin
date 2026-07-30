@@ -5,30 +5,35 @@ import ContactForm from "@/app/contact/ContactForm";
 import { Button } from "@/components/ui/button";
 import { Clock, ExternalLink, MapPin } from "lucide-react";
 import { BUSINESS, FEATURES } from "@/lib/constants";
+import {
+  PageContainer,
+  PageIntro,
+  PageSection,
+  SectionHeading,
+} from "@/components/layout/PageContainer";
 
 export default function ContactPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-24 pb-24">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="pt-10 pb-14 border-b border-border">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-primary mb-3">
-              Contact
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-5 max-w-lg">
-              Get in touch.
-            </h1>
-            <p className="text-[15px] text-muted-foreground max-w-md leading-relaxed">
+      <main className="pb-20 pt-20 sm:pb-24 sm:pt-24">
+        <PageContainer>
+          <PageIntro
+            eyebrow="Contact"
+            title="Get in touch."
+            description={
+              <>
               Ask about a device, a published estimate, or work that needs an
               assessment. We aim to respond during business hours.
-            </p>
-          </div>
+              </>
+            }
+          />
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 py-14">
-            <aside className="lg:col-span-2 space-y-8">
+          <PageSection className="grid grid-cols-1 gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:gap-12">
+            <aside className="order-2 panel-muted p-5 sm:p-7 lg:order-1">
+              <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-1">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                <p className="eyebrow mb-2 text-muted-foreground">
                   Phone
                 </p>
                 <a
@@ -39,7 +44,7 @@ export default function ContactPage() {
                 </a>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                <p className="eyebrow mb-2 text-muted-foreground">
                   Email
                 </p>
                 <a
@@ -50,7 +55,7 @@ export default function ContactPage() {
                 </a>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                <p className="eyebrow mb-2 text-muted-foreground">
                   Address
                 </p>
                 <a
@@ -72,7 +77,7 @@ export default function ContactPage() {
                 </a>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                <p className="eyebrow mb-2 text-muted-foreground">
                   Published hours
                 </p>
                 <div className="text-[15px] text-foreground space-y-0.5">
@@ -81,8 +86,9 @@ export default function ContactPage() {
                   <p className="text-muted-foreground">Sun: Closed</p>
                 </div>
               </div>
+              </div>
 
-              <div className="rounded-xl border border-border bg-card p-5">
+              <div className="mt-7 border-t border-border pt-6">
                 <div className="flex items-start gap-2 mb-2">
                   <Clock className="h-4 w-4 text-[color:var(--icon-fg)] mt-0.5 flex-shrink-0" />
                   <p className="text-[13px] font-semibold text-foreground">
@@ -97,26 +103,25 @@ export default function ContactPage() {
               </div>
             </aside>
 
-            <div className="lg:col-span-3">
+            <div className="order-1 lg:order-2 lg:col-span-3">
               <ContactForm />
             </div>
-          </div>
+          </PageSection>
 
-          <section className="border-t border-border py-14">
+          <PageSection>
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-stretch">
               <div className="flex flex-col justify-between gap-8">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-primary mb-3">
-                    Location
-                  </p>
-                  <h2 className="text-3xl font-semibold tracking-tight mb-4">
-                    Find Origin Repairs.
-                  </h2>
-                  <p className="text-[15px] text-muted-foreground leading-relaxed max-w-sm">
+                <SectionHeading
+                  eyebrow="Location"
+                  title="Find Origin Repairs."
+                  description={
+                    <>
                     Use the map for the configured Cookridge Street address and
                     current directions.
-                  </p>
-                </div>
+                    </>
+                  }
+                  className="mb-0 block"
+                />
                 <Button asChild className="btn-secondary h-11 w-fit px-5 text-[13px]">
                   <a
                     href={BUSINESS.googleDirectionsUrl}
@@ -131,8 +136,8 @@ export default function ContactPage() {
               </div>
               <InteractiveMap />
             </div>
-          </section>
-        </div>
+          </PageSection>
+        </PageContainer>
       </main>
       <Footer />
     </>
