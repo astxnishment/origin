@@ -53,7 +53,7 @@ export default function DataRecoveryPage() {
             imageAlt={serviceImages.dataRecovery.alt}
             imageWidth={serviceImages.dataRecovery.width}
             imageHeight={serviceImages.dataRecovery.height}
-            imageClassName="max-h-[400px] max-w-[400px] sm:scale-110"
+            imageClassName="max-h-[450px] max-w-[540px] sm:scale-105"
             primaryAction={{ label: "Request an Assessment", href: "/contact" }}
             secondaryAction={{ label: "Book a Drop-off", href: "/book" }}
           />

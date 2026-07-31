@@ -80,7 +80,7 @@ const categories = [
     note: "Devices, SSDs, drives and files",
     icon: HardDrive,
     image: serviceImages.dataRecovery,
-    imageClassName: "h-[82%] w-[82%]",
+    imageClassName: "h-auto max-h-[88%] w-[96%]",
   },
   {
     label: "Liquid Damage",

@@ -74,10 +74,10 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 658,
   },
   dataRecovery: {
-    src: "/images/services/data-recovery.webp",
-    alt: "Data recovery service at Origin Repairs Leeds — phone, laptop, SSD and hard drive",
-    width: 350,
-    height: 350,
+    src: "/images/services/data-recovery-v2.webp",
+    alt: "Hard drive, NVMe SSD and external drive data recovery at Origin Repairs Leeds",
+    width: 1126,
+    height: 941,
   },
   liquidDamage: {
     src: "/images/services/liquid-damage-v3.webp",
