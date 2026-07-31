@@ -294,6 +294,7 @@ const SPECIALIST_ENTRIES: RepairCatalogueEntry[] = [
   specialist({ id: "pc-upgrade", category: "desktop", model: "Custom PC", repairType: "SSD / RAM upgrade", minPrice: 29, maxPrice: 129, estimatedTime: "30–90 minutes", warranty: "12 months on supplied parts" }),
   specialist({ id: "pc-no-power", category: "desktop", model: "Custom PC", repairType: "No power repair", minPrice: 59, maxPrice: 249, estimatedTime: "1–3 days", warranty: "3 months" }),
   specialist({ id: "pc-board", category: "desktop", model: "Custom PC", repairType: "Motherboard / logic board", minPrice: 79, maxPrice: 299, estimatedTime: "1–5 days", warranty: "3 months" }),
+  specialist({ id: "pc-liquid", category: "desktop", model: "Desktop / custom PC", repairType: "Liquid damage repair", minPrice: 99, maxPrice: 399, estimatedTime: "2–7 days", warranty: "3 months" }),
   specialist({ id: "pc-overheating", category: "desktop", model: "Custom PC", repairType: "Overheating / fan service", minPrice: 39, maxPrice: 99, estimatedTime: "Same day estimate", warranty: "3 months" }),
   specialist({ id: "pc-software", category: "desktop", model: "Custom PC", repairType: "Software / OS issue", minPrice: 39, maxPrice: 79, estimatedTime: "1 hour estimate", warranty: "1 month" }),
   specialist({ id: "pc-data", category: "desktop", model: "Custom PC", repairType: "Data recovery", minPrice: 99, maxPrice: 499, estimatedTime: "3–10 days", warranty: "Not applicable" }),

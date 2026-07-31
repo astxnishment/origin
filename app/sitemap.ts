@@ -36,6 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/repairs/consoles`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE_URL}/repairs/custom-pc`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE_URL}/repairs/data-recovery`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/repairs/liquid-damage`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/pricing`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/about`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/contact`, lastModified: CONTENT_LAST_MODIFIED, changeFrequency: "monthly", priority: 0.6 },

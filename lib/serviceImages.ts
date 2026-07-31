@@ -79,9 +79,9 @@ export const serviceImages: Record<string, ServiceImage> = {
     width: 350,
     height: 350,
   },
-  dataRecoveryLiquidDamage: {
+  liquidDamage: {
     src: "/images/services/data-recovery-liquid-damage.webp",
-    alt: "Data recovery and liquid damage repair at Origin Repairs Leeds",
+    alt: "Liquid-damaged phone and board repair at Origin Repairs Leeds",
     width: 893,
     height: 1094,
   },

@@ -144,8 +144,13 @@ export const SERVICES = [
     description: "Custom PC assembly, component upgrades and diagnostics",
   },
   {
-    name: "Data Recovery & Liquid Damage",
+    name: "Data Recovery",
     href: "/repairs/data-recovery",
-    description: "Assessment-led liquid-damage and data-recovery work",
+    description: "Assessment-led recovery for devices, SSDs and hard drives",
+  },
+  {
+    name: "Liquid Damage Repair",
+    href: "/repairs/liquid-damage",
+    description: "Liquid-damage assessment, cleaning and board-level repair",
   },
 ] as const;

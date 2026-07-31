@@ -19,4 +19,13 @@ describe("feature flags", () => {
     const { FEATURES } = await import("@/lib/business-config");
     expect(FEATURES.mailInEnabled).toBe(true);
   });
+
+  it("keeps data recovery and liquid damage as separate services", async () => {
+    const { SERVICES } = await import("@/lib/business-config");
+    const serviceNames = SERVICES.map((service) => service.name);
+
+    expect(serviceNames).toContain("Data Recovery");
+    expect(serviceNames).toContain("Liquid Damage Repair");
+    expect(serviceNames).not.toContain("Data Recovery & Liquid Damage");
+  });
 });

@@ -19,6 +19,28 @@ test("quote journey reaches a catalogue model without a fabricated result", asyn
   await expect(page.getByText("Choose or enter the model")).toBeVisible();
 });
 
+test("data recovery and liquid damage have separate customer journeys", async ({
+  page,
+}) => {
+  await page.goto("/repairs");
+  await expect(
+    page.getByRole("heading", { name: "Data Recovery" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Liquid Damage Repair" })
+  ).toBeVisible();
+
+  await page.goto("/repairs/data-recovery");
+  await expect(
+    page.getByRole("heading", { name: "Recover what matters." })
+  ).toBeVisible();
+
+  await page.goto("/repairs/liquid-damage");
+  await expect(
+    page.getByRole("heading", { name: "Power it down. Bring it in." })
+  ).toBeVisible();
+});
+
 test("pricing results lead to a valid repair and preserve the selected tier", async ({
   page,
 }) => {
@@ -94,7 +116,15 @@ test("theme toggle changes the document theme", async ({ page, viewport }) => {
 test("major pages have no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  for (const path of ["/", "/repairs", "/pricing", "/quote", "/contact"]) {
+  for (const path of [
+    "/",
+    "/repairs",
+    "/repairs/data-recovery",
+    "/repairs/liquid-damage",
+    "/pricing",
+    "/quote",
+    "/contact",
+  ]) {
     await page.goto(path);
     const results = await new AxeBuilder({ page })
       .disableRules(["color-contrast"])
@@ -173,6 +203,8 @@ test("mobile pages fit the viewport and forms avoid focus zoom", async ({
     "/repairs/phones",
     "/repairs/laptops",
     "/repairs/consoles",
+    "/repairs/data-recovery",
+    "/repairs/liquid-damage",
   ]) {
     await page.goto(path);
     const layout = await page.evaluate(() => ({

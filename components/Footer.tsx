@@ -10,7 +10,8 @@ const repairs = [
   { href: "/repairs/laptops", label: "Laptop Repair" },
   { href: "/repairs/consoles", label: "Console Repair" },
   { href: "/repairs/custom-pc", label: "Custom PC Builds" },
-  { href: "/repairs/data-recovery", label: "Data & Liquid Damage" },
+  { href: "/repairs/data-recovery", label: "Data Recovery" },
+  { href: "/repairs/liquid-damage", label: "Liquid Damage" },
 ];
 
 const services = [

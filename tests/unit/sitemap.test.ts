@@ -27,5 +27,11 @@ describe("sitemap", () => {
     expect(urls.every((url) => url.startsWith("https://originrepairs.co.uk"))).toBe(
       true
     );
+    expect(urls).toContain(
+      "https://originrepairs.co.uk/repairs/data-recovery"
+    );
+    expect(urls).toContain(
+      "https://originrepairs.co.uk/repairs/liquid-damage"
+    );
   });
 });

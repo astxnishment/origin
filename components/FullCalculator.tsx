@@ -26,6 +26,7 @@ import {
   ArrowRight,
   Check,
   Clock,
+  Droplets,
   Gamepad2,
   HardDrive,
   Laptop,
@@ -39,7 +40,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-type CategoryId = "phone" | "tablet" | "laptop" | "console" | "desktop" | "data";
+type CategoryId =
+  | "phone"
+  | "tablet"
+  | "laptop"
+  | "console"
+  | "desktop"
+  | "data"
+  | "liquid";
 
 type Category = {
   id: CategoryId;
@@ -54,6 +62,7 @@ type DeviceChoice = {
   detail?: string;
   brand?: "Apple" | "Samsung" | "Google Pixel";
   catalogCategory?: "phone" | "tablet" | "laptop";
+  specialistCategory?: CatalogueCategory;
   presets?: string[];
   freeText?: boolean;
 };
@@ -65,6 +74,7 @@ const CATEGORIES: Category[] = [
   { id: "console", label: "Game console", detail: "PlayStation, Xbox, Switch & more", icon: Gamepad2 },
   { id: "desktop", label: "Custom PC", detail: "Builds, repairs & upgrades", icon: MonitorCog },
   { id: "data", label: "Data recovery", detail: "Drives, SSDs, phones & computers", icon: HardDrive },
+  { id: "liquid", label: "Liquid damage", detail: "Phones, tablets, laptops, consoles & PCs", icon: Droplets },
 ];
 
 const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
@@ -99,9 +109,16 @@ const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
   ],
   data: [
     { id: "drive", label: "Hard drive / SSD", detail: "Internal and external storage", presets: ["Hard drive / SSD"] },
-    { id: "phone-data", label: "Phone / tablet", detail: "Including liquid-damaged devices", freeText: true },
+    { id: "phone-data", label: "Phone / tablet", detail: "Phones and tablets", freeText: true },
     { id: "computer-data", label: "Laptop / desktop", detail: "Mac, Windows and custom PCs", freeText: true },
     { id: "removable-data", label: "USB / memory card", detail: "Flash drives and camera cards", presets: ["USB drive / memory card"] },
+  ],
+  liquid: [
+    { id: "liquid-phone", label: "Phone", detail: "iPhone, Galaxy, Pixel and more", freeText: true, specialistCategory: "phone" },
+    { id: "liquid-tablet", label: "Tablet", detail: "iPad, Galaxy Tab and Android", freeText: true, specialistCategory: "tablet" },
+    { id: "liquid-laptop", label: "Laptop", detail: "MacBook, Windows and gaming", freeText: true, specialistCategory: "laptop" },
+    { id: "liquid-console", label: "Game console", detail: "PlayStation, Xbox, Switch and more", freeText: true, specialistCategory: "console" },
+    { id: "liquid-desktop", label: "Desktop / custom PC", detail: "Gaming, workstation and office PCs", freeText: true, specialistCategory: "desktop" },
   ],
 };
 
@@ -131,21 +148,28 @@ const REPAIRS: Record<CategoryId, RepairType[]> = {
   desktop: [
     "Custom PC build", "GPU / cooling upgrade", "SSD / RAM upgrade", "No power repair",
     "Motherboard / logic board", "Overheating / fan service", "Software / OS issue",
-    "Data recovery", "Hardware diagnostics", "Other repair",
+    "Liquid damage repair", "Data recovery", "Hardware diagnostics", "Other repair",
   ],
-  data: ["Data recovery", "Liquid damage repair", "Hardware diagnostics"],
+  data: ["Data recovery"],
+  liquid: ["Liquid damage repair"],
 };
 
-function catalogueCategory(category: CategoryId): CatalogueCategory {
-  return category === "data" ? "data-recovery" : category;
+function catalogueCategory(
+  category: CategoryId,
+  choice?: DeviceChoice | null
+): CatalogueCategory {
+  if (category === "data") return "data-recovery";
+  if (category === "liquid") return choice?.specialistCategory ?? "phone";
+  return category;
 }
 
 function genericQuote(
   category: CategoryId,
-  repair: RepairType
+  repair: RepairType,
+  choice?: DeviceChoice | null
 ): RepairPrice | null {
   const entry = getSpecialistEntry(
-    catalogueCategory(category),
+    catalogueCategory(category, choice),
     repairTypeToSlug(repair)
   );
   if (!entry) return null;
@@ -170,18 +194,20 @@ function ChoiceButton({
   detail,
   icon: Icon,
   onClick,
+  className,
 }: {
   active: boolean;
   title: string;
   detail?: string;
   icon?: LucideIcon;
   onClick: () => void;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex min-h-20 items-center gap-3 border p-4 text-left transition-colors hover:bg-surface"
+      className={`flex min-h-20 items-center gap-3 border p-4 text-left transition-colors hover:bg-surface ${className ?? ""}`}
       style={{
         background: active ? "var(--selection-bg)" : "var(--card)",
         borderColor: active ? "var(--control-border-hover)" : "var(--border)",
@@ -231,14 +257,14 @@ export default function FullCalculator() {
               ? repairTiers[0].partTierId
               : partTierId
           )
-      : genericQuote(category, repair)
+      : genericQuote(category, repair, deviceChoice)
     : null;
   const availableRepairs = model
     ? getSupportedRepairTypes(model)
     : category
       ? REPAIRS[category].filter((item) =>
           getSpecialistEntry(
-            catalogueCategory(category),
+            catalogueCategory(category, deviceChoice),
             repairTypeToSlug(item)
           )
         )
@@ -327,7 +353,11 @@ export default function FullCalculator() {
                 {!category
                   ? "What needs repairing?"
                   : !deviceChoice
-                    ? `Which ${CATEGORIES.find((item) => item.id === category)?.label.toLowerCase()}?`
+                    ? category === "data"
+                      ? "Where is the data stored?"
+                      : category === "liquid"
+                        ? "Which device is liquid-damaged?"
+                        : `Which ${CATEGORIES.find((item) => item.id === category)?.label.toLowerCase()}?`
                     : !resolvedDeviceName
                       ? "Choose or enter the model"
                       : !repair
@@ -368,13 +398,14 @@ export default function FullCalculator() {
 
           {!category && (
             <div className="grid overflow-hidden rounded-lg border border-border sm:grid-cols-2">
-              {CATEGORIES.map((item) => (
+              {CATEGORIES.map((item, index) => (
                 <ChoiceButton
                   key={item.id}
                   active={false}
                   title={item.label}
                   detail={item.detail}
                   icon={item.icon}
+                  className={index === CATEGORIES.length - 1 ? "sm:col-span-2" : undefined}
                   onClick={() => resetAfterCategory(item.id)}
                 />
               ))}
@@ -392,12 +423,18 @@ export default function FullCalculator() {
                 Device categories
               </button>
               <div className="grid overflow-hidden rounded-lg border border-border sm:grid-cols-2">
-                {DEVICE_CHOICES[category].map((choice) => (
+                {DEVICE_CHOICES[category].map((choice, index) => (
                   <ChoiceButton
                     key={choice.id}
                     active={false}
                     title={choice.label}
                     detail={choice.detail}
+                    className={
+                      DEVICE_CHOICES[category].length % 2 === 1 &&
+                      index === DEVICE_CHOICES[category].length - 1
+                        ? "sm:col-span-2"
+                        : undefined
+                    }
                     onClick={() => pickDevice(choice)}
                   />
                 ))}

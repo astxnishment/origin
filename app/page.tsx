@@ -75,12 +75,20 @@ const categories = [
     imageClassName: "h-[90%] w-[82%]",
   },
   {
-    label: "Data Recovery & Liquid Damage",
+    label: "Data Recovery",
     href: "/repairs/data-recovery",
-    note: "Devices, SSDs and files",
+    note: "Devices, SSDs, drives and files",
     icon: HardDrive,
-    image: serviceImages.dataRecoveryLiquidDamage,
-    imageClassName: "h-[88%] w-[84%]",
+    image: serviceImages.dataRecovery,
+    imageClassName: "h-[82%] w-[82%]",
+  },
+  {
+    label: "Liquid Damage",
+    href: "/repairs/liquid-damage",
+    note: "All devices and liquid types",
+    icon: Droplets,
+    image: serviceImages.liquidDamage,
+    imageClassName: "h-[88%] w-[78%]",
   },
 ];
 
@@ -234,7 +242,7 @@ export default function Home() {
               }
             />
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12">
               {categories.map(
                 ({
                   label,
@@ -243,11 +251,13 @@ export default function Home() {
                   icon: Icon,
                   image,
                   imageClassName,
-                }) => (
+                }, index) => (
                   <Link
                     key={label}
                     href={href}
-                    className="interactive-card group grid min-h-44 grid-cols-[minmax(0,1fr)_42%] items-center gap-2 p-4 sm:min-h-56 sm:p-5"
+                    className={`interactive-card group grid min-h-44 grid-cols-[minmax(0,1fr)_42%] items-center gap-2 p-4 sm:min-h-56 sm:p-5 ${
+                      index < 3 ? "lg:col-span-4" : "lg:col-span-3"
+                    } ${index === categories.length - 1 ? "sm:col-span-2 lg:col-span-3" : ""}`}
                   >
                     <div className="flex min-w-0 self-stretch flex-col justify-between">
                       <Icon className="h-5 w-5 text-[color:var(--icon-fg)]" />

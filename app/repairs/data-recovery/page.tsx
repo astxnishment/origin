@@ -12,23 +12,22 @@ import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 import { BUSINESS } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Liquid Damage & Data Recovery Leeds | Phones, Laptops, Consoles",
+  title: "Data Recovery Leeds | Phones, SSDs & Hard Drives",
   description:
-    "Liquid damage repair and data recovery in Leeds for phones, tablets, laptops, consoles, SSDs and hard drives. Assessment first, fixed quote before work.",
+    "Data recovery in Leeds for phones, tablets, laptops, desktops, SSDs and hard drives. Assessment first, with the recovery route and price agreed before work.",
 };
 
 const recoveryTypes = [
-  { name: "Liquid-damage diagnostic", price: "Assessment required", time: "Condition dependent", note: "Inspection separates cleaning, parts and board-level work." },
-  { name: "Logical data recovery", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "2–10 days estimate", note: "File-system and software-level recovery attempts." },
-  { name: "Device board recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate", note: "Assessment-led work for a device that does not power on." },
-  { name: "Drive assessment", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "Media dependent", note: "SSD, hard-drive and removable-media condition is checked first." },
-  { name: "Specialist laboratory referral", price: "Quoted by specialist", time: "Confirmed after assessment", note: "Physical drive or complex media work may require a specialist." },
+  { name: "Phone data recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate", note: "Assessment-led recovery for phones that cannot access important data." },
+  { name: "Tablet data recovery", price: getSpecialistPriceLabel("tablet", "data-recovery"), time: "2–7 days estimate", note: "For iPad, Galaxy Tab and other tablet storage faults." },
+  { name: "Laptop / desktop recovery", price: getSpecialistPriceLabel("laptop", "data-recovery"), time: "3–10 days estimate", note: "Mac, Windows and custom PC storage recovery." },
+  { name: "SSD / hard-drive assessment", price: getSpecialistPriceLabel("data-recovery", "data-recovery"), time: "2–10 days estimate", note: "Complex physical media may need a separately quoted specialist laboratory." },
 ];
 
 const process = [
-  { step: "01", title: "Assessment first", body: "We evaluate the damage and explain the likely recovery route." },
+  { step: "01", title: "Assess the media", body: "We inspect the device or drive and identify the safest recovery route." },
   { step: "02", title: "Consent and scope", body: "Cost, data access and any specialist referral are agreed first." },
-  { step: "03", title: "Recovery attempt", body: "Work proceeds within the agreed scope; no outcome is promised." },
+  { step: "03", title: "Recovery attempt", body: "Work proceeds within the agreed scope. Recovery outcomes cannot be guaranteed." },
   { step: "04", title: "Transfer or return", body: "Recovered data and return arrangements are agreed with you." },
 ];
 
@@ -46,36 +45,36 @@ export default function DataRecoveryPage() {
       <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
-            eyebrow="Liquid damage & data recovery · Leeds"
-            title="Assessment before recovery."
-            description="Phones, tablets, laptops, consoles, SSDs and hard drives are inspected first. Some need cleaning, some need parts and some need board-level recovery."
+            eyebrow="Data recovery · Leeds"
+            title="Recover what matters."
+            description="Phones, tablets, laptops, desktops, SSDs and hard drives are assessed first. We explain the available recovery route, likely timeframe and cost before work begins."
             features={guarantees}
-            image={serviceImages.dataRecoveryLiquidDamage.src}
-            imageAlt={serviceImages.dataRecoveryLiquidDamage.alt}
-            imageWidth={serviceImages.dataRecoveryLiquidDamage.width}
-            imageHeight={serviceImages.dataRecoveryLiquidDamage.height}
-            imageClassName="max-h-[470px] max-w-[520px] scale-110"
+            image={serviceImages.dataRecovery.src}
+            imageAlt={serviceImages.dataRecovery.alt}
+            imageWidth={serviceImages.dataRecovery.width}
+            imageHeight={serviceImages.dataRecovery.height}
+            imageClassName="max-h-[400px] max-w-[400px] sm:scale-110"
             primaryAction={{ label: "Request an Assessment", href: "/contact" }}
             secondaryAction={{ label: "Book a Drop-off", href: "/book" }}
           />
 
           <div className="border-b border-border py-7">
             <p className="text-sm font-semibold text-foreground">
-              Power the device down where safe
+              Stop using the storage where possible
             </p>
             <p className="mt-1 max-w-3xl text-[13px] leading-5 text-muted-foreground">
-              Further use or writes may reduce recovery chances. Contact the
+              Further use or new writes may reduce recovery chances. Contact the
               team on{" "}
               <a href={BUSINESS.phoneHref} className="text-foreground underline">
                 {BUSINESS.phoneDisplay}
               </a>{" "}
-              before attempting another repair.
+              before attempting repairs or recovery software.
             </p>
           </div>
 
           <ServiceRepairList
             title="Recovery services and pricing"
-            description="Recovery is an attempt rather than a guaranteed outcome. The assessment determines the safest next step."
+            description="Recovery is an attempt rather than a guaranteed outcome. The assessment determines the safest available next step."
             repairs={recoveryTypes}
           />
 
@@ -105,7 +104,7 @@ export default function DataRecoveryPage() {
 
           <ServiceFinalCTA
             title="Tell us what happened."
-            description="Describe the device, the failure and which data matters so the team can explain the assessment."
+            description="Describe the device or drive, the failure and which data matters so the team can explain the assessment."
             primaryAction={{ label: "Request an Assessment", href: "/contact" }}
             secondaryAction={{ label: "Call the Team", href: BUSINESS.phoneHref }}
           />

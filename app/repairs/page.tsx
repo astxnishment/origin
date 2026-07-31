@@ -105,15 +105,29 @@ const categories: Array<{
     ],
   },
   {
-    device: "Data Recovery & Liquid Damage",
+    device: "Data Recovery",
     href: "/repairs/data-recovery",
-    tagline: "All liquid-damaged devices, SSDs, hard drives & lost files",
-    image: serviceImages.dataRecoveryLiquidDamage,
+    tagline: "Phones, tablets, computers, SSDs, hard drives and lost files",
+    image: serviceImages.dataRecovery,
     repairs: [
       { name: "Data Recovery Assessment", time: "2–10 days estimate", from: getSpecialistPriceLabel("data-recovery", "data-recovery") },
-      { name: "Liquid Damage Assessment", time: "Condition dependent", from: "Assessment required" },
       { name: "Phone Board Recovery", time: "2–7 days estimate", from: getSpecialistPriceLabel("phone", "data-recovery") },
       { name: "Laptop / Drive Recovery", time: "3–10 days estimate", from: getSpecialistPriceLabel("laptop", "data-recovery") },
+      { name: "Specialist Lab Referral", time: "Confirmed after assessment", from: "Specialist quote" },
+    ],
+  },
+  {
+    device: "Liquid Damage Repair",
+    href: "/repairs/liquid-damage",
+    tagline: "Phones, tablets, laptops, consoles and custom PCs",
+    image: serviceImages.liquidDamage,
+    repairs: [
+      { name: "Phone Liquid Damage", time: "1–5 days estimate", from: getSpecialistPriceLabel("phone", "liquid-damage-repair") },
+      { name: "Tablet Liquid Damage", time: "1–5 days estimate", from: getSpecialistPriceLabel("tablet", "liquid-damage-repair") },
+      { name: "Laptop Liquid Damage", time: "2–7 days estimate", from: getSpecialistPriceLabel("laptop", "liquid-damage-repair") },
+      { name: "Console Liquid Damage", time: "1–5 days estimate", from: getSpecialistPriceLabel("console", "liquid-damage-repair") },
+      { name: "Desktop / Custom PC", time: "2–7 days estimate", from: getSpecialistPriceLabel("desktop", "liquid-damage-repair") },
+      { name: "Corrosion / Board Repair", time: "Condition dependent", from: "Assessment required" },
     ],
   },
 ];
@@ -135,7 +149,7 @@ export default function RepairsPage() {
             title="Repair, without the guesswork."
             description={
               <>
-              Phones, tablets, all kinds of laptops, consoles, custom PCs, liquid damage and board-level repairs.
+              Phones, tablets, all kinds of laptops, consoles, custom PCs, liquid damage, data recovery and board-level repairs.
               </>
             }
           />

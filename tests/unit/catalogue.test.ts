@@ -96,4 +96,14 @@ describe("canonical repair catalogue", () => {
       )
     ).toBe(false);
   });
+
+  it("includes liquid damage pricing for desktop and custom PC repairs", () => {
+    expect(
+      PUBLIC_REPAIR_CATALOGUE.some(
+        (entry) =>
+          entry.category === "desktop" &&
+          entry.repairType === "Liquid damage repair"
+      )
+    ).toBe(true);
+  });
 });

@@ -146,7 +146,7 @@ const REPAIRS_BY_DEVICE: Record<string, readonly RepairType[]> = {
   desktop: [
     "Custom PC build", "GPU / cooling upgrade", "SSD / RAM upgrade",
     "No power repair", "Motherboard / logic board", "Overheating / fan service",
-    "Software / OS issue", "Data recovery", "Hardware diagnostics",
+    "Liquid damage repair", "Software / OS issue", "Data recovery", "Hardware diagnostics",
   ],
 };
 

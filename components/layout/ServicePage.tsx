@@ -81,7 +81,7 @@ export function ServiceHero({
           priority
           sizes="(max-width: 1023px) 88vw, 48vw"
           className={cn(
-            "h-full w-full object-contain drop-shadow-[0_26px_52px_rgba(0,0,0,0.25)]",
+            "h-[220px] w-full object-contain drop-shadow-[0_26px_52px_rgba(0,0,0,0.25)] sm:h-full",
             imageClassName
           )}
         />
