@@ -55,7 +55,7 @@ export default function LiquidDamagePage() {
             imageAlt={serviceImages.liquidDamage.alt}
             imageWidth={serviceImages.liquidDamage.width}
             imageHeight={serviceImages.liquidDamage.height}
-            imageClassName="max-h-[470px] max-w-[420px] sm:scale-105"
+            imageClassName="max-h-[470px] max-w-[560px] sm:scale-105"
             primaryAction={{ label: "Request an Assessment", href: "/contact" }}
             secondaryAction={{ label: "Book a Drop-off", href: "/book" }}
           />

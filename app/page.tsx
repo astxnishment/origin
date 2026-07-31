@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Battery,
   Clock,
+  Droplets,
   Gamepad2,
   HardDrive,
   Laptop,
@@ -23,7 +24,6 @@ import {
   Shield,
   Smartphone,
   Tablet,
-  Waves,
   Wrench,
   Zap,
 } from "lucide-react";
@@ -86,13 +86,13 @@ const categories = [
     label: "Liquid Damage",
     href: "/repairs/liquid-damage",
     note: "All devices and liquid types",
-    icon: Waves,
+    icon: Droplets,
     image: serviceImages.liquidDamage,
-    imageClassName: "h-[88%] w-[78%]",
+    imageClassName: "h-auto max-h-[92%] w-[96%]",
   },
 ];
 
-const popularRepairIcons = [Wrench, Battery, Zap, Waves];
+const popularRepairIcons = [Wrench, Battery, Zap, Droplets];
 const popularRepairs = getHomepageRepairs().map((repair, index) => ({
   ...repair,
   icon: popularRepairIcons[index],
@@ -276,7 +276,7 @@ export default function Home() {
                         alt={image.alt}
                         width={image.width}
                         height={image.height}
-                        loading="lazy"
+                        loading={label === "Liquid Damage" ? "eager" : "lazy"}
                         sizes="(max-width: 639px) 130px, (max-width: 1023px) 180px, 160px"
                         className={`${imageClassName} object-contain transition-transform duration-200 group-hover:scale-[1.025]`}
                       />
