@@ -26,7 +26,6 @@ import {
   ArrowRight,
   Check,
   Clock,
-  Droplets,
   Gamepad2,
   HardDrive,
   Laptop,
@@ -37,6 +36,7 @@ import {
   ShieldCheck,
   Smartphone,
   Tablet,
+  Waves,
   type LucideIcon,
 } from "lucide-react";
 
@@ -74,7 +74,7 @@ const CATEGORIES: Category[] = [
   { id: "console", label: "Game console", detail: "PlayStation, Xbox, Switch & more", icon: Gamepad2 },
   { id: "desktop", label: "Custom PC", detail: "Builds, repairs & upgrades", icon: MonitorCog },
   { id: "data", label: "Data recovery", detail: "Drives, SSDs, phones & computers", icon: HardDrive },
-  { id: "liquid", label: "Liquid damage", detail: "Phones, tablets, laptops, consoles & PCs", icon: Droplets },
+  { id: "liquid", label: "Liquid damage", detail: "Phones, tablets, laptops, consoles & PCs", icon: Waves },
 ];
 
 const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
