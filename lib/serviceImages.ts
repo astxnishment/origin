@@ -20,10 +20,16 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 970,
   },
   samsung: {
-    src: "/images/services/samsung.avif",
+    src: "/images/services/samsung-galaxy-phone.webp",
     alt: "Samsung Galaxy phone repair at Origin Repairs Leeds",
-    width: 1200,
-    height: 900,
+    width: 411,
+    height: 416,
+  },
+  otherAndroidPhones: {
+    src: "/images/services/other-android-phones.webp",
+    alt: "OnePlus, Xiaomi, Sony and other Android phone repair at Origin Repairs Leeds",
+    width: 956,
+    height: 990,
   },
   ipad: {
     src: "/images/services/ipad.webp",

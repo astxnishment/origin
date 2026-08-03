@@ -50,9 +50,9 @@ const categories: Array<{
     prompt: "Which phone do you have? Pick your brand to see models & pricing.",
     choices: [
       { name: "iPhone", note: "iPhone 6 through 17 Pro Max", href: "/repairs/iphone", brand: "Apple", model: "iPhone 17 Pro Max", deviceTypeId: "iphone" },
-      { name: "Samsung Galaxy", note: "Galaxy S, A, Z Fold & Flip", href: "/repairs/samsung", brand: "Samsung", model: "Galaxy S24 Ultra", deviceTypeId: "galaxy-s" },
+      { name: "Samsung Galaxy", note: "Galaxy S, A, Z Fold & Flip", href: "/repairs/samsung", image: serviceImages.samsung },
       { name: "Google Pixel", note: "Pixel 6 through 9 Pro", href: "/repairs/google-pixel", brand: "Google Pixel", model: "Pixel 9 Pro", deviceTypeId: "google-pixel" },
-      { name: "Other Android", note: "OnePlus, Xiaomi, Sony & more", href: "/repairs/phones", brand: "Samsung", model: "Galaxy A55", deviceTypeId: "galaxy-a" },
+      { name: "Other Android", note: "OnePlus, Xiaomi, Sony & more", href: "/repairs/phones", image: serviceImages.otherAndroidPhones },
     ],
   },
   {
