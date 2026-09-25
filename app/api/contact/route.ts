@@ -8,10 +8,12 @@ import {
   checkRateLimit,
   completeIdempotentRequest,
   escapeHtml,
+  getIdempotentRequestState,
   htmlWithLineBreaks,
   isPlausibleSubmissionTime,
   readJsonBody,
   releaseIdempotentRequest,
+  requestPayloadFingerprint,
   verifyTurnstile,
 } from "@/lib/server/requestSecurity";
 
@@ -23,6 +25,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let activeRequestKey: string | undefined;
   try {
     const body = await readJsonBody(request, 16_000);
     const result = contactRequestSchema.safeParse(body);
@@ -37,6 +40,28 @@ export async function POST(request: NextRequest) {
     }
 
     const input = result.data;
+    const fingerprint = requestPayloadFingerprint({
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      device: input.device,
+      issue: input.issue.replace(/\r\n?/g, "\n"),
+      consentToContact: input.consentToContact,
+    });
+    function previousResponse() {
+      const previous = getIdempotentRequestState("contact", input.idempotencyKey, fingerprint);
+      if (previous.status === "new") return null;
+      if (previous.status === "complete") {
+        return NextResponse.json(previous.response.body, { status: previous.response.status, headers: { "Cache-Control": "no-store" } });
+      }
+      return NextResponse.json({ error: previous.status === "conflict"
+        ? "This request key belongs to a message with different details. Start a new message or contact us directly."
+        : "This message is still being processed. Please wait a moment before retrying." }, { status: 409 });
+    }
+    // Replaying a known result has no side effect and must work even when the
+    // original challenge token has already been consumed.
+    const previous = previousResponse();
+    if (previous) return previous;
     if (!isPlausibleSubmissionTime(input.formStartedAt)) {
       return NextResponse.json(
         { error: "Please review the form and try again." },
@@ -51,14 +76,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!beginIdempotentRequest("contact", input.idempotencyKey)) {
-      return NextResponse.json(
-        { error: "This message has already been submitted." },
-        { status: 409 }
-      );
+    if (!beginIdempotentRequest("contact", input.idempotencyKey, fingerprint)) {
+      return previousResponse() ?? NextResponse.json({ error: "Please retry this message." }, { status: 409 });
     }
+    activeRequestKey = input.idempotencyKey;
 
     const businessEmail = await sendEmail({
+      idempotencyKey: `contact/business/${input.idempotencyKey}`,
       to: BUSINESS.email,
       subject: "New website enquiry - Origin Repairs",
       html: `
@@ -87,6 +111,7 @@ export async function POST(request: NextRequest) {
     }
 
     const customerEmail = await sendEmail({
+      idempotencyKey: `contact/customer/${input.idempotencyKey}`,
       to: input.email,
       subject: "Message received - Origin Repairs",
       html: `
@@ -97,16 +122,18 @@ export async function POST(request: NextRequest) {
       `,
     });
 
-    completeIdempotentRequest("contact", input.idempotencyKey);
-
-    return NextResponse.json({
-      ok: true,
+    const responseBody = {
+      ok: true as const,
       confirmationEmailSent: customerEmail.ok,
       message: customerEmail.ok
         ? "Message received. A receipt has been emailed to you."
         : "Message received. The team has your message, but the email receipt could not be delivered.",
-    });
+    };
+    completeIdempotentRequest("contact", input.idempotencyKey, { status: 200, body: responseBody });
+    activeRequestKey = undefined;
+    return NextResponse.json(responseBody, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
+    if (activeRequestKey) releaseIdempotentRequest("contact", activeRequestKey);
     if (error instanceof RequestBodyError) {
       return NextResponse.json(
         { error: error.message },

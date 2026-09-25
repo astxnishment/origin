@@ -92,11 +92,11 @@ export const FEATURES: FeatureFlags = {
   ),
   mailInEnabled: publicFlag(
     process.env.NEXT_PUBLIC_MAIL_IN_ENABLED,
-    false
+    true
   ),
   trackingEnabled: publicFlag(
     process.env.NEXT_PUBLIC_TRACKING_ENABLED,
-    false
+    true
   ),
   customerAccountsEnabled: publicFlag(
     process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED,

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,11 +12,11 @@ import {
 import { serviceImages } from "@/lib/serviceImages";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/custom-pc", {
   title: "Custom PC Builds & Upgrades Leeds | Gaming PCs",
   description:
     "Custom gaming PC builds, workstation builds and PC upgrades in Leeds. GPU, RAM, SSD, cooling, cable management, diagnostics and setup.",
-};
+});
 
 const services = [
   { name: "Custom PC build labour", price: getSpecialistPriceLabel("desktop", "custom-pc-build"), time: "1–3 days estimate" },
@@ -50,7 +51,7 @@ export default function CustomPcPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="Custom PCs · Leeds"

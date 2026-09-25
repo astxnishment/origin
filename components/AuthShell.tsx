@@ -21,7 +21,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pt-[72px]">
         <PageContainer
           size="form"
           className="grid min-h-[calc(100vh-8rem)] items-center gap-8 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.75fr)] lg:gap-20 lg:py-16"

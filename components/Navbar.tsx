@@ -38,7 +38,7 @@ export default function Navbar() {
   return (
     <header className="glass fixed top-0 inset-x-0 z-50">
       {/* 1fr | auto | 1fr keeps the nav mathematically centred in the container */}
-      <div className="page-container grid h-16 grid-cols-[1fr_auto] items-center gap-3 md:h-[72px] md:grid-cols-[1fr_auto_1fr] md:gap-6">
+      <div className="page-container grid h-16 grid-cols-[1fr_auto] items-center gap-3 md:h-[72px] xl:grid-cols-[1fr_auto_1fr] xl:gap-6">
 
         <Link
           href="/"
@@ -50,7 +50,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav — centred column */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden xl:flex items-center gap-8">
           {NAV_LINKS.map(({ href, label }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
@@ -73,7 +73,7 @@ export default function Navbar() {
         </nav>
 
         {/* Right side */}
-        <div className="hidden md:flex items-center gap-1.5 justify-self-end">
+        <div className="hidden xl:flex items-center gap-1.5 justify-self-end">
           <ThemeToggle />
           {FEATURES.customerAccountsEnabled && (
             <Button
@@ -95,7 +95,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile */}
-        <div className="flex md:hidden items-center gap-1">
+        <div className="flex xl:hidden items-center gap-1">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-11 w-11">
@@ -151,7 +151,7 @@ export default function Navbar() {
                   )}
                   <SheetClose asChild>
                     <Button asChild className="btn-secondary h-11 w-full text-sm">
-                      <Link href="/quote">Get Instant Quote</Link>
+                      <Link href="/quote">Get a Quote</Link>
                     </Button>
                   </SheetClose>
                   <a

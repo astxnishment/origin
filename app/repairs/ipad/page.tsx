@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -16,11 +17,11 @@ import {
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import { serviceImages } from "@/lib/serviceImages";
 
-export const metadata: Metadata = {
-  title: "iPad Repair Leeds — Screen, Battery & More | Origin Repairs",
+export const metadata: Metadata = pageMetadata("/repairs/ipad", {
+  title: "iPad Repair Leeds — Screen, Battery & More",
   description:
-    "iPad screen, battery and charging-port repair estimates in Leeds for visible catalogue models, with part options and repair-specific warranties.",
-};
+    "iPad repair enquiries in Leeds for Pro, Air, mini and standard models. Screen, battery and charging-port options are confirmed before work begins.",
+});
 
 const REPR_MODEL = "iPad Air 5";
 
@@ -35,11 +36,11 @@ function repairPrice(repairTypeIds: string[]): string {
 
 const repairTypes = [
   { name: "Screen / display replacement", repairKeys: ["display-assembly-replacement", "screen-replacement"], time: "Model and part dependent", note: "Display options vary by model and are explained before repair." },
-  { name: "Battery replacement", repairKeys: ["battery-replacement"], time: "60–90 minutes", note: "Battery health is assessed before replacement." },
-  { name: "Charging port repair", repairKeys: ["charging-port-replacement", "charging-port-repair"], time: "About 60 minutes", note: "USB-C or Lightning faults are assessed first." },
-  { name: "Camera repair", repairKeys: ["rear-camera-replacement", "camera-repair"], time: "About 60 minutes", note: "Front or rear camera repair where supported." },
+  { name: "Battery replacement", repairKeys: ["battery-replacement"], time: "Model dependent", note: "Battery health is assessed before replacement." },
+  { name: "Charging port repair", repairKeys: ["charging-port-replacement", "charging-port-repair"], time: "Fault dependent", note: "USB-C or Lightning faults are assessed first." },
+  { name: "Camera repair", repairKeys: ["rear-camera-replacement", "camera-repair"], time: "Model dependent", note: "Front or rear camera repair where supported." },
   { name: "Liquid damage assessment", repairKeys: ["liquid-damage-diagnostics", "liquid-damage-diagnostic"], time: "Assessment required", note: "Inspection determines cleaning, parts or board-level work." },
-  { name: "Speaker repair", repairKeys: ["speaker-earpiece-replacement", "speaker-repair"], time: "45–90 minutes", note: "Speaker and microphone faults are confirmed first." },
+  { name: "Speaker repair", repairKeys: ["speaker-earpiece-replacement", "speaker-repair"], time: "Fault dependent", note: "Speaker and microphone faults are confirmed first." },
 ].map((repair) => ({
   name: repair.name,
   time: repair.time,
@@ -62,15 +63,15 @@ const guarantees = [
   "Price agreed before repair",
   "Part options explained first",
   "Repair-specific warranty shown",
-  "Leeds drop-off and mail-in",
+  FEATURES.mailInEnabled ? "Leeds drop-off and mail-in" : "Leeds drop-off by arrangement",
 ];
 
 const faqs = [
   {
     q: "Do I need an appointment for iPad repair?",
     a: FEATURES.walkInsEnabled
-      ? "Walk-ins are enabled, but contacting the team first is sensible for parts-dependent or complex work."
-      : "Walk-in availability is not currently published. Request a time or contact the team before travelling.",
+      ? "Visit during our opening hours. Call ahead for complex work or repairs that may need parts ordered."
+      : "Please request a time or contact the team before travelling.",
   },
   {
     q: "Will I lose my data?",
@@ -94,7 +95,7 @@ export default function IPadRepairPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="iPad repairs · Leeds"
@@ -117,7 +118,7 @@ export default function IPadRepairPage() {
           />
 
           <ServiceTags
-            title="Supported iPad models"
+            title="iPad models for enquiries"
             items={[...iPadModels, "Older models — ask us"]}
           />
 

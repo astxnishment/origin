@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Origin Repairs
 
-## Getting Started
+Device repair website for Origin Repairs in Leeds, built with Next.js App Router, React, TypeScript and Tailwind CSS. Includes repair quotations, drop-off and mail-in requests, email-link customer access, private repair timelines and a staff dashboard backed by PostgreSQL.
 
-First, run the development server:
+## Local development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Use Node.js 22 or 24, install with `npm ci`, then run `npm run dev`. `.env.local.example` describes configuration; keep real credentials out of git. The public service flags enable booking, mail-in and tracking. Database writes and external email remain disabled until explicitly configured.
+
+For tracking development, use a separate local PostgreSQL database, set `DATABASE_URL`, apply `npm run db:migrate`, configure a local-only `AUTH_SECRET` and `STAFF_EMAILS`, and opt into `ALLOW_PREVIEW_REPAIR_WRITES=true`. Never connect a public preview to the live customer database. `npm run db:check` verifies connectivity and required columns without reading records.
+
+## Release checks
+
+```sh
+npm run check
+npm audit --omit=dev --audit-level=high
+npm run build
+npx playwright install chromium
+npm run test:e2e -- --workers=1
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Browser tests run a separate production server on port 3108 at desktop, 320px, 390px and tablet sizes. Real email delivery is disabled. `NEXT_PUBLIC_*` settings are embedded at build time: build and test with identical flags.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The tracking integration suite is deliberately gated. See `.github/workflows/quality.yml` for a complete PostgreSQL-backed test setup and [the deployment plan](docs/DEPLOYMENT.md) for local test settings. The Turnstile recovery suite needs a separate build with a nonempty public widget key and uses a mocked widget and delivery endpoints.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
+See [the deployment plan](docs/DEPLOYMENT.md) for configuration, migration, verification, monitoring and rollback. Hosting and live service credentials have not been selected or configured. `npm run deploy:check` checks required production settings without contacting providers or printing secret values. Production builds run this check automatically before compiling.
 
-To learn more about Next.js, take a look at the following resources:
+For a Node.js host, set `DEPLOYMENT_ENV=production` on the intended public release or `preview` for staging. Vercel's platform-provided `VERCEL_ENV` takes precedence if present. Production detection, canonical redirects, staff origin checks, spam protection and write controls support both. `NODE_ENV` alone never turns a preview into a live service. Static-only hosting cannot run the database, form or sign-in routes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Customer live chat
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The first-party chat button loads an embedded tawk.to conversation only after the customer chooses Start chat. Set the public property/widget IDs in `.env.local.example`; without them the panel offers phone, email and contact options. Closing or navigating away removes the provider iframe, and chat is excluded from private account, staff and repair-request pages. [Chat setup](docs/LIVE-CHAT.md) covers staff availability, the offline form and live verification. No message delivery or agent availability is implied by the local mocked tests.
 
-## Deploy on Vercel
+## Main sources
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `lib/business-config.ts`: business details and public service switches.
+- `lib/currentDevices.ts`, `lib/repairCatalogue.ts`: current models, repair eligibility and prices.
+- `lib/serviceImages.ts`, `lib/deviceImages/`: device imagery and references.
+- `lib/server/repairStore.ts`, `db/migrations/`: persistent repairs and status history.
+- `app/track/`, `app/admin/repairs/`: customer and staff workflows.
+- `app/api/`: validated repair, contact and authentication routes.
+- `docs/DEVICE-CATALOGUE-REVIEW.md`, `docs/POLICY-REVIEW.md`: content sources and operational follow-through.
+- `tests/`: unit, database, journey, responsive and accessibility checks.

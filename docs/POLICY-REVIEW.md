@@ -1,0 +1,37 @@
+# Policy content review — 22 September 2026 (chat update 25 September)
+
+The privacy notice, repair terms, warranty terms and FAQ were rewritten for customers. Operator identity is **Origin Repairs**, as supplied by the owner. The existing Leeds address, telephone number and email remain unchanged. No company number, incorporation status, VAT status, individual proprietor name or legal certification was invented.
+
+This is a content and implementation review, not a certificate of legal compliance or an independent legal opinion. The public pages describe the agreed launch service; they no longer show internal launch instructions.
+
+## Facts reflected in the pages
+
+- Mail-in requests require acceptance and shipping instructions before dispatch. Shipping costs, arrangements and insurance are agreed with the customer.
+- Booking and repair data persist in the service database. Customer-visible status history and restricted staff access are described without claiming automatic device-location tracking.
+- Email-link sign-in uses a cookie lasting up to 30 days. The cookie can be removed by signing out. The application uses Resend for transactional mail and Cloudflare Turnstile for abuse prevention.
+- Theme storage and session-only device/repair drafts are disclosed. Drafts exclude contact details and fault descriptions. No advertising or behavioural analytics are configured.
+- The hosting and database providers have not been chosen. The notice uses accurate recipient categories and makes no claim that Vercel already hosts the site.
+- All existing repair prices and warranty durations are preserved. Additional warranty terms are distinguished from statutory rights.
+- Optional live chat now names tawk.to and explains conversation/technical data and provider storage. It is loaded only after Start chat. Closing the iframe disconnects the widget but does not erase stored conversations or provider cookies. The inbox is not connected yet; the owner must configure consent, staff access, notifications and retention before activation. See [chat setup](LIVE-CHAT.md).
+
+## Operational facts to finish with deployment configuration
+
+1. Record the selected hosting/database providers, processing regions, backup rotation, processor contracts, subprocessors and applicable international-transfer safeguards. Check the published notice against the actual services enabled. Do not treat a privacy notice as evidence that transfer safeguards or contracts are already in place.
+2. Put the published retention criteria into operational procedures for enquiries, repair history, accounts, email logs, security records and backups. Confirm which tax/accounting and claim-retention requirements apply to this business. Implement deletion or anonymisation and explain backup expiry accurately; no fixed retention period was invented in the customer notice.
+3. Restrict staff accounts, train staff on customer-visible notes, and keep personal-file access limited to the agreed diagnostic or recovery purpose. Document any additional condition needed for sensitive personal data in recovery work; ordinary repair consent is not blanket permission for unrelated processing.
+4. Supply the final scope, price including taxes, shipping charges, payment method, cancellation information and contract confirmation in a format customers can keep before an accepted distance contract. The booking request is not itself acceptance. Record the customer's express request for work during a cooling-off period and the acknowledgement required before loss of the cancellation right on full performance. The optional cancellation form is on the terms page.
+5. Confirm the practical complaints, warranty-return, refund and uncollected-device procedures. Additional guarantees and exclusions must not override statutory rights. No automatic disposal period, storage fee, liability waiver or compulsory dispute scheme was invented.
+6. Check any applicable ICO fee/registration obligation using the owner's actual business circumstances. Review the notice if advertising, analytics, new processors or new data uses are introduced.
+
+These are deployment and business-process checks, not new permission requirements or a request to pause otherwise authorised work.
+
+## Official guidance consulted
+
+- [ICO: information a privacy notice should provide](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/individual-rights/the-right-to-be-informed/what-privacy-information-should-we-provide/) — identity, purposes, recipient categories, rights and retention criteria.
+- [ICO: lawful bases](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/lawful-basis/a-guide-to-lawful-basis/) and [legitimate interests](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/lawful-basis/a-guide-to-lawful-basis/legitimate-interests/) — service contracts, legal duties and a balanced security/dispute purpose.
+- [ICO: storage limitation](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/data-protection-principles/a-guide-to-the-data-protection-principles/storage-limitation/) — retention must follow purpose; the law does not prescribe one universal period.
+- [ICO: international transfers](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/international-transfers/a-brief-guide-to-international-transfers/) and [rights-request response times](https://ico.org.uk/for-the-public/time-limits-for-responding-to-data-protection-rights-requests/).
+- [ICO: cookies and similar technologies](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/) — clear information about storage and the distinction between requested functionality and non-essential uses. The ICO identifies parts of its guidance as under review following legislative changes; recheck at launch.
+- [GOV.UK: Consumer Rights Act](https://www.gov.uk/government/publications/consumer-rights-act-2015/consumer-rights-act-2015), [warranties and statutory rights](https://www.gov.uk/accepting-returns-and-giving-refunds), and [distance-selling information](https://www.gov.uk/online-and-distance-selling-for-businesses).
+- [Business Companion, Chartered Trading Standards Institute: distance service contracts](https://www.businesscompanion.info/en/quick-guides/distance-sales/consumer-contracts-distance-sales) and [supplying services](https://www.businesscompanion.info/en/quick-guides/services/supplying-services) — cancellation, early performance and remedies. Direct legislation.gov.uk section requests were rate-limited during review; these official public/trading-standards explanations were used instead of claiming a successful section-level inspection.
+- Provider notices: [Resend](https://resend.com/legal/privacy-policy), [Cloudflare](https://www.cloudflare.com/privacypolicy/) and [Google](https://policies.google.com/privacy).

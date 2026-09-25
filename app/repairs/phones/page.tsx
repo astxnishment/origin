@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,11 +15,11 @@ import {
   getStartingPriceLabel,
 } from "@/lib/serviceCatalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/phones", {
   title: "Phone Repair Leeds | iPhone, Samsung, Google Pixel",
   description:
     "Phone repairs in Leeds for iPhone, Samsung Galaxy, Google Pixel and more. Screens, batteries, charging ports, liquid damage, data recovery and motherboard repair.",
-};
+});
 
 const repairTypes = [
   { name: "Screen replacement", price: getStartingPriceLabel({ category: "phone", repairTypeIds: ["screen-replacement"] }), time: "Model and part dependent" },
@@ -56,11 +57,11 @@ export default function PhoneRepairsPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="Phone repairs · Leeds"
-            title="Phone repairs for every major model."
+            title="Phone repairs, clearly quoted."
             description="iPhone, Samsung Galaxy, Google Pixel and other Android phones. Screens, batteries, charging ports, liquid damage and board-level faults."
             features={guarantees}
             image={serviceImages.phones.src}
@@ -68,7 +69,7 @@ export default function PhoneRepairsPage() {
             imageWidth={serviceImages.phones.width}
             imageHeight={serviceImages.phones.height}
             imageClassName="max-h-[500px] max-w-[620px]"
-            primaryAction={{ label: "Get an Instant Quote", href: "/quote" }}
+            primaryAction={{ label: "Get a Quote", href: "/quote" }}
             secondaryAction={{ label: "Book Phone Repair", href: "/book" }}
           />
 

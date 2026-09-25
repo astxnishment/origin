@@ -19,6 +19,8 @@ describe("sitemap", () => {
 
     const { default: sitemap } = await import("@/app/sitemap");
     const urls = sitemap().map((entry) => entry.url);
+    expect(urls).toContain("https://originrepairs.co.uk/repairs/iphone");
+    expect(urls.some((url) => url.includes("/repairs/iphone-"))).toBe(false);
 
     expect(urls.length).toBeGreaterThan(20);
     expect(urls.some((url) => /\/(track|login|signup|account)(\/|$)/.test(url))).toBe(

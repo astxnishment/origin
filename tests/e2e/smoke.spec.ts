@@ -10,6 +10,19 @@ test("homepage starts with an empty catalogue estimator", async ({ page }) => {
   await expect(page.getByText(/James T\.|Sophie H\.|Marcus R\./)).toHaveCount(0);
 });
 
+test("legacy iPhone repair links go to booking with the selection preserved", async ({ page }) => {
+  await page.goto("/repairs/iphone-15-battery-replacement-leeds?tier=compatible-battery");
+  await expect(page).toHaveURL(/\/book\?.*model=iphone-15.*repair=battery-replacement.*tier=compatible-battery/);
+  await expect(page.getByRole("combobox", { name: "MODEL", exact: false })).toContainText("iPhone 15");
+});
+
+test("one iPhone page lets customers choose the latest model", async ({ page }) => {
+  await page.goto("/repairs/iphone");
+  await page.getByLabel("iPhone model", { exact: true }).selectOption("iphone-18-pro-max");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await expect(page).toHaveURL(/\/book\?brand=apple&model=iphone-18-pro-max/);
+});
+
 test("quote journey reaches a catalogue model without a fabricated result", async ({
   page,
 }) => {
@@ -17,6 +30,15 @@ test("quote journey reaches a catalogue model without a fabricated result", asyn
   await page.getByRole("button", { name: /^Phone/ }).click();
   await page.getByRole("button", { name: /^iPhone/ }).click();
   await expect(page.getByText("Choose or enter the model")).toBeVisible();
+  await page.getByRole("searchbox", { name: "Search models" }).fill("18 max");
+  await expect(page.getByRole("button", { name: "iPhone 18 Pro Max", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "iPhone 8", exact: true })).toHaveCount(0);
+  await page.getByRole("searchbox", { name: "Search models" }).fill("no such model");
+  await expect(page.getByText("No matching models. Try a shorter name or model number.")).toBeVisible();
+  await page.getByRole("searchbox", { name: "Search models" }).fill("18 pro");
+  await page.getByRole("button", { name: "iPhone 18 Pro", exact: true }).click();
+  await page.getByRole("button", { name: "Screen replacement", exact: true }).click();
+  await expect(page.getByText("Quote required", { exact: true }).first()).toBeVisible();
 });
 
 test("data recovery and liquid damage have separate customer journeys", async ({
@@ -41,21 +63,20 @@ test("data recovery and liquid damage have separate customer journeys", async ({
   ).toBeVisible();
 });
 
-test("pricing results lead to a valid repair and preserve the selected tier", async ({
+test("iPhone pricing goes directly to booking and preserves the selected tier", async ({
   page,
 }) => {
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Phone" }).click();
+  await page.getByRole("searchbox", { name: "Search price table" }).fill("iPhone 15");
   const repairLink = page
-    .locator('a[href^="/repairs/"][href*="tier="]:visible')
+    .locator('a[href^="/book?"][href*="tier="]:visible')
     .first();
   await expect(repairLink).toBeVisible();
+  const href = await repairLink.getAttribute("href");
   await repairLink.click();
-  await expect(page).toHaveURL(/\/repairs\/.+\?tier=/);
-  const requestLink = page.getByRole("link", {
-    name: /Request This Repair|Request an Assessment/,
-  });
-  await expect(requestLink).toHaveAttribute("href", /tier=/);
+  await expect(page).toHaveURL(new RegExp(href!.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$"));
+  await expect(page.getByRole("combobox", { name: "MODEL", exact: false })).toContainText("iPhone 15");
 });
 
 test("booking uses focused stages and back navigation keeps selections", async ({
@@ -101,7 +122,7 @@ test("404 has recovery links", async ({ page }) => {
 test("theme toggle changes the document theme", async ({ page, viewport }) => {
   await page.goto("/");
   const initial = await page.locator("html").getAttribute("data-theme");
-  if (viewport && viewport.width < 768) {
+  if (viewport && viewport.width < 1280) {
     await page.getByRole("button", { name: "Menu" }).click();
   }
   await page
@@ -127,27 +148,35 @@ test("major pages have no automatically detectable accessibility violations", as
   ]) {
     await page.goto(path);
     const results = await new AxeBuilder({ page })
-      .disableRules(["color-contrast"])
       .analyze();
     expect(results.violations, path).toEqual([]);
   }
 });
 
-test("customer account is available while disabled services stay hidden", async ({
+test("navigation respects the configured launch services", async ({
   page,
   viewport,
 }) => {
   await page.goto("/");
-  if (viewport && viewport.width < 768) {
+  if (viewport && viewport.width < 1280) {
     await page.getByRole("button", { name: "Menu" }).click();
   }
-  await expect(
-    page.getByRole("link", { name: /Customer account/i }).first()
-  ).toBeVisible();
-  await expect(page.getByText(/Track Repair|Mail-in/)).toHaveCount(0);
+  const account = page.getByRole("link", { name: /Customer account/i }).first();
+  if (process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED === "false") {
+    await expect(account).toHaveCount(0);
+  } else {
+    await expect(account).toBeVisible();
+  }
+  if (process.env.NEXT_PUBLIC_MAIL_IN_ENABLED === "false") {
+    await expect(page.getByRole("link", { name: /Mail-in/i })).toHaveCount(0);
+  }
+  if (process.env.NEXT_PUBLIC_TRACKING_ENABLED === "false") {
+    await expect(page.getByRole("link", { name: /Track a Repair/i })).toHaveCount(0);
+  }
 });
 
 test("customer account login uses secure email-link access", async ({ page }) => {
+  test.skip(process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED === "false", "Accounts disabled for this build");
   await page.goto("/login");
   await expect(
     page.getByRole("heading", { name: "Sign in to your account" })

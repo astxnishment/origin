@@ -43,11 +43,18 @@ function encryptionKey(secret: string): Buffer {
   return createHash("sha256").update(secret).digest();
 }
 
-function normaliseNextPath(value: string | undefined): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+export function normaliseNextPath(value: string | undefined): string {
+  if (!value || /[\\\u0000-\u0020]/.test(value)) return "/account";
+  try {
+    const base = "https://originrepairs.co.uk";
+    const url = new URL(value, base);
+    if (url.origin !== base || !(/^\/account(?:\/|$)/.test(url.pathname) || url.pathname === "/track" || url.pathname === "/admin/repairs")) {
+      return "/account";
+    }
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
     return "/account";
   }
-  return value;
 }
 
 function encryptToken(payload: AuthToken): string {

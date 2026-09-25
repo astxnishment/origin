@@ -1,5 +1,7 @@
 import { REPAIR_PRICING, type RepairRow } from "@/lib/repairPricing";
 import { normaliseWarranty, warrantyForRepair } from "@/lib/warranty";
+import { NEW_IPHONE_MODELS } from "@/lib/deviceImages/appleDeviceImages";
+import { CURRENT_DEVICE_ADDITIONS, getCurrentDeviceEnquiries } from "@/lib/currentDevices";
 
 export const CATALOGUE_BRANDS = ["Apple", "Samsung", "Google Pixel"] as const;
 export type CatalogueBrand = (typeof CATALOGUE_BRANDS)[number];
@@ -44,7 +46,7 @@ export interface RepairCatalogueEntry {
   visibility: CatalogueVisibility;
   stockStatus: "check-availability";
   seoEligible: boolean;
-  source: "pricing-workbook" | "pixel-catalogue" | "specialist";
+  source: "pricing-workbook" | "pixel-catalogue" | "apple-update" | "current-device-enquiry" | "specialist";
   recommendedTier: string;
 }
 
@@ -124,6 +126,7 @@ const WORKBOOK_ENTRIES: RepairCatalogueEntry[] = REPAIR_PRICING.filter(
     visibility,
     stockStatus: "check-availability",
     seoEligible:
+      !(row.brand === "Apple" && row.model.startsWith("iPhone")) &&
       visibility === "public" &&
       (row.minPrice !== null || row.partQuality === "Diagnostic Only"),
     source: "pricing-workbook",
@@ -302,7 +305,57 @@ const SPECIALIST_ENTRIES: RepairCatalogueEntry[] = [
   specialist({ id: "data-complex", category: "data-recovery", model: "Phone / SSD / hard drive", repairType: "Data recovery", minPrice: 79, maxPrice: 499, estimatedTime: "2–10 days", warranty: "Not applicable", note: "Recovery price depends on media condition and the work required. Assessment is quoted first; no outcome is guaranteed." }),
 ];
 
+// Enquiries only until repair methods, parts, pricing and warranties are verified.
+// Keep these separate from the generated pricing workbook.
+const NEW_IPHONE_ENTRIES: RepairCatalogueEntry[] = NEW_IPHONE_MODELS.flatMap((model) =>
+  [
+    "Screen replacement", "Battery replacement", "Back glass", "Charging port repair",
+    "Camera repair", "Water damage diagnostic", "Liquid damage repair", "Data recovery",
+    "Motherboard / logic board repair", "No power repair", "Face ID / biometric repair",
+  ].map((repairType) => ({
+    id: `${slugify(model)}-${slugify(repairType)}-assessment`,
+    category: "phone" as const,
+    brand: "Apple", series: "iPhone", model, modelId: slugify(model),
+    repairType, repairTypeId: slugify(repairType),
+    partTier: "Confirmed after inspection", partTierId: "assessment",
+    partOrigin: "not-specified" as const, genuineStatus: "Not yet confirmed",
+    minPrice: null, maxPrice: null,
+    estimatedTime: "Confirmed after assessment", warranty: "Confirmed after inspection",
+    inspectionRequired: true,
+    customerNote: "New model enquiry. Repair feasibility, parts, price, time and warranty are confirmed after inspection before any work is agreed.",
+    visibility: "quote-only" as const, stockStatus: "check-availability" as const,
+    seoEligible: false, source: "apple-update" as const, recommendedTier: "Assessment",
+  }))
+);
+
+const CURRENT_DEVICE_ENTRIES: RepairCatalogueEntry[] = CURRENT_DEVICE_ADDITIONS.flatMap((device) =>
+  getCurrentDeviceEnquiries(device.category).map((repairType) => ({
+    ...device,
+    id: `${slugify(device.model)}-${slugify(repairType)}-assessment`,
+    modelId: slugify(device.model),
+    repairType,
+    repairTypeId: slugify(repairType),
+    partTier: "Confirmed after inspection",
+    partTierId: "assessment",
+    partOrigin: "not-specified" as const,
+    genuineStatus: "Not yet confirmed",
+    minPrice: null,
+    maxPrice: null,
+    estimatedTime: "Confirmed after assessment",
+    warranty: "Confirmed after inspection",
+    inspectionRequired: true,
+    customerNote: "Model enquiry only. Send the exact model number and fault details. We confirm whether repair is possible, parts availability, price, time and warranty before any work is agreed.",
+    visibility: "quote-only" as const,
+    stockStatus: "check-availability" as const,
+    seoEligible: false,
+    source: "current-device-enquiry" as const,
+    recommendedTier: "Assessment",
+  }))
+);
+
 export const REPAIR_CATALOGUE: readonly RepairCatalogueEntry[] = [
+  ...NEW_IPHONE_ENTRIES,
+  ...CURRENT_DEVICE_ENTRIES,
   ...WORKBOOK_ENTRIES,
   ...PIXEL_ENTRIES,
   ...SPECIALIST_ENTRIES,

@@ -21,6 +21,7 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consentToContact, setConsentToContact] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -59,6 +60,11 @@ export default function ContactForm() {
     return next;
   }
 
+  function resetSpamCheck() {
+    setTurnstileToken("");
+    setTurnstileResetKey((key) => key + 1);
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const nextErrors = validate();
@@ -91,6 +97,7 @@ export default function ContactForm() {
       };
 
       if (!response.ok) {
+        resetSpamCheck();
         const serverErrors = Object.fromEntries(
           Object.entries(result.fields ?? {}).map(([key, messages]) => [
             key,
@@ -120,6 +127,7 @@ export default function ContactForm() {
       setConsentToContact(false);
       setTurnstileToken("");
     } catch {
+      resetSpamCheck();
       setResponseMessage(
         "We could not send the message. Please try again or contact us directly."
       );
@@ -209,7 +217,7 @@ export default function ContactForm() {
             value={formData.device}
             onChange={handleChange}
             maxLength={120}
-            placeholder="e.g. iPhone 15 Pro"
+            placeholder="e.g. iPhone 18 Pro or Galaxy S26"
             className="h-11 rounded-xl border-border bg-card text-[13px] sm:h-10"
           />
         </FormField>
@@ -282,7 +290,7 @@ export default function ContactForm() {
         )}
       </div>
 
-      <TurnstileField onToken={setTurnstileToken} />
+      <TurnstileField onToken={setTurnstileToken} resetKey={turnstileResetKey} />
       {errors.turnstileToken && (
         <p role="alert" className="text-[12px] text-destructive">
           {errors.turnstileToken}

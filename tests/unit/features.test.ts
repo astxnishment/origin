@@ -6,11 +6,12 @@ afterEach(() => {
 });
 
 describe("feature flags", () => {
-  it("keeps customer accounts available while unfinished operational systems stay disabled", async () => {
+  it("defaults to the owner-requested mail-in and tracking launch services", async () => {
+    for (const name of ["NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED", "NEXT_PUBLIC_TRACKING_ENABLED", "NEXT_PUBLIC_MAIL_IN_ENABLED", "NEXT_PUBLIC_WALK_INS_ENABLED"]) vi.stubEnv(name, undefined);
     const { FEATURES } = await import("@/lib/business-config");
-    expect(FEATURES.trackingEnabled).toBe(false);
+    expect(FEATURES.trackingEnabled).toBe(true);
     expect(FEATURES.customerAccountsEnabled).toBe(true);
-    expect(FEATURES.mailInEnabled).toBe(false);
+    expect(FEATURES.mailInEnabled).toBe(true);
     expect(FEATURES.walkInsEnabled).toBe(false);
   });
 

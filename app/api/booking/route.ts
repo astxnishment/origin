@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { bookingRequestSchema } from "@/lib/forms/schemas";
-import { BUSINESS, FEATURES } from "@/lib/constants";
+import { BUSINESS, FEATURES, SEO } from "@/lib/constants";
+import { areRepairWritesEnabled } from "@/lib/deployment";
+import type { StaffRepair } from "@/lib/repairTracking";
+import { createRepair, RepairStoreError } from "@/lib/server/repairStore";
 import { resolveBookingSelection } from "@/lib/server/bookingQuote";
 import { sendEmail } from "@/lib/server/email";
 import {
@@ -22,6 +25,10 @@ export async function POST(request: NextRequest) {
       { error: "Repair requests are not currently available online." },
       { status: 503 }
     );
+  }
+
+  if (FEATURES.trackingEnabled && !areRepairWritesEnabled()) {
+    return NextResponse.json({ error: "Online repair requests are not open yet. Please contact us directly." }, { status: 503 });
   }
 
   if (!checkRateLimit(request, "booking", 5, 15 * 60 * 1000)) {
@@ -77,7 +84,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!beginIdempotentRequest("booking", input.idempotencyKey)) {
+    let savedRepair: StaffRepair | undefined;
+    if (FEATURES.trackingEnabled) {
+      const saved = await createRepair({
+        customerEmail: input.email,
+        customerName: input.name,
+        customerPhone: input.phone,
+        deviceLabel: resolved.deviceLabel,
+        repairLabel: resolved.repairLabel,
+        partLabel: resolved.entry.partTier,
+        priceLabel: resolved.priceLabel,
+        warranty: resolved.entry.warranty,
+        serviceMethod: input.serviceMethod,
+        returnAddress: input.serviceMethod === "mail-in" ? input.returnAddress : "",
+        requestedDate: input.date,
+        requestedTime: input.time,
+        issue: input.issue,
+      }, `booking_${input.idempotencyKey}`);
+      savedRepair = saved.repair;
+      if (!saved.created) {
+        return NextResponse.json({
+          ok: true,
+          reference: savedRepair.reference,
+          trackingUrl: `/track?reference=${encodeURIComponent(savedRepair.reference)}`,
+          message: "Your repair request is already saved. Sign in with the email used for this request to view its progress.",
+        }, { headers: { "Cache-Control": "no-store" } });
+      }
+    } else if (!beginIdempotentRequest("booking", input.idempotencyKey)) {
       return NextResponse.json(
         { error: "This request has already been submitted." },
         { status: 409 }
@@ -100,10 +133,12 @@ export async function POST(request: NextRequest) {
         : "Visit / drop-off request";
 
     const businessEmail = await sendEmail({
+      idempotencyKey: `booking/business/${input.idempotencyKey}`,
       to: BUSINESS.email,
       subject: "New repair request - Origin Repairs",
       html: `
         <h2>New repair request</h2>
+        ${savedRepair ? `<p><strong>Repair reference:</strong> ${escapeHtml(savedRepair.reference)}</p>` : ""}
         <p><strong>Customer:</strong> ${escapeHtml(input.name)}</p>
         <p><strong>Phone:</strong> ${escapeHtml(input.phone)}</p>
         <p><strong>Email:</strong> ${escapeHtml(input.email)}</p>
@@ -127,27 +162,31 @@ export async function POST(request: NextRequest) {
     });
 
     if (!businessEmail.ok) {
-      releaseIdempotentRequest("booking", input.idempotencyKey);
       console.error("Repair request delivery failed", {
         reason: businessEmail.reason,
         status: businessEmail.status,
       });
-      return NextResponse.json(
-        {
-          error:
-            "We could not deliver your request. Please try again or contact us directly.",
-        },
-        { status: 503 }
-      );
+      if (!savedRepair) {
+        releaseIdempotentRequest("booking", input.idempotencyKey);
+        return NextResponse.json(
+          {
+            error:
+              "We could not deliver your request. Please try again or contact us directly.",
+          },
+          { status: 503 }
+        );
+      }
     }
 
     const customerEmail = await sendEmail({
+      idempotencyKey: `booking/customer/${input.idempotencyKey}`,
       to: input.email,
       subject: "Repair request received - Origin Repairs",
       html: `
         <h2>Repair request received</h2>
         <p>Hi ${escapeHtml(input.name)},</p>
         <p>We received your request for ${escapeHtml(resolved.deviceLabel)}.</p>
+        ${savedRepair ? `<p><strong>Your reference:</strong> ${escapeHtml(savedRepair.reference)}</p><p><a href="${escapeHtml(`${SEO.siteUrl}/track?reference=${encodeURIComponent(savedRepair.reference)}`)}">View repair progress</a> by signing in with the email address used for this request.</p>` : ""}
         <ul>
           <li><strong>Repair:</strong> ${escapeHtml(resolved.repairLabel)}</li>
           <li><strong>Part option:</strong> ${escapeHtml(resolved.entry.partTier)}</li>
@@ -165,16 +204,24 @@ export async function POST(request: NextRequest) {
       `,
     });
 
-    completeIdempotentRequest("booking", input.idempotencyKey);
+    if (!savedRepair) completeIdempotentRequest("booking", input.idempotencyKey);
 
     return NextResponse.json({
       ok: true,
+      ...(savedRepair ? { reference: savedRepair.reference, trackingUrl: `/track?reference=${encodeURIComponent(savedRepair.reference)}` } : {}),
       confirmationEmailSent: customerEmail.ok,
       message: customerEmail.ok
         ? "Repair request received. A receipt has been emailed to you."
         : "Repair request received. The team has your request, but the email receipt could not be delivered.",
     });
   } catch (error) {
+    if (error instanceof RepairStoreError) {
+      if (error.code === "idempotency-conflict") {
+        return NextResponse.json({ error: "This request has already been saved with different details. Contact us to change it." }, { status: 409 });
+      }
+      console.error("Repair request storage failed", { type: "storage" });
+      return NextResponse.json({ error: "We could not save your repair request. Please try again or contact us directly." }, { status: 503 });
+    }
     if (error instanceof RequestBodyError) {
       return NextResponse.json(
         { error: error.message },

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,11 +16,11 @@ import {
   getVisibleModels,
 } from "@/lib/serviceCatalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/laptops", {
   title: "Laptop Repair Leeds | MacBook, Windows, Gaming Laptops",
   description:
     "All kinds of laptop repair in Leeds: MacBook, Dell, HP, Lenovo, ASUS, Acer, Surface and gaming laptops. Screens, batteries, keyboards, liquid damage and board repair.",
-};
+});
 
 const repairTypes = [
   { name: "Screen replacement", price: getStartingPriceLabel({ category: "laptop", repairTypeIds: ["screen-replacement"] }), time: "Model and part dependent" },
@@ -64,7 +65,7 @@ export default function LaptopRepairsPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="Laptop repairs · Leeds"
@@ -76,7 +77,7 @@ export default function LaptopRepairsPage() {
             imageWidth={serviceImages.macbook.width}
             imageHeight={serviceImages.macbook.height}
             imageClassName="max-h-[430px] max-w-[620px]"
-            primaryAction={{ label: "Get an Instant Quote", href: "/quote" }}
+            primaryAction={{ label: "Get a Quote", href: "/quote" }}
             secondaryAction={{ label: "Book Laptop Repair", href: "/book" }}
           />
 

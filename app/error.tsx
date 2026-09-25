@@ -11,7 +11,7 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <main className="flex min-h-[70vh] items-center justify-center px-5 py-28">
+    <main id="main-content" tabIndex={-1} className="flex min-h-[70vh] items-center justify-center px-5 py-28">
       <div className="max-w-md text-center">
         <AlertCircle className="mx-auto h-6 w-6 text-muted-foreground" />
         <h1 className="mt-5 text-3xl font-semibold tracking-tight">

@@ -12,6 +12,7 @@ import {
   getRepairTiers,
   getSupportedRepairTypes,
   repairTypeToSlug,
+  slugToRepairType,
   type DeviceModel,
   type RepairPrice,
   type RepairType,
@@ -79,7 +80,7 @@ const CATEGORIES: Category[] = [
 
 const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
   phone: [
-    { id: "apple-phone", label: "iPhone", detail: "iPhone 6 through 17 Pro Max", brand: "Apple", catalogCategory: "phone" },
+    { id: "apple-phone", label: "iPhone", detail: "iPhone 8 through 18 Pro Max", brand: "Apple", catalogCategory: "phone" },
     { id: "samsung-phone", label: "Samsung Galaxy", detail: "S, A, Fold & Flip series", brand: "Samsung", catalogCategory: "phone" },
     { id: "pixel-phone", label: "Google Pixel", detail: "Pixel, Pro, Fold & a-series", brand: "Google Pixel", catalogCategory: "phone" },
     { id: "android-phone", label: "Other Android", detail: "OnePlus, Xiaomi, Sony, Huawei & more", freeText: true },
@@ -90,7 +91,7 @@ const DEVICE_CHOICES: Record<CategoryId, DeviceChoice[]> = {
     { id: "android-tablet", label: "Other tablet", detail: "Lenovo, Huawei, Amazon & more", freeText: true },
   ],
   laptop: [
-    { id: "apple-laptop", label: "MacBook", detail: "Air & Pro, all years", brand: "Apple", catalogCategory: "laptop" },
+    { id: "apple-laptop", label: "MacBook", detail: "Air, Pro & Neo", brand: "Apple", catalogCategory: "laptop" },
     { id: "samsung-laptop", label: "Samsung Galaxy Book", detail: "Galaxy Book series", brand: "Samsung", catalogCategory: "laptop" },
     { id: "windows-laptop", label: "Windows / gaming laptop", detail: "Dell, HP, Lenovo, ASUS, Acer & more", freeText: true },
     { id: "other-laptop", label: "Other laptop", detail: "Any make or model", freeText: true },
@@ -153,6 +154,51 @@ const REPAIRS: Record<CategoryId, RepairType[]> = {
   data: ["Data recovery"],
   liquid: ["Liquid damage repair"],
 };
+
+export interface QuotePrefill {
+  device?: string;
+  brand?: string;
+  category?: string;
+  repair?: string;
+}
+
+function resolvePrefill(prefill: QuotePrefill) {
+  const aliases: Record<string, string> = {
+    iphone: "apple-phone", samsung: "samsung-phone", "google-pixel": "pixel-phone",
+    pixel: "pixel-phone", android: "android-phone", ipad: "apple-tablet",
+    "galaxy-tab": "samsung-tablet", macbook: "apple-laptop", "galaxy-book": "samsung-laptop",
+    windows: "windows-laptop",
+  };
+  const requestedDevice = prefill.device ? aliases[prefill.device] ?? prefill.device : undefined;
+  let category: CategoryId | null = CATEGORIES.find((item) =>
+    item.id === (prefill.category === "data-recovery" ? "data" : prefill.category)
+  )?.id ?? null;
+  let choice: DeviceChoice | null = null;
+
+  // A known device family is more precise than a broad or conflicting brand.
+  for (const item of CATEGORIES) {
+    const match = DEVICE_CHOICES[item.id].find((candidate) => candidate.id === requestedDevice);
+    if (match) {
+      category = item.id;
+      choice = match;
+      break;
+    }
+  }
+  if (!choice && prefill.brand) {
+    const brand = ({ apple: "Apple", samsung: "Samsung", "google-pixel": "Google Pixel", google: "Google Pixel" } as const)[prefill.brand as "apple" | "samsung" | "google-pixel" | "google"];
+    const targetCategory = category ?? "phone";
+    choice = brand ? DEVICE_CHOICES[targetCategory].find((candidate) => candidate.brand === brand) ?? null : null;
+    if (choice) category = targetCategory;
+  }
+  const requestedRepair = slugToRepairType(prefill.repair ?? "");
+  const pendingRepair = category && requestedRepair && REPAIRS[category].includes(requestedRepair)
+    ? requestedRepair : null;
+  const deviceName = choice?.presets?.length === 1 ? choice.presets[0] : "";
+  const repair = category && choice && deviceName && pendingRepair &&
+    getSpecialistEntry(catalogueCategory(category, choice), repairTypeToSlug(pendingRepair))
+    ? pendingRepair : null;
+  return { category, choice, deviceName, repair, pendingRepair: repair ? null : pendingRepair };
+}
 
 function catalogueCategory(
   category: CategoryId,
@@ -223,14 +269,17 @@ function ChoiceButton({
   );
 }
 
-export default function FullCalculator() {
-  const [category, setCategory] = useState<CategoryId | null>(null);
-  const [deviceChoice, setDeviceChoice] = useState<DeviceChoice | null>(null);
+export default function FullCalculator({ prefill = {} }: { prefill?: QuotePrefill }) {
+  const [initial] = useState(() => resolvePrefill(prefill));
+  const [category, setCategory] = useState<CategoryId | null>(initial.category);
+  const [deviceChoice, setDeviceChoice] = useState<DeviceChoice | null>(initial.choice);
   const [model, setModel] = useState<DeviceModel | null>(null);
-  const [deviceName, setDeviceName] = useState("");
+  const [deviceName, setDeviceName] = useState(initial.deviceName);
   const [deviceNameDraft, setDeviceNameDraft] = useState("");
-  const [repair, setRepair] = useState<RepairType | null>(null);
+  const [repair, setRepair] = useState<RepairType | null>(initial.repair);
+  const [pendingRepair, setPendingRepair] = useState<RepairType | null>(initial.pendingRepair);
   const [partTierId, setPartTierId] = useState("");
+  const [modelQuery, setModelQuery] = useState("");
 
   const models = useMemo(() => {
     if (!deviceChoice?.brand || !deviceChoice.catalogCategory) return [];
@@ -240,6 +289,11 @@ export default function FullCalculator() {
         deviceCategory(device) === deviceChoice.catalogCategory
     );
   }, [deviceChoice]);
+
+  const modelTerms = modelQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const matchingModels = models.filter((item) =>
+    modelTerms.every((term) => item.name.toLowerCase().includes(term))
+  );
 
   const resolvedDeviceName = model?.name || deviceName.trim();
   const repairTiers =
@@ -273,6 +327,8 @@ export default function FullCalculator() {
   const isReady = Boolean(category && deviceChoice && resolvedDeviceName && repair && quote);
 
   function resetAfterCategory(next: CategoryId) {
+    setPendingRepair(null);
+    setModelQuery("");
     setCategory(next);
     setDeviceChoice(null);
     setModel(null);
@@ -283,15 +339,38 @@ export default function FullCalculator() {
   }
 
   function pickDevice(choice: DeviceChoice) {
+    setModelQuery("");
     setDeviceChoice(choice);
     setModel(null);
     setDeviceName(choice.presets?.length === 1 ? choice.presets[0] : "");
     setDeviceNameDraft("");
-    setRepair(null);
+    const preset = choice.presets?.length === 1 ? choice.presets[0] : "";
+    setRepair(category && preset && pendingRepair &&
+      getSpecialistEntry(catalogueCategory(category, choice), repairTypeToSlug(pendingRepair))
+      ? pendingRepair : null);
+    if (preset) setPendingRepair(null);
+    setPartTierId("");
+  }
+
+  function pickModel(next: DeviceModel) {
+    setModel(next);
+    setRepair(pendingRepair && getSupportedRepairTypes(next).includes(pendingRepair) ? pendingRepair : null);
+    setPendingRepair(null);
+    setPartTierId("");
+  }
+
+  function pickDeviceName(name: string) {
+    setDeviceName(name);
+    setRepair(category && pendingRepair &&
+      getSpecialistEntry(catalogueCategory(category, deviceChoice), repairTypeToSlug(pendingRepair))
+      ? pendingRepair : null);
+    setPendingRepair(null);
     setPartTierId("");
   }
 
   function reset() {
+    setPendingRepair(null);
+    setModelQuery("");
     setCategory(null);
     setDeviceChoice(null);
     setModel(null);
@@ -362,7 +441,9 @@ export default function FullCalculator() {
                       ? "Choose or enter the model"
                       : !repair
                         ? "What is the fault?"
-                        : "Your estimate is ready"}
+                        : needsTierSelection
+                          ? "Choose a part option"
+                          : "Your estimate is ready"}
               </h2>
             </div>
             {category && (
@@ -454,18 +535,34 @@ export default function FullCalculator() {
               </button>
 
               {models.length > 0 && (
+                <div>
+                  <label htmlFor="quote-model-search" className="mb-2 block text-sm font-medium">Search models</label>
+                  <Input id="quote-model-search" type="search" value={modelQuery}
+                    onChange={(event) => setModelQuery(event.target.value)}
+                    placeholder={deviceChoice.brand === "Apple" && deviceChoice.catalogCategory === "phone" ? "e.g. iPhone 18 Pro" : "Enter your model"}
+                    autoComplete="off" className="mb-2 h-12 text-base" />
+                  <p className="mb-3 text-xs text-muted-foreground" role="status">
+                    {matchingModels.length} {matchingModels.length === 1 ? "model" : "models"} found
+                  </p>
                 <div className="max-h-[420px] overflow-y-auto rounded-lg border border-border">
-                  {models.map((item) => (
+                  {matchingModels.map((item) => (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setModel(item)}
+                      onClick={() => pickModel(item)}
                       className="flex w-full items-center justify-between border-b border-border px-4 py-3 text-left text-[13px] font-medium last:border-b-0 hover:bg-surface"
                     >
                       {item.name}
                       <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
                     </button>
                   ))}
+                  {matchingModels.length === 0 && (
+                    <div className="p-4 text-sm text-muted-foreground">
+                      <p>No matching models. Try a shorter name or model number.</p>
+                      <Link href="/contact" className="mt-3 inline-block font-medium text-foreground underline underline-offset-4">Ask about an unlisted model</Link>
+                    </div>
+                  )}
+                </div>
                 </div>
               )}
 
@@ -476,7 +573,7 @@ export default function FullCalculator() {
                       key={preset}
                       active={false}
                       title={preset}
-                      onClick={() => setDeviceName(preset)}
+                      onClick={() => pickDeviceName(preset)}
                     />
                   ))}
                 </div>
@@ -498,7 +595,7 @@ export default function FullCalculator() {
                     <Button
                       type="button"
                       disabled={!deviceNameDraft.trim()}
-                      onClick={() => setDeviceName(deviceNameDraft.trim())}
+                      onClick={() => pickDeviceName(deviceNameDraft.trim())}
                       className="btn-primary h-11 rounded-md px-5"
                     >
                       Continue
@@ -712,7 +809,7 @@ export default function FullCalculator() {
           <div className="mt-7 border-t border-border pt-5">
             <p className="text-[12px] font-medium text-foreground">Can&apos;t find your device?</p>
             <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-              We repair far more than the models listed here.
+              Send us the make, model and fault so we can check the options.
             </p>
             <Link href="/contact" className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-foreground hover:underline">
               Ask for a manual quote

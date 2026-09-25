@@ -3,8 +3,10 @@ import { headers } from "next/headers";
 import localFont from "next/font/local";
 import "./globals.css";
 import MobileCTABar from "@/components/MobileCTABar";
+import LiveChat from "@/components/LiveChat";
+import { liveChatConfiguration } from "@/lib/liveChat";
 import { BUSINESS, FEATURES, SEO, SERVICES, TRUST } from "@/lib/constants";
-import { INDEXING_ENABLED } from "@/lib/deployment";
+import { getDeploymentEnvironment, INDEXING_ENABLED } from "@/lib/deployment";
 
 const geistSans = localFont({
   src: "../public/fonts/geist-latin.woff2",
@@ -41,9 +43,6 @@ export const metadata: Metadata = {
     "liquid damage repair Leeds",
   ],
   category: "Device repair",
-  alternates: {
-    canonical: SEO.siteUrl,
-  },
   robots: {
     index: INDEXING_ENABLED,
     follow: INDEXING_ENABLED,
@@ -114,6 +113,7 @@ export default async function RootLayout({
     })();
   `;
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const chat = liveChatConfiguration();
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -227,15 +227,16 @@ export default async function RootLayout({
         >
           Skip to main content
         </a>
-        <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
+        <div className="flex-1">
           {children}
         </div>
-        {process.env.VERCEL_ENV === "preview" && (
+        {getDeploymentEnvironment() === "preview" && (
           <div className="fixed bottom-16 left-3 z-[90] rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:bottom-3">
             Preview
           </div>
         )}
         <MobileCTABar />
+        {chat.enabled && <LiveChat configured={Boolean(chat.scriptUrl)} />}
       </body>
     </html>
   );

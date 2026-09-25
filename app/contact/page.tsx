@@ -16,7 +16,7 @@ export default function ContactPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-20 pt-20 sm:pb-24 sm:pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-20 pt-20 sm:pb-24 sm:pt-24">
         <PageContainer>
           <PageIntro
             eyebrow="Contact"
@@ -97,8 +97,8 @@ export default function ContactPage() {
                 </div>
                 <p className="text-[13px] text-muted-foreground leading-relaxed">
                   {FEATURES.walkInsEnabled
-                    ? "Walk-ins are currently enabled. Call ahead for complex or parts-dependent work."
-                    : "Walk-in availability is not currently published. Contact us before travelling."}
+                    ? "Visit during our opening hours. Call ahead for complex work or repairs that may need parts ordered."
+                    : "Please contact us to arrange a visit before travelling."}
                 </p>
               </div>
             </aside>
@@ -116,8 +116,7 @@ export default function ContactPage() {
                   title="Find Origin Repairs."
                   description={
                     <>
-                    Use the map for the configured Cookridge Street address and
-                    current directions.
+                    Find us on Cookridge Street and plan your journey.
                     </>
                   }
                   className="mb-0 block"

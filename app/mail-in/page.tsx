@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -13,11 +14,11 @@ import {
   SectionHeading,
 } from "@/components/layout/PageContainer";
 
-export const metadata: Metadata = {
-  title: "Mail-in Device Repair UK | Origin Repairs Leeds",
+export const metadata: Metadata = pageMetadata("/mail-in", {
+  title: "Mail-in Device Repair UK Leeds",
   description:
     "Request mail-in assessment for a phone, tablet, laptop, console or custom PC. Shipping instructions and the quote process are confirmed before dispatch.",
-};
+});
 
 const steps = [
   {
@@ -54,7 +55,7 @@ export default function MailInRepairPage() {
     <>
       <Navbar />
 
-      <main className="pb-24 pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-24 pt-24">
         <PageContainer>
           <PageIntro
             eyebrow="Mail-in repairs"
@@ -98,9 +99,9 @@ export default function MailInRepairPage() {
             <div className="border-l-2 border-primary pl-5">
               <p className="eyebrow mb-2">Before dispatch</p>
               <p className="text-sm leading-6 text-muted-foreground">
-                A submitted form does not create a repair reference or confirm
-                that a parcel can be accepted. Keep the carrier tracking details
-                once we have confirmed the shipment.
+                A repair reference confirms that your request was recorded;
+                it is not permission to send a parcel. Wait for our acceptance
+                and shipping instructions, then keep the carrier tracking details.
               </p>
             </div>
           </PageSection>

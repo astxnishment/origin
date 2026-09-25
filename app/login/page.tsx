@@ -1,18 +1,19 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/AuthShell";
 import LoginForm from "@/app/login/LoginForm";
 import { FEATURES } from "@/lib/constants";
-import { getCustomerSession } from "@/lib/server/auth";
+import { getCustomerSession, normaliseNextPath } from "@/lib/server/auth";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/login", {
   title: "Customer Account",
   description: "Secure customer account access for Origin Repairs.",
   robots: {
     index: false,
     follow: false,
   },
-};
+});
 
 const errorMessages: Record<string, string> = {
   expired:
@@ -27,14 +28,10 @@ export default async function LoginPage({
 }) {
   if (!FEATURES.customerAccountsEnabled) redirect("/");
 
-  const session = await getCustomerSession();
-  if (session) redirect("/account");
-
   const query = await searchParams;
-  const nextPath =
-    query.next?.startsWith("/") && !query.next.startsWith("//")
-      ? query.next
-      : "/account";
+  const nextPath = normaliseNextPath(query.next);
+  const session = await getCustomerSession();
+  if (session) redirect(nextPath);
 
   return (
     <AuthShell>

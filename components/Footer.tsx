@@ -23,7 +23,9 @@ const services = [
   ...(FEATURES.mailInEnabled
     ? [{ href: "/mail-in", label: "Mail-in Repairs" }]
     : []),
-  { href: "/track", label: "Track a Repair" },
+  ...(FEATURES.trackingEnabled
+    ? [{ href: "/track", label: "Track a Repair" }]
+    : []),
 ];
 
 const company = [

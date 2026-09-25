@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { headers } from "next/headers";
 import { ArrowRight, Clock, MapPin, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -23,7 +23,8 @@ import {
 } from "@/lib/repairCatalogue";
 import { BUSINESS, FEATURES, SEO } from "@/lib/constants";
 
-export const dynamicParams = false;
+// Legacy iPhone URLs remain reachable as redirects, not individual repair pages.
+export const dynamicParams = true;
 
 type GeneratedRepair = {
   device: DeviceModel;
@@ -93,6 +94,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const parsed = parseRepairSlug(slug);
+  if (parsed?.device.brand === "Apple" && parsed.device.name.startsWith("iPhone")) {
+    return {
+      title: "iPhone Repair Leeds",
+      alternates: { canonical: `${SEO.siteUrl}/repairs/iphone` },
+      robots: { index: false },
+    };
+  }
   if (
     !parsed ||
     !isGeneratedRepair(parsed.device, parsed.repairType)
@@ -135,6 +143,12 @@ export default async function RepairPage({
   const { slug } = await params;
   const query = await searchParams;
   const parsed = parseRepairSlug(slug);
+  if (parsed?.device.brand === "Apple" && parsed.device.name.startsWith("iPhone")) {
+    const tier = getRepairTiers(parsed.device, parsed.repairType).find(
+      (entry) => entry.partTierId === query.tier
+    );
+    permanentRedirect(buildBookingHref(parsed.device, parsed.repairType, tier?.partTierId));
+  }
   if (
     !parsed ||
     !isGeneratedRepair(parsed.device, parsed.repairType)
@@ -233,7 +247,7 @@ export default async function RepairPage({
       />
       <Navbar />
 
-      <main className="pb-28 pt-32">
+      <main id="main-content" tabIndex={-1} className="pb-28 pt-32">
         <section className="mx-auto max-w-5xl px-5 sm:px-8">
           <nav
             aria-label="Breadcrumb"

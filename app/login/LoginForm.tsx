@@ -11,7 +11,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, Mail, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import TurnstileField from "@/components/TurnstileField";
+import TurnstileField, { TURNSTILE_ENABLED } from "@/components/TurnstileField";
 
 type FormStatus = "idle" | "sending" | "sent" | "error";
 
@@ -26,6 +26,7 @@ export default function LoginForm({
   const [email, setEmail] = useState("");
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [status, setStatus] = useState<FormStatus>(
     initialError ? "error" : "idle"
   );
@@ -39,8 +40,18 @@ export default function LoginForm({
     startedAt.current = Date.now();
   }, []);
 
+  function resetSpamCheck() {
+    setTurnstileToken("");
+    setTurnstileResetKey((key) => key + 1);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setStatus("error");
+      setMessage("Complete the spam check.");
+      return;
+    }
     setStatus("sending");
     setMessage("");
 
@@ -63,6 +74,7 @@ export default function LoginForm({
       };
 
       if (!response.ok) {
+        resetSpamCheck();
         setStatus("error");
         setMessage(
           result.error ?? "We could not send the sign-in email. Try again."
@@ -75,6 +87,7 @@ export default function LoginForm({
       setStatus("sent");
       setMessage(result.message ?? "Check your email for a secure sign-in link.");
     } catch {
+      resetSpamCheck();
       setStatus("error");
       setMessage("We could not send the sign-in email. Try again.");
     }
@@ -106,6 +119,7 @@ export default function LoginForm({
           type="button"
           onClick={() => {
             startedAt.current = Date.now();
+            setTurnstileToken("");
             setStatus("idle");
             setMessage("");
           }}
@@ -163,7 +177,7 @@ export default function LoginForm({
         )}
 
         <div className="mt-4">
-          <TurnstileField onToken={onTurnstileToken} />
+          <TurnstileField onToken={onTurnstileToken} resetKey={turnstileResetKey} />
         </div>
 
         <Button
@@ -182,7 +196,7 @@ export default function LoginForm({
         Need help with an existing repair?{" "}
         <Link
           href="/contact"
-          className="font-medium text-foreground underline-offset-4 hover:underline"
+          className="font-medium text-foreground underline underline-offset-4"
         >
           Contact the team
         </Link>

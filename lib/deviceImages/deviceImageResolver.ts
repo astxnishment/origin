@@ -11,6 +11,7 @@
 import { getPixelDeviceImage, type PixelVariant } from "@/lib/deviceImages/googlePixelDeviceImages";
 import { getSamsungVariant, type SamsungVariant } from "@/lib/deviceImages/samsungGenericImages";
 import type { DeviceType as DeviceIconType } from "@/components/DeviceIcon";
+import { appleCategoryImages, applePhoneImages } from "./appleDeviceImages";
 
 // ── Result types ──────────────────────────────────────────────────────────────
 
@@ -66,19 +67,17 @@ export function resolveDeviceImage({
     if (category === "tablet" || deviceTypeId === "ipad") {
       return {
         strategy: "apple-local",
-        src: "/images/services/ipad.webp",
-        width: 698,
-        height: 800,
+        ...appleCategoryImages.ipad,
       };
     }
     if (category === "laptop" || deviceTypeId === "macbook") {
       return {
         strategy: "apple-local",
-        src: "/images/services/macbook.webp",
-        width: 1076,
-        height: 658,
+        ...appleCategoryImages.macbook,
       };
     }
+    const modelImage = applePhoneImages[model];
+    if (modelImage) return { strategy: "apple-local", ...modelImage };
     return {
       strategy: "apple-local",
       src: "/images/services/iphone.webp",
@@ -89,7 +88,11 @@ export function resolveDeviceImage({
 
   // ── Samsung ────────────────────────────────────────────────────────────────
   if (brand === "Samsung") {
-    const variant = getSamsungVariant(deviceTypeId, model);
+    const inferredType = category === "tablet" || /Galaxy Tab/i.test(model) ? "galaxy-tab"
+      : category === "laptop" || /Galaxy Book/i.test(model) ? "galaxy-book"
+      : /Galaxy Z|Fold|Flip/i.test(model) ? "galaxy-z"
+      : /Galaxy A/i.test(model) ? "galaxy-a" : "galaxy-s";
+    const variant = getSamsungVariant(deviceTypeId || inferredType, model);
     return { strategy: "samsung-svg", variant };
   }
 

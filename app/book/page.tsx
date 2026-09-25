@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -19,11 +20,11 @@ import {
 } from "@/lib/calculatorData";
 import { Phone, Mail, MapPin, Clock, Package } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Request a Repair — Leeds | Origin Repairs",
+export const metadata: Metadata = pageMetadata("/book", {
+  title: "Request a Repair — Leeds",
   description:
     "Request a device repair assessment in Leeds. Select your device, preferred time and part option, and Origin Repairs will confirm availability.",
-};
+});
 
 interface PageProps {
   searchParams: Promise<{
@@ -59,7 +60,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
     <>
       <Navbar />
 
-      <main className="pb-20 pt-16 md:pb-28 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-20 pt-16 md:pb-28 md:pt-[72px]">
         <PageContainer>
           <PageIntro
             eyebrow="Repair request"
