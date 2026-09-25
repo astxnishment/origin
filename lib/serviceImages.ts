@@ -108,10 +108,10 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 320,
   },
   customPc: {
-    src: "/images/services/custom-pc-build.webp",
-    alt: "Custom gaming PC build and upgrade service at Origin Repairs Leeds",
-    width: 696,
-    height: 815,
+    src: "/images/services/custom-pc-modern.webp",
+    alt: "White custom PC with a glass case, neatly routed cables and soft blue lighting",
+    width: 1200,
+    height: 1200,
   },
   // ── Aliases kept for any other pages that reference these keys ───────────
   samsungTab: {

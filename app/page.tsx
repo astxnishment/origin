@@ -78,7 +78,7 @@ const categories = [
     note: "Builds, upgrades and cooling",
     icon: MonitorCog,
     image: serviceImages.customPc,
-    imageClassName: "h-[90%] w-[82%]",
+    imageClassName: "h-[90%] w-full",
   },
   {
     label: "Data Recovery",
