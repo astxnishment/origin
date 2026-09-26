@@ -15,7 +15,7 @@ import {
   getVisibleModels,
 } from "@/lib/serviceCatalogue";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
-import { serviceImages } from "@/lib/serviceImages";
+import ipadHero from "@/public/images/services/ipad-hero-cutout.webp";
 
 export const metadata: Metadata = pageMetadata("/repairs/ipad", {
   title: "iPad Repair Leeds — Screen, Battery & More",
@@ -102,10 +102,10 @@ export default function IPadRepairPage() {
             title="iPad repair, clearly quoted."
             description="Screen, battery, charging port, camera and liquid-damage work for the models in our catalogue, with the part type, price and warranty shown before approval."
             features={guarantees}
-            image={serviceImages.ipad.src}
-            imageAlt={serviceImages.ipad.alt}
-            imageWidth={serviceImages.ipad.width}
-            imageHeight={serviceImages.ipad.height}
+            image={ipadHero}
+            imageAlt="Silver iPad Pro, front and back"
+            imageWidth={ipadHero.width}
+            imageHeight={ipadHero.height}
             imageClassName="max-h-[470px] max-w-[590px]"
             primaryAction={{ label: "Get an iPad Quote", href: "/quote" }}
             secondaryAction={{ label: "Book iPad Repair", href: "/book" }}
