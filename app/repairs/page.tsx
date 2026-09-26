@@ -87,7 +87,17 @@ const categories: Array<{
     image: serviceImages.macbook,
     prompt: "Which laptop do you have? Pick yours to get started.",
     choices: [
-      { name: "MacBook", note: "Air, Pro & Neo", href: "/quote?device=macbook", image: serviceImages.macbook },
+      {
+        name: "MacBook",
+        note: "Air, Pro & Neo",
+        href: "/quote?device=macbook",
+        image: {
+          src: "/images/services/macbook-pro-open.webp",
+          alt: "Open Space Black MacBook Pro with a blue display and visible keyboard",
+          width: 1200,
+          height: 775,
+        },
+      },
       { name: "Samsung Galaxy Book", note: "Galaxy Book series", href: "/quote?device=galaxy-book", image: serviceImages.samsungGalaxyBook },
       { name: "Windows / Gaming laptop", note: "Dell, HP, Lenovo, ASUS, Acer & more", href: "/repairs/laptops", image: serviceImages.windowsLogo },
     ],

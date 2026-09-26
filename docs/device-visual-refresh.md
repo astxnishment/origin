@@ -32,10 +32,12 @@ Prompt:
 
 ## MacBook Pro
 
+**Owner correction, 26 September:** apply the same limited scope as the tablet correction. The previously approved `macbook-pro-current.webp` (1200 × 715, dark Apple display artwork) is restored for the homepage, laptop category, service hero and selectors. The blue-display `macbook-pro-open.webp` below is now used only by the MacBook choice in the repairs directory, where the old orange-wallpaper image was outdated. Do not revert to that older `macbook.webp` asset or spread the blue replacement across the site again.
+
 - Website asset: [`macbook-pro-open.webp`](../public/images/services/macbook-pro-open.webp), 1200 × 775, 75,554 bytes.
 - Reference: [Apple current MacBook Pro product viewer](https://www.apple.com/v/macbook-pro/ax/images/overview/product-viewer/pv_hero_endframe__gc89p7dw1syi_large.jpg), from [Apple UK MacBook Pro](https://www.apple.com/uk/macbook-pro/).
 - Generated original retained outside the repository; the linked WebP is the production asset.
-- Replaces the older category illustration, including the stale MacBook reference in the device image resolver. Shared by MacBook/laptop service images and Apple laptop selectors. This is a representative category image.
+- A representative image used only by the MacBook choice in the repairs directory; other locations use the previously approved dark-display image.
 
 Prompt:
 
@@ -43,7 +45,7 @@ Prompt:
 
 ## Integration
 
-`lib/deviceImages/appleDeviceImages.ts` owns the original iPad and refreshed MacBook paths for service pages and device selectors. `lib/serviceImages.ts` retains the original tablet category lineup and owns the Samsung image. The separate iPad thumbnail and its padding are local to `app/repairs/page.tsx`. Existing approved mixed iPhone/Samsung phone-category imagery is retained.
+`lib/deviceImages/appleDeviceImages.ts` owns the original iPad and previously approved dark-display MacBook paths for service pages and device selectors. `lib/serviceImages.ts` retains the original tablet category lineup and owns the Samsung image. The separate iPad and MacBook choice images are local to `app/repairs/page.tsx`. Existing approved mixed iPhone/Samsung phone-category imagery is retained.
 
 The Samsung page now includes a larger product hero, direct family navigation, model links with repair-request prefill, and pricing rows that fill the available width. Tablet navigation in the repair directory includes all tablet brands.
 
@@ -55,3 +57,4 @@ The Samsung page now includes a larger product hero, direct family navigation, m
 - Samsung model links correctly prefill the repair request; the tablet directory link opens all tablet brands.
 - Production desktop/dark and mobile/light checks passed with no browser console errors. Screenshots reviewed for the Samsung hero and the iPad/MacBook directory rows.
 - 26 September correction: restored images checked on the homepage, repairs directory and iPad page at 1440px and 390px in both themes. The final directory cutout was rechecked in all four views; its only application reference is the iPad choice on `/repairs`. TypeScript, focused lint and diff checks passed.
+- 26 September MacBook correction: both homepage images, the laptop directory heading and the laptop service hero load the restored dark-display asset at desktop and mobile widths in both themes. The blue replacement appears only in the directory's MacBook choice. All 12 page/viewport/theme checks passed without page errors or horizontal overflow; TypeScript, focused lint and diff checks also passed.

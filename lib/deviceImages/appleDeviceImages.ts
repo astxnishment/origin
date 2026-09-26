@@ -5,7 +5,7 @@ export const NEW_IPHONE_MODELS = ["iPhone 18 Pro Max", "iPhone 18 Pro"] as const
 // Shared category illustrations keep repair pages and device pickers in sync.
 export const appleCategoryImages = {
   ipad: { src: "/images/services/ipad.webp", width: 698, height: 800 },
-  macbook: { src: "/images/services/macbook-pro-open.webp", width: 1200, height: 775 },
+  macbook: { src: "/images/services/macbook-pro-current.webp", width: 1200, height: 715 },
 } as const;
 
 export const applePhoneImages: Record<string, { src: string; width: number; height: number }> = {

@@ -55,7 +55,7 @@ export const serviceImages: Record<string, ServiceImage> = {
   },
   macbook: {
     ...appleCategoryImages.macbook,
-    alt: "Open Space Black MacBook Pro with a blue display and visible keyboard",
+    alt: "Space Black MacBook Pro with a dark display, viewed from the front",
   },
   samsungGalaxyBook: {
     src: "/images/services/samsung-galaxy-book.webp",
