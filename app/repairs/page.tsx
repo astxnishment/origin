@@ -21,6 +21,7 @@ type Choice = {
   note: string;
   href: string;
   image?: (typeof serviceImages)[keyof typeof serviceImages];
+  imageFrameClassName?: string;
   /** When set, render a real DeviceImage (brand/model). */
   brand?: "Apple" | "Samsung" | "Google Pixel";
   model?: string;
@@ -63,7 +64,18 @@ const categories: Array<{
     image: serviceImages.tablets,
     prompt: "Which tablet do you have? Pick yours to check repair options.",
     choices: [
-      { name: "iPad", note: "Pro, Air, mini & standard", href: "/quote?device=ipad", image: serviceImages.ipad },
+      {
+        name: "iPad",
+        note: "Pro, Air, mini & standard",
+        href: "/quote?device=ipad",
+        image: {
+          src: "/images/services/ipad-directory-thumbnail.webp",
+          alt: "iPad Pro, front and back",
+          width: 558,
+          height: 640,
+        },
+        imageFrameClassName: "p-1",
+      },
       { name: "Samsung Galaxy Tab", note: "Tab S, Tab A series", href: "/quote?device=galaxy-tab", image: serviceImages.samsungGalaxyTab },
       { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/contact", image: serviceImages.androidLogo },
     ],
@@ -216,7 +228,7 @@ export default function RepairsPage() {
                         href={c.href}
                         className="group flex min-h-20 items-center gap-3 bg-card p-4 transition-colors hover:bg-surface sm:gap-4 sm:p-5"
                       >
-                        <div className={`flex h-14 w-16 flex-shrink-0 items-center justify-center ${choices.length < 4 ? "sm:h-16 sm:w-20 xl:h-20 xl:w-24" : "sm:h-14 sm:w-16"}`}>
+                        <div className={`flex h-14 w-16 flex-shrink-0 items-center justify-center ${choices.length < 4 ? "sm:h-16 sm:w-20 xl:h-20 xl:w-24" : "sm:h-14 sm:w-16"} ${c.imageFrameClassName ?? ""}`}>
                           {c.image ? (
                             <Image
                               src={c.image.src}

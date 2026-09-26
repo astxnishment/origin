@@ -33,11 +33,13 @@ export const serviceImages: Record<string, ServiceImage> = {
   },
   ipad: {
     ...appleCategoryImages.ipad,
-    alt: "Space Black iPad Pro with a blue and lilac display",
+    alt: "iPad repair at Origin Repairs Leeds — screen and battery replacement",
   },
   tablets: {
-    ...appleCategoryImages.ipad,
-    alt: "iPad Pro — tablet repairs at Origin Repairs Leeds",
+    src: "/images/services/tablet-lineup.webp",
+    alt: "iPad and Samsung Galaxy Tab repair at Origin Repairs Leeds",
+    width: 1162,
+    height: 701,
   },
   samsungGalaxyTab: {
     src: "/images/services/samsung-galaxy-tab.webp",

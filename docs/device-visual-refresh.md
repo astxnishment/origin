@@ -15,10 +15,16 @@ Prompt:
 
 ## iPad Pro
 
-- Website asset: [`ipad-pro-current.webp`](../public/images/services/ipad-pro-current.webp), 1116 × 910, 105,768 bytes.
+**Owner correction, 26 September:** the original tablet artwork is preferred. Restore `tablet-lineup.webp` (1162 × 701) for tablet category images and `ipad.webp` (698 × 800) for iPad service and device-selector images. The issue was limited to the iPad thumbnail in the repairs directory. A separate cutout derived from the original `ipad.webp`, `ipad-directory-thumbnail.webp` (558 × 640, 37,132 bytes), is used only in that row, with contained sizing and 4px padding. Both original assets are unchanged. Do not substitute the redesigned illustration across the site.
+
+The directory cutout was edited with the built-in image-generation tool, then resized and encoded as transparent WebP. Its prompt was:
+
+> Use case: background-extraction. Edit target: this exact existing iPad product image from a repair website. The user wants the ORIGINAL photograph and design preserved, not a redesigned iPad. Keep both overlapping devices, their front-and-back arrangement, silver colour, black display, exact black-and-rainbow looping display artwork, camera arrangement, scale, straight-on angle and proportions unchanged. ONLY remove the white background outside the actual rounded silhouettes of the two devices, including the tiny white wedges beyond the rounded outer corners. Preserve the silver rear iPad and its white/silver edges; these are part of the device, not background. Do not remove or redraw any device, do not invent new hardware, do not modernise the design, do not change the wallpaper, do not rotate the devices. Add a small even fully transparent margin around the entire pair so all corners are visible and no part is clipped. Deliver a precise clean alpha-transparent cutout suitable for a 68px-high thumbnail on a dark website. No white matte remnants, no drop shadow, no text, no background scene, no checkerboard painted into the image.
+
+- Superseded asset, retained but no longer used: [`ipad-pro-current.webp`](../public/images/services/ipad-pro-current.webp), 1116 × 910, 105,768 bytes.
 - Reference: [Apple iPad Pro product image](https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-pro-11-select-wifi-spaceblack-202405?wid=1200&hei=1200&fmt=png-alpha), linked from the current [Apple UK iPad Pro page](https://www.apple.com/uk/ipad-pro/).
-- Generated original retained outside the repository; the linked WebP is the production asset.
-- A representative modern iPad illustration shared by service images and Apple tablet selectors; it does not imply every selected older model has identical hardware.
+- Generated original retained outside the repository for reference.
+- A representative modern iPad illustration originally used across the site; reverted after the owner's clarification above.
 
 Prompt:
 
@@ -37,7 +43,7 @@ Prompt:
 
 ## Integration
 
-`lib/deviceImages/appleDeviceImages.ts` owns the shared iPad and MacBook paths, so the repair directory, service pages and device selectors use the same images. `lib/serviceImages.ts` owns the Samsung image. Existing approved mixed iPhone/Samsung phone-category imagery is retained.
+`lib/deviceImages/appleDeviceImages.ts` owns the original iPad and refreshed MacBook paths for service pages and device selectors. `lib/serviceImages.ts` retains the original tablet category lineup and owns the Samsung image. The separate iPad thumbnail and its padding are local to `app/repairs/page.tsx`. Existing approved mixed iPhone/Samsung phone-category imagery is retained.
 
 The Samsung page now includes a larger product hero, direct family navigation, model links with repair-request prefill, and pricing rows that fill the available width. Tablet navigation in the repair directory includes all tablet brands.
 
@@ -48,3 +54,4 @@ The Samsung page now includes a larger product hero, direct family navigation, m
 - Automated accessibility checks passed on refreshed pages at mobile and desktop widths in both themes.
 - Samsung model links correctly prefill the repair request; the tablet directory link opens all tablet brands.
 - Production desktop/dark and mobile/light checks passed with no browser console errors. Screenshots reviewed for the Samsung hero and the iPad/MacBook directory rows.
+- 26 September correction: restored images checked on the homepage, repairs directory and iPad page at 1440px and 390px in both themes. The final directory cutout was rechecked in all four views; its only application reference is the iPad choice on `/repairs`. TypeScript, focused lint and diff checks passed.
