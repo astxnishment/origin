@@ -53,10 +53,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/logos/origin-icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-32.png?v=20260926", type: "image/png", sizes: "32x32" },
+      { url: "/icon.svg?v=20260926", type: "image/svg+xml", sizes: "any" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-    shortcut: ["/logos/origin-icon.png"],
+    apple: [{ url: "/apple-touch-icon.png?v=20260926", sizes: "180x180" }],
   },
   openGraph: {
     title: "Origin Repairs — Device Repair in Leeds",
