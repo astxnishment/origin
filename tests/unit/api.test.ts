@@ -6,6 +6,8 @@ import { publicAuthOrigin } from "@/app/api/auth/magic-link/route";
 
 const futureDate = new Date();
 futureDate.setUTCDate(futureDate.getUTCDate() + 14);
+// Reach the catalogue validation rather than failing on Sunday opening hours.
+if (futureDate.getUTCDay() === 0) futureDate.setUTCDate(futureDate.getUTCDate() + 1);
 const futureDateValue = futureDate.toISOString().slice(0, 10);
 
 function request(path: string, body: unknown) {

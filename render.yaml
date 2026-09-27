@@ -1,0 +1,96 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+# Proposed paid infrastructure: obtain owner approval before creating resources.
+# Setup, costs and prompted values: docs/RENDER-SETUP.md
+previews:
+  generation: off
+
+services:
+  - type: web
+    name: origin-repairs
+    runtime: node
+    region: frankfurt
+    plan: 1c-2g
+    numInstances: 1
+    branch: codex/launch-refresh
+    autoDeployTrigger: off
+    previews:
+      generation: off
+    buildCommand: npm ci --include=dev && npm run build
+    preDeployCommand: npm run db:migrate && npm run db:check
+    startCommand: npm run start -- --hostname 0.0.0.0 --port "$PORT"
+    healthCheckPath: /
+    domains:
+      - originrepairs.co.uk
+    renderSubdomainPolicy: disabled
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: DEPLOYMENT_ENV
+        value: production
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://originrepairs.co.uk
+      - key: AUTH_BASE_URL
+        value: https://originrepairs.co.uk
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: origin-repairs-db
+          property: connectionString
+      # postgres.js uses PGSSL; PGSSLMODE is not read by this driver.
+      # Render's private PostgreSQL endpoint uses a self-signed certificate.
+      - key: PGSSL
+        value: require
+      - key: ALLOW_PREVIEW_EMAILS
+        value: "false"
+      - key: ALLOW_PREVIEW_REPAIR_WRITES
+        value: "false"
+      # Enter actual credentials in Render; never commit them to this file.
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_TURNSTILE_SITE_KEY
+        sync: false
+      - key: STAFF_EMAILS
+        sync: false
+      - key: NEXT_PUBLIC_TAWK_PROPERTY_ID
+        sync: false
+      - key: NEXT_PUBLIC_TAWK_WIDGET_ID
+        sync: false
+      # Owner-reviewed controls remain manual. Incomplete setup blocks the build.
+      - key: PRODUCTION_OPERATIONS_ENABLED
+        sync: false
+      - key: EMAILS_ENABLED
+        sync: false
+      - key: REPAIR_WRITES_ENABLED
+        sync: false
+      - key: NEXT_PUBLIC_BOOKING_ENABLED
+        sync: false
+      - key: NEXT_PUBLIC_WALK_INS_ENABLED
+        sync: false
+      - key: NEXT_PUBLIC_MAIL_IN_ENABLED
+        sync: false
+      - key: NEXT_PUBLIC_TRACKING_ENABLED
+        sync: false
+      - key: NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED
+        sync: false
+      - key: NEXT_PUBLIC_LIVE_CHAT_ENABLED
+        sync: false
+      - key: SITE_INDEXING_ENABLED
+        sync: false
+
+databases:
+  - name: origin-repairs-db
+    region: frankfurt
+    plan: 0.5c-1g
+    postgresMajorVersion: "16"
+    diskSizeGB: 5
+    storageAutoscalingEnabled: false
+    databaseName: origin_repairs
+    user: origin_repairs
+    ipAllowList: []
