@@ -24,7 +24,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      NEXT_PUBLIC_SITE_URL: https://originrepairs.co.uk
+      NEXT_PUBLIC_SITE_URL: https://originrepairs.com
       SITE_INDEXING_ENABLED: "false"
       EMAILS_ENABLED: "false"
       ALLOW_PREVIEW_EMAILS: "false"

@@ -1,5 +1,7 @@
 # Render deployment setup
 
+29 September 2026 status: **historical proposal, not the selected deployment path**. The owner selected Cloudflare and `originrepairs.com`. Do not apply this older Blueprint or use its domain/service settings for the current migration. Follow [CLOUDFLARE.md](CLOUDFLARE.md); the existing Vercel deployment is retained for rollback. Prices and setup below describe the earlier proposal and require fresh review if Render is reconsidered.
+
 Prepared 27 September 2026. [render.yaml](../render.yaml) is a proposed configuration, not a purchased or deployed service. Obtain the owner's approval of the recurring cost before creating resources. Follow the operational checks in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Proposed monthly cost

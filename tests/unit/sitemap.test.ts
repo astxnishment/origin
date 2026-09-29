@@ -15,25 +15,25 @@ describe("sitemap", () => {
     vi.stubEnv("VERCEL_ENV", "production");
     vi.stubEnv("PRODUCTION_OPERATIONS_ENABLED", "true");
     vi.stubEnv("SITE_INDEXING_ENABLED", "true");
-    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.co.uk");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.com");
 
     const { default: sitemap } = await import("@/app/sitemap");
     const urls = sitemap().map((entry) => entry.url);
-    expect(urls).toContain("https://originrepairs.co.uk/repairs/iphone");
+    expect(urls).toContain("https://originrepairs.com/repairs/iphone");
     expect(urls.some((url) => url.includes("/repairs/iphone-"))).toBe(false);
 
     expect(urls.length).toBeGreaterThan(20);
     expect(urls.some((url) => /\/(track|login|signup|account)(\/|$)/.test(url))).toBe(
       false
     );
-    expect(urls.every((url) => url.startsWith("https://originrepairs.co.uk"))).toBe(
+    expect(urls.every((url) => url.startsWith("https://originrepairs.com"))).toBe(
       true
     );
     expect(urls).toContain(
-      "https://originrepairs.co.uk/repairs/data-recovery"
+      "https://originrepairs.com/repairs/data-recovery"
     );
     expect(urls).toContain(
-      "https://originrepairs.co.uk/repairs/liquid-damage"
+      "https://originrepairs.com/repairs/liquid-damage"
     );
   });
 });

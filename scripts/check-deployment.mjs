@@ -13,9 +13,10 @@ const required = (condition, message) => { if (!condition) problems.push(message
 const configured = (value) => Boolean(value?.trim()) && !/xxxxx|replace.me|your[_-]/i.test(value);
 
 required(deploymentEnvironment === 'production', 'Set DEPLOYMENT_ENV=production on the intended production host (Vercel uses its platform-provided VERCEL_ENV).');
+required(env.HOSTING_PROVIDER === undefined || ['cloudflare', 'vercel', 'generic'].includes(env.HOSTING_PROVIDER), 'Set HOSTING_PROVIDER to cloudflare, vercel or generic, or leave it unset on an existing host.');
 const contactOnly = env.NEXT_PUBLIC_CONTACT_ONLY === 'true';
 if (contactOnly) {
-  required(['https://origin-peach.vercel.app', 'https://originrepairs.co.uk'].includes(env.NEXT_PUBLIC_SITE_URL), 'Contact-only publishing requires NEXT_PUBLIC_SITE_URL=https://origin-peach.vercel.app or https://originrepairs.co.uk with no path, credentials, port or query.');
+  required(['https://origin-peach.vercel.app', 'https://originrepairs.com'].includes(env.NEXT_PUBLIC_SITE_URL), 'Contact-only publishing requires NEXT_PUBLIC_SITE_URL=https://origin-peach.vercel.app or https://originrepairs.com with no path, credentials, port or query.');
   for (const flag of [
     'PRODUCTION_OPERATIONS_ENABLED', 'EMAILS_ENABLED', 'REPAIR_WRITES_ENABLED',
     'SITE_INDEXING_ENABLED', 'ALLOW_PREVIEW_EMAILS', 'ALLOW_PREVIEW_REPAIR_WRITES',
@@ -27,12 +28,12 @@ if (contactOnly) {
   }
   notes.push('Contact-only mode: online repair requests, mail-in, tracking, accounts, live chat, outbound email, database writes and search indexing remain disabled.');
 } else {
-  required(env.NEXT_PUBLIC_SITE_URL === 'https://originrepairs.co.uk', 'Set NEXT_PUBLIC_SITE_URL to https://originrepairs.co.uk before building.');
+  required(env.NEXT_PUBLIC_SITE_URL === 'https://originrepairs.com', 'Set NEXT_PUBLIC_SITE_URL to https://originrepairs.com before building.');
   required(env.PRODUCTION_OPERATIONS_ENABLED === 'true', 'Confirm the owner checklist in docs/DEPLOYMENT.md, then set PRODUCTION_OPERATIONS_ENABLED=true.');
   required(env.EMAILS_ENABLED === 'true', 'Set EMAILS_ENABLED=true for live repair requests and contact messages.');
   required(env.ALLOW_PREVIEW_EMAILS !== 'true', 'Keep ALLOW_PREVIEW_EMAILS=false in production.');
   required(configured(env.RESEND_API_KEY), 'Configure a real RESEND_API_KEY with a verified sending domain.');
-  required(configured(env.RESEND_FROM_EMAIL) && /@originrepairs\.co\.uk>?$/.test(env.RESEND_FROM_EMAIL?.trim() ?? ''), 'Configure RESEND_FROM_EMAIL with a verified originrepairs.co.uk sender.');
+  required(configured(env.RESEND_FROM_EMAIL) && /@originrepairs\.com>?$/.test(env.RESEND_FROM_EMAIL?.trim() ?? ''), 'Configure RESEND_FROM_EMAIL with a verified originrepairs.com sender.');
   required(configured(env.TURNSTILE_SECRET_KEY) && configured(env.NEXT_PUBLIC_TURNSTILE_SITE_KEY), 'Configure both Turnstile keys for the production domain; in-memory rate limits do not span server instances.');
   for (const flag of ['NEXT_PUBLIC_BOOKING_ENABLED', 'NEXT_PUBLIC_WALK_INS_ENABLED', 'NEXT_PUBLIC_MAIL_IN_ENABLED', 'NEXT_PUBLIC_TRACKING_ENABLED', 'NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED', 'NEXT_PUBLIC_LIVE_CHAT_ENABLED', 'SITE_INDEXING_ENABLED']) {
     required(['true', 'false'].includes(env[flag]), `Set ${flag} explicitly to true or false.`);

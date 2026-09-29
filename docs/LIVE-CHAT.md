@@ -1,4 +1,6 @@
-# Live chat setup
+# Legacy Tawk live chat setup
+
+29 September 2026 update: the owner selected a **Cloudflare-hosted human staff/customer inbox**. That replacement is not implemented. The Cloudflare contact-only profile disables this existing Tawk adapter; adding Tawk IDs or a generic API key will not create the requested inbox. Follow [CLOUDFLARE.md](CLOUDFLARE.md#human-chat-on-cloudflare) for persistence, permissions and delivery work. The instructions below describe the retained adapter only, not the current activation plan.
 
 Prepared 25 September 2026. The website integration is implemented; the owner's tawk.to account is not connected yet. No real conversation has been sent and no agent has been hired.
 
@@ -15,7 +17,7 @@ Prepared 25 September 2026. The website integration is implemented; the owner's 
 ## Connect the team's inbox
 
 1. Sign in at [tawk.to](https://dashboard.tawk.to), or create the business's account. The owner completes password, verification and account-terms steps. The [core human-operated service is free](https://www.tawk.to/faqs/); branding removal, AI features and hired agents are separate optional services.
-2. Create/select the Origin Repairs property for `https://originrepairs.co.uk`. Invite only the staff who should answer customer messages. Configure their app/browser notifications and who monitors offline messages.
+2. Create/select the Origin Repairs property for `https://originrepairs.com`. Invite only the staff who should answer customer messages. Configure their app/browser notifications and who monitors offline messages.
 3. Copy the **public Property ID and Widget ID** from Administration → Chat Widget. [Finding the IDs](https://help.tawk.to/article/where-can-i-find-the-property-and-widget-id). No secret API key is needed for this anonymous integration.
 4. Set `NEXT_PUBLIC_LIVE_CHAT_ENABLED=true`, `NEXT_PUBLIC_TAWK_PROPERTY_ID` and `NEXT_PUBLIC_TAWK_WIDGET_ID` in the host's environment. Rebuild after changes. Set the feature to `false` if chat must be temporarily removed.
 5. Turn on **Widget offline when all Agent(s) offline**. Set the scheduler to actual staffed hours in Europe/London. The default can otherwise show Online without an available person. [Availability settings](https://help.tawk.to/article/the-difference-between-online-away-and-invisible).

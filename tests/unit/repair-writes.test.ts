@@ -13,7 +13,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv("VERCEL_ENV", "preview");
   vi.stubEnv("DEPLOYMENT_ENV", undefined);
-  vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.co.uk");
+  vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.com");
   vi.stubEnv("PRODUCTION_OPERATIONS_ENABLED", "false");
   vi.stubEnv("REPAIR_WRITES_ENABLED", "false");
   vi.stubEnv("ALLOW_PREVIEW_REPAIR_WRITES", "false");
@@ -31,9 +31,9 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.resetModules(); });
 
 function request(path: string, body: unknown, method = "POST") {
-  return new NextRequest(`https://originrepairs.co.uk${path}`, {
+  return new NextRequest(`https://originrepairs.com${path}`, {
     method,
-    headers: { "content-type": "application/json", origin: "https://originrepairs.co.uk", "sec-fetch-site": "same-origin", "x-forwarded-for": randomUUID() },
+    headers: { "content-type": "application/json", origin: "https://originrepairs.com", "sec-fetch-site": "same-origin", "x-forwarded-for": randomUUID() },
     body: JSON.stringify(body),
   });
 }
@@ -112,7 +112,7 @@ describe("repair database write deployment policy", () => {
     vi.stubEnv("REPAIR_WRITES_ENABLED", "true");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "test-server-key");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true, hostname: "originrepairs.co.uk" }), { status: 200 })));
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true, hostname: "originrepairs.com" }), { status: 200 })));
     const responses = await mutateAll();
     expect(responses.map((response) => response.status)).toEqual([200, 201, 200]);
     expect(mocks.create).toHaveBeenCalledTimes(2);

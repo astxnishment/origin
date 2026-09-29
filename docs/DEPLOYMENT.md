@@ -1,33 +1,29 @@
 # Origin Repairs launch plan
 
-Prepared 22 September 2026; Vercel publishing preparation updated 29 September 2026. This records the implemented release and the remaining real-service setup. No hosting purchase, DNS change or real email has been performed.
+Updated 29 September 2026. The owner selected **Cloudflare** and confirmed **originrepairs.com** as the canonical domain. The existing Vercel deployment remains available for rollback. Render is an earlier proposal, not the current destination.
 
 ## Release status
 
-29 September: the owner explicitly requested an update to the existing Vercel site, superseding the earlier instruction to leave that connection unchanged. The public alias is `https://origin-peach.vercel.app`; it previously served the August main-branch build while the refreshed site remained a protected preview. The Vercel production configuration now selects the explicit contact-only mode below. Publication is pending the new release build and public verification; it is not the full operational launch.
+The Cloudflare migration currently uses an explicit **contact-only** profile. Worker deployment, domain routing and live acceptance remain pending verification. No production service activation or successful Cloudflare deployment is asserted by this document. Follow [the Cloudflare migration guide](CLOUDFLARE.md) for the actual build, preview and deploy wrappers; ordinary Next.js verification is not a Workers runtime check.
 
-### Publishing the updated pages before service connections
+The requested replacements are **Clerk authentication** and **Cloudflare-hosted human chat with a staff inbox**. Neither replacement is implemented; Clerk keys and real-service setup are pending. The existing custom email-link auth, PostgreSQL repair flows and Tawk adapter remain in the repository, disabled by the migration profile. Keys alone cannot enable the requested replacements. The detailed session, CSP/API, database and Durable Object chat work is tracked in [CLOUDFLARE.md](CLOUDFLARE.md#work-required-before-full-services).
 
-Set these two **Production** variables and rebuild:
+### Publishing public information during migration
+
+`scripts/cloudflare-environment.mjs` supplies the same safe values to the browser build and Worker runtime:
 
 ```dotenv
+HOSTING_PROVIDER=cloudflare
+DEPLOYMENT_ENV=production
 NEXT_PUBLIC_CONTACT_ONLY=true
-NEXT_PUBLIC_SITE_URL=https://origin-peach.vercel.app
+NEXT_PUBLIC_SITE_URL=https://originrepairs.com
 ```
 
-All online-operation, public-service, indexing and preview-override switches must be unset or `false`; the deployment gate rejects conflicts. Contact-only mode also enforces disabled email, database writes, accounts, booking, mail-in requests, tracking and live chat at runtime. Provider secrets are not needed. Repair pages, current imagery and local quote estimates remain available. `/book`, `/mail-in`, `/track` and `/contact` offer phone/WhatsApp contact with clear availability messages; the contact API rejects submissions before reading customer data. Unavailable domain email links are replaced with direct contact alternatives. Indexing remains off while this temporary address is used.
+All online-operation, public-service, indexing and preview-override switches are `false`. Contact-only mode also enforces disabled email, database writes, accounts, booking, mail-in requests, tracking and live chat at runtime. Provider secrets are not needed. Repair information, current images and local quote estimates remain available. `/book`, `/mail-in`, `/track` and `/contact` offer phone/WhatsApp alternatives; the contact API rejects submissions before reading customer data. Indexing remains off during migration.
 
-For the full operational launch, set `NEXT_PUBLIC_CONTACT_ONLY=false`, configure the canonical custom domain and all real services in the checklist below, and rebuild. This mode is explicit; it does not change local development or preview defaults. Vercel's Hobby plan is restricted to non-commercial use; the owner must arrange an appropriate plan for the business launch. No paid upgrade is included in publishing this update.
+The exact Vercel contact-only address `https://origin-peach.vercel.app` remains supported. No wildcard Workers address is accepted as a production canonical. A generated Worker URL may be used for verification with `.com` metadata and noindex before domain cutover.
 
-The owner supplied the operator name **Origin Repairs** and selected **both mail-in and live tracking**. These services are implemented. Hosting, a production PostgreSQL database, verified email delivery, production spam-protection keys and approved staff addresses are still needed. The existing Leeds address and other business details have been preserved; the owner's name reply did not independently confirm the address.
-
-The owner requested a provider other than Vercel on 25 September. The replacement provider and budget are pending. The application now supports an explicit `DEPLOYMENT_ENV` on other Node.js hosts while retaining Vercel compatibility. No plan is purchased by this work.
-
-27 September release preparation: Render is the proposed destination. The account is accessible but has no deployed service. [The prepared Render configuration](RENDER-SETUP.md) defines the website and private PostgreSQL database in Frankfurt at a proposed base cost of US$45.50/month, excluding tax and usage. Recurring-cost approval, domain-provider details and real-service credentials are still outstanding. A fresh release build and all 213 unit tests pass; two date-sensitive test fixtures were corrected to avoid closed Sundays. The release is prepared on `codex/launch-refresh`; this is not evidence of a public launch. Do not publish through the old Vercel production connection while the owner's choice of another provider remains in force.
-
-Release destination check on 25 September: GitHub records an existing Vercel production deployment for `main` commit `1aad4fff971720e37275bc497247a732ca0e9853` (deployed 3 August). Its deployment URL redirects to Vercel sign-in, and `originrepairs.co.uk` did not resolve from the release environment. GitHub access works. Publishing to the existing connection remains pending clarification because the owner requested another host. The local deployment check still reports missing production configuration; do not treat the old successful deployment as verification of the new services.
-
-Use a Node.js host with managed HTTPS, a canonical custom domain and persistent PostgreSQL. Production stage detection, redirects, staff origin protection and spam/write controls are portable. Verify the selected host's proxy/header and domain configuration before launch. Static-only hosting cannot support these features.
+Do not remove contact-only mode until the requested providers are implemented and accepted. The full-service gate currently checks custom auth and Tawk requirements; update it with those integrations rather than supplying dummy legacy credentials. The owner has selected mail-in and live tracking, but operational service availability still depends on production storage, delivery, authentication and staff procedures.
 
 ## Implemented scope
 
@@ -58,17 +54,21 @@ Tracking reflects staff updates; it does not locate devices or automatically det
 
 ## 2. Configure hosting and services
 
-For a managed Node.js host: use the project root, Node.js 22 or 24, locked install `npm ci`, build `npm run build`, and start `npm run start -- --hostname 0.0.0.0 --port "$PORT"` using the port supplied by the host. Terminate HTTPS at the managed proxy and configure the canonical domain. Separate production and preview secrets. Use a separate staging database; previews must never share the customer database or production authentication secret.
+Cloudflare uses the separate commands and settings in [CLOUDFLARE.md](CLOUDFLARE.md). The table below describes the existing full-service implementation and remains a future acceptance checklist, not the active migration profile. Clerk and human-chat integration will require corresponding changes before activation.
+
+For the retained Next.js/Node.js path: use the project root, Node.js 22 or 24, locked install `npm ci`, build `npm run build`, and start `npm run start -- --hostname 0.0.0.0 --port "$PORT"` using the port supplied by the host. Terminate HTTPS at the managed proxy and configure the canonical domain. Separate production and preview secrets. Use a separate staging database; previews must never share the customer database or production authentication secret.
 
 | Variable | Production value |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://originrepairs.co.uk` |
+| `NEXT_PUBLIC_SITE_URL` | `https://originrepairs.com` |
+| `HOSTING_PROVIDER` | `cloudflare` on Workers; `generic` for direct local Node requests |
+| `NEXT_PUBLIC_CONTACT_ONLY` | `true` during migration; `false` only after full-service acceptance |
 | `DEPLOYMENT_ENV` | `production` for the intended public release; `preview` during setup |
 | `PRODUCTION_OPERATIONS_ENABLED` | `true` after operational setup is verified |
 | `EMAILS_ENABLED` | `true` |
 | `ALLOW_PREVIEW_EMAILS` | `false` |
 | `RESEND_API_KEY` | Real secret for the verified sending domain |
-| `RESEND_FROM_EMAIL` | Verified sender at `originrepairs.co.uk` |
+| `RESEND_FROM_EMAIL` | Explicitly configured verified sender at `originrepairs.com`; confirm the mailbox separately |
 | `TURNSTILE_SECRET_KEY` | Production-domain secret |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Matching public widget key |
 | `DATABASE_URL` | Production PostgreSQL connection URL with provider-required TLS |
@@ -76,31 +76,29 @@ For a managed Node.js host: use the project root, Node.js 22 or 24, locked insta
 | `ALLOW_PREVIEW_REPAIR_WRITES` | `false` |
 | `STAFF_EMAILS` | Comma-separated, owner-approved staff email addresses |
 | `AUTH_SECRET` | Dedicated random secret of at least 32 characters |
-| `AUTH_BASE_URL` | `https://originrepairs.co.uk` |
+| `AUTH_BASE_URL` | `https://originrepairs.com` for the retained custom auth |
 | `NEXT_PUBLIC_BOOKING_ENABLED` | `true` |
 | `NEXT_PUBLIC_MAIL_IN_ENABLED` | `true` |
 | `NEXT_PUBLIC_TRACKING_ENABLED` | `true` |
 | `NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED` | `true` (tracking requires accounts) |
 | `NEXT_PUBLIC_WALK_INS_ENABLED` | `false` unless availability is confirmed |
 | `SITE_INDEXING_ENABLED` | `false` during acceptance; `true` for final reviewed public release |
-| `SITE_CONTENT_LAST_MODIFIED` | Actual content revision date, currently `2026-09-25` |
+| `SITE_CONTENT_LAST_MODIFIED` | Actual content revision date, currently `2026-09-29` |
 | `NEXT_PUBLIC_LIVE_CHAT_ENABLED` | `true` once the inbox is configured, or explicitly `false` to omit chat |
 | `NEXT_PUBLIC_TAWK_PROPERTY_ID` | Public 24-character property identifier from tawk.to |
 | `NEXT_PUBLIC_TAWK_WIDGET_ID` | Public widget identifier from tawk.to |
 
 Other hosts use `DEPLOYMENT_ENV`. Vercel supplies `VERCEL_ENV`, which takes precedence if present so previews cannot be promoted by a generic flag. `NODE_ENV=production` is not sufficient to activate live operations. All `NEXT_PUBLIC_*` values are compiled into the browser: rebuild after changing them. Leave review-profile URLs blank until verified. `.env.local.example` is a template and contains no usable live credentials.
 
-Connect and verify the customer chat inbox using [the live-chat setup guide](LIVE-CHAT.md). The UI and mocked tests do not establish that staff are available or that messages reach the real inbox.
+The [Tawk setup guide](LIVE-CHAT.md) documents only the retained legacy adapter. Build and verify the requested Cloudflare human inbox before enabling chat. The UI and mocked tests do not establish staff availability or real message delivery.
 
-25 September verification: the updated portable-host controls and chat integration pass 213 unit tests, TypeScript, lint and production build checks. Chat browser coverage includes 50 distinct cases across the default and simulated-provider configurations; the final ordinary build is restored. This does not change the outstanding hosting, account, database, email, domain and owner-operation requirements.
-
-26 September final visual release: a fresh production-mode build passes with the approved tablet/MacBook restorations, custom PC image and Origin tab icon. The local launch check still reports missing production configuration. The latest remote deployment remains the 3 August Vercel release; `originrepairs.co.uk` still did not resolve from this environment. No new deployment, domain change, service activation or real message delivery is claimed. Hosting destination/budget and domain ownership/provider have been requested from the owner; account setup and live acceptance checks remain necessary for the full launch.
-
-Production builds run `deploy:check` automatically. The same check can be run manually without sending messages or printing secrets. It verifies configuration shape and required controls, not credential validity, DNS, database readiness or inbox delivery. The tracking APIs separately require explicit permission to write records. Non-production writes require `ALLOW_PREVIEW_REPAIR_WRITES=true`; enable it only for controlled staging/local tests.
+The Next.js production build and Cloudflare release wrappers run the readiness gate before building or deploying. The same check can be run manually without sending messages or printing secrets. It verifies configuration shape and required controls, not credential validity, DNS, database readiness or inbox delivery. The tracking APIs separately require explicit permission to write records. Non-production writes require `ALLOW_PREVIEW_REPAIR_WRITES=true`; enable it only for controlled staging/local tests.
 
 Preview defaults: production operations, indexing, email delivery and database writes all off. Keep `ALLOW_PREVIEW_EMAILS=false`. Provider abuse protection and Turnstile are necessary because in-memory rate limits are per instance.
 
 ## 3. Prepare the production database
+
+For Workers, first replace the global client with request-scoped connections and configure Hyperdrive with query caching disabled, if used. The existing PostgreSQL schema remains required for repairs; the planned chat Durable Objects are separate storage.
 
 1. Create a persistent PostgreSQL database in the agreed region with restricted credentials and provider-required TLS. Record the provider, access controls, processing region, retention and costs.
 2. Configure the intended `DATABASE_URL`, take an appropriate backup if it contains existing data, and run `npm run db:migrate`. This applies `db/migrations/001_repairs.sql`; application requests never create or alter tables. Initial schema creation is repeatable, but existing incompatible tables need a reviewed migration.
@@ -111,6 +109,8 @@ Preview defaults: production operations, indexing, email delivery and database w
 Bookings use unique request keys and payload hashes in a database transaction. Status updates append history and reject stale versions. A saved booking is the request record even when email fails. Provider email keys supplement retry protection for up to [Resend's documented retention window](https://resend.com/docs/dashboard/emails/idempotency-keys); API acceptance alone does not prove inbox delivery.
 
 ## 4. Run release checks
+
+These commands cover the retained Next.js implementation. Also run the separate built-Worker checks in [CLOUDFLARE.md](CLOUDFLARE.md#build-and-verify-before-deployment). Use the full-feature CI test profile for this suite; the safe contact-only example intentionally disables forms.
 
 ```sh
 npm ci
@@ -138,7 +138,7 @@ The browser suite runs a separate production server on port 3108 across desktop,
 
 ## 6. Attach the domain and release
 
-Add `originrepairs.co.uk` and `www.originrepairs.co.uk` to the chosen host using its exact DNS instructions. Preserve MX/TXT email records. Verify HTTPS, the www-to-apex redirect, canonical metadata and security headers. Keep staging deployments private/noindex.
+Add `originrepairs.com` and `www.originrepairs.com` to the chosen host using its exact DNS instructions. Preserve MX/TXT email records. Verify HTTPS, the www-to-apex redirect, canonical metadata and security headers. Keep staging deployments private/noindex.
 
 Build with the approved configuration, complete the live acceptance checks, then enable indexing and rebuild the final public release. Verify robots permits public pages, sitemap includes intended services and excludes accounts/admin/tracking, and the final hostname loads correctly on mobile. Keep a known working deployment for rollback. Submit the sitemap through the owner's search-console account when ready.
 
@@ -148,7 +148,9 @@ Assign someone to monitor the staff dashboard, business inbox, host/database hea
 
 To stop new repair writes during an incident, set `REPAIR_WRITES_ENABLED=false` and apply the host's runtime/redeployment procedure. Leave telephone/email contact routes available. Restore the last working application deployment when appropriate; do not roll back database schema blindly. Restore backups only through the agreed recovery procedure. Feature flag changes require a rebuild to update navigation and browser behavior.
 
-## Verification record
+## Historical Next.js verification record
+
+These earlier results do not verify the Cloudflare migration or the planned Clerk/chat integrations.
 
 Verified locally on 22 September 2026:
 
@@ -168,6 +170,6 @@ Verified locally on 22 September 2026:
 | Live production configuration | Still requires hosting, database, real credentials, staff allowlist and explicit launch settings |
 | External delivery, domain and backup restore | Not verified; requires selected services and the controlled live checks above |
 
-These counts record the final passing coverage across the release run and focused reruns after fixes. The local database tests used PGlite's PostgreSQL engine and wire server with the actual production driver; they are not proof of full managed-PostgreSQL concurrency, availability or backup recovery. CI is configured to repeat the suite against PostgreSQL 16. No CI run is claimed here.
+These counts record the final passing coverage across the release run and focused reruns after fixes. The local database tests used PGlite's PostgreSQL engine and wire server with the actual production driver; they are not proof of full managed-PostgreSQL concurrency, availability or backup recovery. CI is configured to repeat the suite against PostgreSQL 16. This historical table does not report the status of the current migration CI run.
 
 Automated accessibility checks supplement visual and keyboard review; they do not certify full accessibility compliance. Mocked delivery and disabled external email do not establish inbox delivery. Public launch remains dependent on the real-service and owner checks above, regardless of automated results.

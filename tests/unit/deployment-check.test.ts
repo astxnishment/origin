@@ -13,12 +13,12 @@ afterAll(() => rmSync(cwd, { recursive: true, force: true }));
 const readyConfiguration: NodeJS.ProcessEnv = {
   NODE_ENV: "production",
   DEPLOYMENT_ENV: "production",
-  NEXT_PUBLIC_SITE_URL: "https://originrepairs.co.uk",
+  NEXT_PUBLIC_SITE_URL: "https://originrepairs.com",
   PRODUCTION_OPERATIONS_ENABLED: "true",
   EMAILS_ENABLED: "true",
   ALLOW_PREVIEW_EMAILS: "false",
   RESEND_API_KEY: "configuration-test-email-key-no-provider-called",
-  RESEND_FROM_EMAIL: "Origin Repairs <noreply@originrepairs.co.uk>",
+  RESEND_FROM_EMAIL: "Origin Repairs <noreply@originrepairs.com>",
   TURNSTILE_SECRET_KEY: "configuration-test-private-turnstile-key",
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: "configuration-test-public-turnstile-key",
   NEXT_PUBLIC_BOOKING_ENABLED: "true",
@@ -33,7 +33,7 @@ const readyConfiguration: NodeJS.ProcessEnv = {
   DATABASE_URL: "postgresql://test:fake-password@database.example.test/repairs",
   STAFF_EMAILS: "staff@example.test",
   AUTH_SECRET: "configuration-test-auth-secret-never-use-for-real-accounts",
-  AUTH_BASE_URL: "https://originrepairs.co.uk",
+  AUTH_BASE_URL: "https://originrepairs.com",
 };
 
 function check(overrides: Record<string, string | undefined> = {}, args = ["--if-production"]) {
@@ -48,6 +48,23 @@ function check(overrides: Record<string, string | undefined> = {}, args = ["--if
 }
 
 describe("deployment readiness on any Node host", () => {
+  it.each(["CLOUDFLARE", "cloudflar", ""])("rejects an ambiguous hosting provider setting: %s", (provider) => {
+    const result = check({ HOSTING_PROVIDER: provider });
+    expect(result.status).toBe(1);
+    expect(result.output).toContain("Set HOSTING_PROVIDER");
+  });
+
+  it("accepts a fully configured explicit Cloudflare deployment", () => {
+    expect(check({ HOSTING_PROVIDER: "cloudflare" }).status).toBe(0);
+  });
+
+  it("rejects the former domain and sender for a full launch", () => {
+    const result = check({ NEXT_PUBLIC_SITE_URL: "https://originrepairs.co.uk", RESEND_FROM_EMAIL: "Origin Repairs <noreply@originrepairs.co.uk>" });
+    expect(result.status).toBe(1);
+    expect(result.output).toContain("Set NEXT_PUBLIC_SITE_URL to https://originrepairs.com");
+    expect(result.output).toContain("verified originrepairs.com sender");
+  });
+
   it("runs the production build gate for the generic production marker without contacting providers", () => {
     const result = check();
     expect(result.status).toBe(0);

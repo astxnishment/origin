@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The Cloudflare release serves our compressed WebP assets directly.
+  // Vercel retains its existing image optimizer.
+  images: { unoptimized: process.env.HOSTING_PROVIDER === "cloudflare" },
   async headers() {
     return [
       {

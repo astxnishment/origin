@@ -47,7 +47,7 @@ function publicFlag(value: string | undefined, fallback: boolean): boolean {
 
 function siteUrl(): string {
   return optionalUrl(process.env.NEXT_PUBLIC_SITE_URL)?.replace(/\/$/, "") ??
-    "https://originrepairs.co.uk";
+    "https://originrepairs.com";
 }
 
 /**
