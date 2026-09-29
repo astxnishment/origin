@@ -26,7 +26,7 @@ The tracking integration suite is deliberately gated. See `.github/workflows/qua
 
 ## Deployment
 
-Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for the verified deployment record, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. On 29 September 2026, the Cloudflare CLI confirmed deployment to `.com` and `www`; the canonical site returned HTTPS 200 with the expected canonical, CSP and HSTS, and live homepage/client navigation checks passed. Local checks passed 284 unit tests and 31 Cloudflare browser checks, with two duplicate API probes skipped; the dependency audit reported zero vulnerabilities. PR #3's CI compatibility fix is still in progress; these results do not claim a merged PR or completed CI. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
+Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for the verified deployment record, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. On 29 September 2026, the Cloudflare CLI confirmed deployment to `.com` and `www`; the canonical site returned HTTPS 200 with the expected canonical, CSP and HSTS, and live homepage/client navigation checks passed. Local checks passed 285 unit tests and 31 Cloudflare browser checks, with two duplicate API probes skipped; the dependency audit reported zero vulnerabilities. Repository checks verify both the retained Next.js path and the Cloudflare runtime before changes are merged. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
 
 ```sh
 npm run build:cloudflare

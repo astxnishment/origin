@@ -8,11 +8,30 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.doUnmock("next/headers");
   vi.unstubAllEnvs();
   vi.resetModules();
 });
 
 describe("customer authentication tokens", () => {
+  it("loads request cookies only when reading a customer session", async () => {
+    let cookieValue = "";
+    const cookies = vi.fn(async () => ({
+      get: (name: string) => name === "origin_customer_session" ? { value: cookieValue } : undefined,
+    }));
+    const loadHeaders = vi.fn(() => ({ cookies }));
+    vi.doMock("next/headers", loadHeaders);
+    const { createSessionToken, verifySessionToken, getCustomerSession } = await import("@/lib/server/auth");
+    cookieValue = createSessionToken("customer@example.com");
+    expect(verifySessionToken(cookieValue)?.email).toBe("customer@example.com");
+    expect(loadHeaders).not.toHaveBeenCalled();
+    expect(cookies).not.toHaveBeenCalled();
+
+    await expect(getCustomerSession()).resolves.toMatchObject({ email: "customer@example.com" });
+    expect(loadHeaders).toHaveBeenCalledTimes(1);
+    expect(cookies).toHaveBeenCalledTimes(1);
+  });
+
   it("verifies a short-lived login token for the requested account route", async () => {
     const { createLoginToken, verifyLoginToken } = await import(
       "@/lib/server/auth"

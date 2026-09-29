@@ -6,11 +6,12 @@ The owner also requested **Clerk authentication** and a **Cloudflare-hosted huma
 
 ## Verified deployment record
 
-- Cloudflare version: `30fff7df-dac7-4239-8c9e-410387d4f529`, deployed 29 September 2026 to the `.com` and `www` domains.
+- Cloudflare version: `1d7d3162-2042-4598-b1e7-be9b3012f019`, deployed 29 September 2026 to the `.com` and `www` domains.
 - Live `https://originrepairs.com` returned HTTPS 200 with the correct canonical URL, Content Security Policy and HSTS. Live browser checks verified the homepage and client-side navigation.
-- Local verification passed 284 unit tests and 31 Cloudflare browser checks; two repeated API-probe cases were intentionally skipped. The dependency audit reported zero vulnerabilities.
-- PR #3 is still undergoing a CI installation-compatibility fix. This record does not claim that the PR is merged or that hosted CI has finished successfully.
-- `origin-repairs.blentiugov.workers.dev` exists, but HTTPS on that generated address was not verified; initial certificate availability may still be pending. Use the verified canonical `.com` site.
+- Local verification passed 285 unit tests and 31 Cloudflare browser checks; two repeated API-probe cases were intentionally skipped. The dependency audit reported zero vulnerabilities.
+- The generated `origin-repairs.blentiugov.workers.dev` address also returned HTTPS 200 after certificate activation. Use `.com` as the public address.
+- Cloudflare Always Use HTTPS is enabled. HTTP returns 301 to HTTPS; `www` returns 308 to the apex domain while preserving the path and query.
+- Live empty-request probes confirmed that contact, booking, account, staff and chat endpoints reject use while disabled. No customer data or real messages were submitted.
 
 These checks verify the contact-only website. Booking, mail-in requests, customer accounts, tracking, Clerk, live chat, outbound email, database writes and indexing remain disabled. They do not establish real message delivery or acceptance of repair requests.
 
