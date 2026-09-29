@@ -56,7 +56,7 @@ describe("live chat boundaries", () => {
     expect((await GET().text()).match(/<script nonce="([^"]+)"/)![1]).not.toBe(nonce);
   });
 
-  it.each(["/admin", "/admin/repairs", "/account/repairs", "/login", "/signup", "/forgot-password", "/track", "/book", "/support/chat"])("does not expose chat on %s", (path) => {
+  it.each(["/admin", "/admin/repairs", "/account/repairs", "/login", "/signup", "/forgot-password", "/track", "/book", "/mail-in", "/support/chat"])("does not expose chat on %s", (path) => {
     expect(showLiveChatOnPath(path)).toBe(false);
   });
 

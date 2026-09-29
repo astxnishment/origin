@@ -15,6 +15,11 @@ const configured = (value) => Boolean(value?.trim()) && !/xxxxx|replace.me|your[
 required(deploymentEnvironment === 'production', 'Set DEPLOYMENT_ENV=production on the intended production host (Vercel uses its platform-provided VERCEL_ENV).');
 required(env.HOSTING_PROVIDER === undefined || ['cloudflare', 'vercel', 'generic'].includes(env.HOSTING_PROVIDER), 'Set HOSTING_PROVIDER to cloudflare, vercel or generic, or leave it unset on an existing host.');
 const contactOnly = env.NEXT_PUBLIC_CONTACT_ONLY === 'true';
+function checkChatConfiguration() {
+  required(/^[a-f0-9]{24}$/i.test(env.NEXT_PUBLIC_TAWK_PROPERTY_ID?.trim() ?? ''), 'Configure NEXT_PUBLIC_TAWK_PROPERTY_ID with the 24-character hexadecimal property ID from the live-chat account.');
+  required(/^[a-z0-9]{1,64}$/i.test(env.NEXT_PUBLIC_TAWK_WIDGET_ID?.trim() ?? ''), 'Configure NEXT_PUBLIC_TAWK_WIDGET_ID with the 1–64 character alphanumeric widget ID from the live-chat account.');
+  notes.push('Test live chat with a real available agent and verify its offline message form before launch.');
+}
 if (contactOnly) {
   required(['https://origin-peach.vercel.app', 'https://originrepairs.com'].includes(env.NEXT_PUBLIC_SITE_URL), 'Contact-only publishing requires NEXT_PUBLIC_SITE_URL=https://origin-peach.vercel.app or https://originrepairs.com with no path, credentials, port or query.');
   for (const flag of [
@@ -22,11 +27,14 @@ if (contactOnly) {
     'SITE_INDEXING_ENABLED', 'ALLOW_PREVIEW_EMAILS', 'ALLOW_PREVIEW_REPAIR_WRITES',
     'NEXT_PUBLIC_BOOKING_ENABLED', 'NEXT_PUBLIC_WALK_INS_ENABLED',
     'NEXT_PUBLIC_MAIL_IN_ENABLED', 'NEXT_PUBLIC_TRACKING_ENABLED',
-    'NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED', 'NEXT_PUBLIC_LIVE_CHAT_ENABLED',
+    'NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED',
   ]) {
     required(env[flag] === undefined || env[flag] === 'false', `Contact-only publishing requires ${flag}=false or unset.`);
   }
-  notes.push('Contact-only mode: online repair requests, mail-in, tracking, accounts, live chat, outbound email, database writes and search indexing remain disabled.');
+  required(env.NEXT_PUBLIC_LIVE_CHAT_ENABLED === undefined || ['true', 'false'].includes(env.NEXT_PUBLIC_LIVE_CHAT_ENABLED), 'Set NEXT_PUBLIC_LIVE_CHAT_ENABLED to true or false, or leave it unset to disable chat in contact-only mode.');
+  if (env.NEXT_PUBLIC_LIVE_CHAT_ENABLED === 'true') checkChatConfiguration();
+  notes.push('Contact-only mode: online repair requests, mail-in, tracking, accounts, outbound email, database writes and search indexing remain disabled.');
+  notes.push(env.NEXT_PUBLIC_LIVE_CHAT_ENABLED === 'true' ? 'Live chat is explicitly enabled as a separate customer-initiated contact channel.' : 'Live chat remains disabled.');
 } else {
   required(env.NEXT_PUBLIC_SITE_URL === 'https://originrepairs.com', 'Set NEXT_PUBLIC_SITE_URL to https://originrepairs.com before building.');
   required(env.PRODUCTION_OPERATIONS_ENABLED === 'true', 'Confirm the owner checklist in docs/DEPLOYMENT.md, then set PRODUCTION_OPERATIONS_ENABLED=true.');
@@ -59,9 +67,7 @@ if (contactOnly) {
     notes.push('Confirm packing instructions, postage responsibility, return process and service terms before accepting mail-in devices.');
   }
   if (enabledByDefault('NEXT_PUBLIC_LIVE_CHAT_ENABLED')) {
-    required(/^[a-f0-9]{24}$/i.test(env.NEXT_PUBLIC_TAWK_PROPERTY_ID?.trim() ?? ''), 'Configure NEXT_PUBLIC_TAWK_PROPERTY_ID with the 24-character hexadecimal property ID from the live-chat account.');
-    required(/^[a-z0-9]{1,64}$/i.test(env.NEXT_PUBLIC_TAWK_WIDGET_ID?.trim() ?? ''), 'Configure NEXT_PUBLIC_TAWK_WIDGET_ID with the 1–64 character alphanumeric widget ID from the live-chat account.');
-    notes.push('Test live chat with a real available agent and verify its offline message form before launch.');
+    checkChatConfiguration();
   }
   if (env.SITE_INDEXING_ENABLED !== 'true') notes.push('Search indexing is disabled. Enable it only for the reviewed canonical production release.');
 }

@@ -1,7 +1,13 @@
 import { expect, test as base, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { cloudflareEnvironment } from "../../scripts/cloudflare-environment.mjs";
 
 const canonicalOrigin = "https://originrepairs.com";
+const chatConfigured = cloudflareEnvironment.NEXT_PUBLIC_LIVE_CHAT_ENABLED === "true"
+  && /^[a-f0-9]{24}$/i.test(cloudflareEnvironment.NEXT_PUBLIC_TAWK_PROPERTY_ID)
+  && /^[a-z0-9]{1,64}$/i.test(cloudflareEnvironment.NEXT_PUBLIC_TAWK_WIDGET_ID);
+const chatScriptUrl = `https://embed.tawk.to/${cloudflareEnvironment.NEXT_PUBLIC_TAWK_PROPERTY_ID}/${cloudflareEnvironment.NEXT_PUBLIC_TAWK_WIDGET_ID}`;
+const privateChatPaths = /^\/(?:admin|account|login|signup|forgot-password|track|book|mail-in|support)(?:\/|$)/;
 const publicPages = [
   "/", "/repairs", "/repairs/phones", "/repairs/iphone", "/repairs/samsung",
   "/repairs/google-pixel", "/repairs/ipad", "/repairs/laptops", "/repairs/consoles",
@@ -15,8 +21,9 @@ const test = base.extend<{ auditBrowser: void }>({
     const externalRequests: string[] = [];
     const browserErrors: string[] = [];
     const origin = new URL(baseURL!).origin;
-    // A contact-only page must work without contacting maps, chat, spam-check
-    // or messaging providers. Never allow this suite to contact them for real.
+    // Public pages must not start third-party integrations automatically. Chat
+    // tests override only the vendor script with a local fixture; nothing in
+    // this suite may contact a provider or submit a real message.
     await page.route("**/*", async (route) => {
       const url = new URL(route.request().url());
       if (/^https?:$/.test(url.protocol) && url.origin !== origin) {
@@ -56,6 +63,46 @@ async function expectLoadedImages(page: Page) {
   }
 }
 
+async function mockChatProvider(page: Page, fail = false) {
+  const requests: Array<{ url: string; frameUrl: string }> = [];
+  // Keep the real /support/chat response, nonce and bridge. Only replace the
+  // vendor script, so these checks also exercise the Worker's document CSP.
+  await page.route("https://embed.tawk.to/**", (route) => {
+    requests.push({ url: route.request().url(), frameUrl: route.request().frame().url() });
+    if (fail) return route.abort("failed");
+    return route.fulfill({
+      contentType: "application/javascript",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: `
+        (function () {
+        // Model the provider's embedded mode. Without a valid target, its
+        // floating desktop panel is wider than the 320px mobile viewport.
+        const target = typeof window.Tawk_API.embedded === "string"
+          ? document.getElementById(window.Tawk_API.embedded) : null;
+        const widget = document.createElement("section");
+        widget.dataset.testChatWidget = "true";
+        widget.style.cssText = target
+          ? "width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column"
+          : "width:380px;height:600px";
+        (target || document.body).appendChild(widget);
+        window.Tawk_API.getStatus = function () { return "offline"; };
+        window.Tawk_API.maximize = function () {
+          document.documentElement.dataset.testChatMaximized = "true";
+        };
+        ["online", "away", "offline"].forEach(function (status) {
+          const button = document.createElement("button");
+          button.textContent = "Simulate " + status;
+          button.onclick = function () { window.Tawk_API.onStatusChange(status); };
+          widget.appendChild(button);
+        });
+        window.Tawk_API.onLoad();
+        })();
+      `,
+    });
+  });
+  return requests;
+}
+
 test("public pages render with canonical metadata and working images", async ({ page }) => {
   test.setTimeout(180_000);
   for (const path of publicPages) {
@@ -65,7 +112,7 @@ test("public pages render with canonical metadata and working images", async ({ 
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${canonicalOrigin}${path === "/" ? "" : path}`);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-    await expect(page.getByRole("button", { name: "Chat with us" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Chat with us" })).toHaveCount(chatConfigured && !privateChatPaths.test(path) ? 1 : 0);
     await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
     await expectLoadedImages(page);
     await expectNoOverflow(page);
@@ -213,6 +260,150 @@ test("contact-only routes expose direct contact without online forms", async ({ 
   }
 });
 
+test.describe("explicitly enabled chat in the contact-only release", () => {
+  test.skip(!chatConfigured, "The shared Cloudflare release profile has not enabled valid chat settings.");
+
+  test("chat opts in, boots inside its own document and closes accessibly", async ({ page, viewport }) => {
+    const requests = await mockChatProvider(page);
+    await page.goto("/repairs");
+    const launcher = page.getByRole("button", { name: "Chat with us", exact: true });
+    const dialog = page.getByRole("dialog", { name: "Talk to Origin Repairs", exact: true });
+    const frame = page.getByTitle("Origin Repairs live chat", { exact: true });
+    await expect(launcher).toBeVisible();
+    if (viewport!.width < 768) {
+      const actions = page.getByRole("navigation", { name: "Quick repair actions" });
+      await expect(actions).toBeVisible();
+      const launcherBox = await launcher.boundingBox();
+      const actionsBox = await actions.boundingBox();
+      expect(launcherBox!.y + launcherBox!.height).toBeLessThanOrEqual(actionsBox!.y);
+      await actions.getByRole("link", { name: "Get Quote", exact: true }).click({ trial: true });
+    }
+    await launcher.click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("button", { name: "Start chat", exact: true })).toBeVisible();
+    await expect(dialog.locator('a[href^="mailto:"]')).toHaveCount(0);
+    await expect(dialog.getByRole("link", { name: "Contact options", exact: true })).toHaveAttribute("href", "/contact");
+    await expect(frame).toHaveCount(0);
+    const box = await dialog.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.y).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(viewport!.width + 1);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(viewport!.height + 1);
+    const accessibility = await new AxeBuilder({ page }).include('[role="dialog"]').analyze();
+    expect(accessibility.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) }))).toEqual([]);
+    expect(requests, "Opening the consent dialog must not load Tawk").toEqual([]);
+
+    const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/support/chat");
+    await dialog.getByRole("button", { name: "Start chat", exact: true }).click();
+    const response = await responsePromise;
+    expect(response.status()).toBe(200);
+    await expect(frame).toBeVisible();
+    await expect(dialog.getByRole("status")).toHaveText("The team is offline. Leave a message for a reply.");
+    const chatDocument = page.frameLocator('iframe[title="Origin Repairs live chat"]');
+    await expect(chatDocument.locator("html")).toHaveAttribute("data-test-chat-maximized", "true");
+    await expect(chatDocument.locator("#loading")).toBeHidden();
+    const embeddedWidget = chatDocument.locator('[data-test-chat-widget="true"]');
+    await expect(embeddedWidget).toBeVisible();
+    const widgetSize = await embeddedWidget.evaluate((widget) => {
+      const bounds = widget.getBoundingClientRect();
+      return {
+        parentId: widget.parentElement?.id,
+        x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height,
+        viewportWidth: window.innerWidth, viewportHeight: window.innerHeight,
+        contentWidth: document.documentElement.scrollWidth,
+        contentHeight: document.documentElement.scrollHeight,
+      };
+    });
+    expect(widgetSize.parentId, "The provider must mount into the declared embedded container").toBe("origin-tawk-container");
+    expect(widgetSize.width).toBeGreaterThan(0);
+    expect(widgetSize.height).toBeGreaterThan(0);
+    expect(widgetSize.x).toBeCloseTo(0, 0);
+    expect(widgetSize.y).toBeCloseTo(0, 0);
+    expect(widgetSize.width).toBeCloseTo(widgetSize.viewportWidth, 0);
+    expect(widgetSize.height).toBeCloseTo(widgetSize.viewportHeight, 0);
+    expect(widgetSize.contentWidth).toBeLessThanOrEqual(widgetSize.viewportWidth + 1);
+    expect(widgetSize.contentHeight).toBeLessThanOrEqual(widgetSize.viewportHeight + 1);
+    const nonce = await chatDocument.locator("script[nonce]").evaluate((script) => (script as HTMLScriptElement).nonce);
+    expect(nonce).not.toBe("");
+    expect(response.headers()["content-security-policy"]).toContain(`'nonce-${nonce}'`);
+    expect(response.headers()["content-security-policy"]).toContain("'strict-dynamic'");
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toBe(chatScriptUrl);
+    expect(new URL(requests[0].frameUrl).pathname).toBe("/support/chat");
+    await expect(page.locator('script[src*="tawk.to"]')).toHaveCount(0);
+    for (const status of ["online", "away", "offline"]) {
+      await chatDocument.getByRole("button", { name: `Simulate ${status}`, exact: true }).click();
+      await expect(dialog.getByRole("status")).toContainText(`The team is ${status}.`);
+    }
+
+    // Escape is handled by the first-party dialog, not the vendor document.
+    await dialog.getByRole("button", { name: "Close chat", exact: true }).focus();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(frame).toHaveCount(0);
+    await expect(launcher).toBeFocused();
+    await launcher.click();
+    await expect(dialog.getByRole("button", { name: "Start chat", exact: true })).toBeVisible();
+    await expect(frame).toHaveCount(0);
+    expect(requests).toHaveLength(1);
+    await dialog.getByRole("button", { name: "Start chat", exact: true }).click();
+    await expect(dialog.getByRole("status")).toContainText("The team is offline.");
+    await dialog.getByRole("button", { name: "Close chat", exact: true }).click();
+    await expect(frame).toHaveCount(0);
+    await expect(launcher).toBeFocused();
+    expect(requests).toHaveLength(2);
+  });
+
+  test("provider failure removes the iframe and offers working contact options", async ({ page }) => {
+    const requests = await mockChatProvider(page, true);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Chat with us", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Talk to Origin Repairs", exact: true });
+    expect(requests).toEqual([]);
+    await dialog.getByRole("button", { name: "Start chat", exact: true }).click();
+    await expect(dialog.getByText("We couldn’t connect to chat. Try again, or contact the team below.")).toBeVisible();
+    await expect(dialog.getByRole("button", { name: "Try chat again", exact: true })).toBeVisible();
+    await expect(page.getByTitle("Origin Repairs live chat", { exact: true })).toHaveCount(0);
+    await expect(dialog.locator('a[href="tel:+447768426754"]')).toBeVisible();
+    await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toBe(chatScriptUrl);
+    await dialog.getByRole("link", { name: "Contact options", exact: true }).click();
+    await expect(page).toHaveURL(/\/contact$/);
+    await expect(dialog).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Message on WhatsApp", exact: true })).toBeVisible();
+    await expect(page.locator("main form")).toHaveCount(0);
+  });
+
+  test("navigation tears down chat and private service routes never launch it", async ({ page }) => {
+    const requests = await mockChatProvider(page);
+    await page.goto("/contact");
+    await page.getByRole("banner").getByRole("link", { name: "Origin Repairs — home", exact: true }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await page.getByRole("button", { name: "Chat with us", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Talk to Origin Repairs", exact: true });
+    await dialog.getByRole("button", { name: "Start chat", exact: true }).click();
+    await expect(dialog.getByRole("status")).toContainText("The team is offline.");
+    await page.goBack();
+    await expect(page).toHaveURL(/\/contact$/);
+    await expect(dialog).toHaveCount(0);
+    await expect(page.locator("iframe")).toHaveCount(0);
+    await page.getByRole("button", { name: "Chat with us", exact: true }).click();
+    await expect(dialog.getByRole("button", { name: "Start chat", exact: true })).toBeVisible();
+    await expect(page.locator("iframe")).toHaveCount(0);
+    expect(requests).toHaveLength(1);
+    await dialog.getByRole("button", { name: "Close chat", exact: true }).click();
+    for (const path of ["/book", "/mail-in", "/track", "/admin", "/admin/repairs", "/support"]) {
+      await page.goto(path);
+      await expect.poll(() => new URL(page.url()).pathname).toBe(path);
+      await expect(page.getByRole("button", { name: "Chat with us", exact: true })).toHaveCount(0);
+      await expect(page.locator("iframe")).toHaveCount(0);
+      await expect(page.locator('script[src*="tawk.to"]')).toHaveCount(0);
+    }
+    expect(requests, "Private routes must not initialize another provider instance").toHaveLength(1);
+  });
+});
+
 test("disabled APIs reject empty probes without accepting messages or repair changes", async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-dark", "One set of empty local API probes is sufficient.");
   for (const [method, path] of [
@@ -227,8 +418,14 @@ test("disabled APIs reject empty probes without accepting messages or repair cha
     expect(body.ok, path).not.toBe(true);
   }
   const chat = await request.get("/support/chat");
-  expect(chat.status()).toBe(503);
-  expect(await chat.text()).not.toContain("<script");
+  expect(chat.status()).toBe(chatConfigured ? 200 : 503);
+  if (chatConfigured) {
+    expect(await chat.text()).toContain(chatScriptUrl);
+    expect(chat.headers()["content-security-policy"]).toContain("'strict-dynamic'");
+    expect(chat.headers()["cache-control"]).toBe("private, no-store");
+  } else {
+    expect(await chat.text()).not.toContain("<script");
+  }
   const login = await request.get("/api/auth/verify", { maxRedirects: 0 });
   expect(login.status()).toBe(307);
   expect(login.headers().location).toContain("/login?error=unavailable");

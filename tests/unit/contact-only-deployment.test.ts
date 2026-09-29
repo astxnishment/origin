@@ -15,7 +15,7 @@ const disabledFlags = [
   "SITE_INDEXING_ENABLED", "ALLOW_PREVIEW_EMAILS", "ALLOW_PREVIEW_REPAIR_WRITES",
   "NEXT_PUBLIC_BOOKING_ENABLED", "NEXT_PUBLIC_WALK_INS_ENABLED",
   "NEXT_PUBLIC_MAIL_IN_ENABLED", "NEXT_PUBLIC_TRACKING_ENABLED",
-  "NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED", "NEXT_PUBLIC_LIVE_CHAT_ENABLED",
+  "NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED",
 ] as const;
 
 function check(overrides: Record<string, string | undefined> = {}, args: string[] = []) {
@@ -46,6 +46,7 @@ beforeEach(() => {
   // Runtime policy must remain safe even if conflicting switches reach it
   // through a misconfigured deployment that bypassed the build command.
   for (const flag of disabledFlags) vi.stubEnv(flag, "true");
+  vi.stubEnv("NEXT_PUBLIC_LIVE_CHAT_ENABLED", "true");
 });
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -94,6 +95,32 @@ describe("explicit contact-only production gate", () => {
   it("accepts explicitly disabled flags and rejects malformed flag values", () => {
     expect(check(Object.fromEntries(disabledFlags.map((flag) => [flag, "false"]))).status).toBe(0);
     expect(check({ NEXT_PUBLIC_BOOKING_ENABLED: "invalid" }).status).toBe(1);
+  });
+
+  it("permits explicitly configured chat without enabling repair operations", () => {
+    const result = check({
+      NEXT_PUBLIC_LIVE_CHAT_ENABLED: "true",
+      NEXT_PUBLIC_TAWK_PROPERTY_ID: "0123456789abcdef01234567",
+      NEXT_PUBLIC_TAWK_WIDGET_ID: "testwidget1",
+    });
+    expect(result.status).toBe(0);
+    expect(result.output).toContain("Live chat is explicitly enabled");
+    expect(result.output).toContain("Full-service launch remains disabled");
+    expect(result.output).not.toContain("BLOCKED:");
+  });
+
+  it.each([
+    { NEXT_PUBLIC_TAWK_PROPERTY_ID: undefined, NEXT_PUBLIC_TAWK_WIDGET_ID: undefined },
+    { NEXT_PUBLIC_TAWK_PROPERTY_ID: "invalid", NEXT_PUBLIC_TAWK_WIDGET_ID: "testwidget1" },
+    { NEXT_PUBLIC_TAWK_PROPERTY_ID: "0123456789abcdef01234567", NEXT_PUBLIC_TAWK_WIDGET_ID: "../widget" },
+  ])("rejects chat opt-in without valid provider identifiers: %j", (configuration) => {
+    const result = check({ NEXT_PUBLIC_LIVE_CHAT_ENABLED: "true", ...configuration });
+    expect(result.status).toBe(1);
+    expect(result.output).toContain("Configure NEXT_PUBLIC_TAWK_");
+  });
+
+  it.each(["TRUE", "invalid", ""])("rejects an ambiguous chat flag: %s", (flag) => {
+    expect(check({ NEXT_PUBLIC_LIVE_CHAT_ENABLED: flag }).status).toBe(1);
   });
 
   it.each([undefined, "false", "TRUE"])("never skips full launch requirements without the exact opt-in: %s", (flag) => {
@@ -170,11 +197,37 @@ describe("contact-only runtime isolation", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("disables a configured chat provider", async () => {
+  it.each([undefined, "false", "invalid"])("keeps configured chat disabled without an explicit opt-in: %s", async (flag) => {
+    vi.stubEnv("NEXT_PUBLIC_LIVE_CHAT_ENABLED", flag);
     vi.stubEnv("NEXT_PUBLIC_TAWK_PROPERTY_ID", "0123456789abcdef01234567");
     vi.stubEnv("NEXT_PUBLIC_TAWK_WIDGET_ID", "testwidget1");
     const { liveChatConfiguration } = await import("@/lib/liveChat");
     expect(liveChatConfiguration()).toEqual({ enabled: false, scriptUrl: null });
+  });
+
+  it("allows only configured chat while keeping operational services disabled", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TAWK_PROPERTY_ID", "0123456789abcdef01234567");
+    vi.stubEnv("NEXT_PUBLIC_TAWK_WIDGET_ID", "testwidget1");
+    const [{ liveChatConfiguration }, deployment, { GET }] = await Promise.all([
+      import("@/lib/liveChat"), import("@/lib/deployment"), import("@/app/support/chat/route"),
+    ]);
+    expect(liveChatConfiguration()).toEqual({ enabled: true, scriptUrl: "https://embed.tawk.to/0123456789abcdef01234567/testwidget1" });
+    expect(GET().status).toBe(200);
+    expect(deployment.IS_PRODUCTION_DEPLOYMENT).toBe(false);
+    expect(deployment.EMAIL_DELIVERY_ENABLED).toBe(false);
+    expect(deployment.areRepairWritesEnabled()).toBe(false);
+    expect(deployment.INDEXING_ENABLED).toBe(false);
+  });
+
+  it("keeps chat hidden and rejects its document when opted in with invalid identifiers", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TAWK_PROPERTY_ID", "invalid");
+    vi.stubEnv("NEXT_PUBLIC_TAWK_WIDGET_ID", "testwidget1");
+    const { liveChatConfiguration } = await import("@/lib/liveChat");
+    const { GET } = await import("@/app/support/chat/route");
+    expect(liveChatConfiguration()).toEqual({ enabled: false, scriptUrl: null });
+    const response = GET();
+    expect(response.status).toBe(503);
+    expect(await response.text()).not.toContain("<script");
   });
 
   it("preserves the full operational mode without contact-only opt-in", async () => {

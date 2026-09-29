@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Dialog } from "radix-ui";
 import { ArrowRight, LoaderCircle, Mail, MessageCircle, Phone, X } from "lucide-react";
 import { BUSINESS } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { isChatStatus, showLiveChatOnPath, type ChatStatus } from "@/lib/liveChat";
 
 export default function LiveChat({ configured }: { configured: boolean }) {
@@ -94,7 +95,7 @@ function ChatPanel({ configured }: { configured: boolean }) {
           </> : <div className="overflow-y-auto p-5 sm:p-6">
             <p className="text-lg font-semibold leading-snug">Let’s get your device sorted.</p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              {failed ? "We couldn’t connect to chat. Try again, or contact the team below." : !configured ? "Live chat is unavailable right now. Please call, email or send us a message." : "Chat with our team about repairs, prices or sending in a device. If nobody is available, leave a message and we’ll get back to you."}
+              {failed ? "We couldn’t connect to chat. Try again, or contact the team below." : !configured ? (CONTACT_ONLY_MODE ? "Live chat is unavailable right now. Please call or use our contact options." : "Live chat is unavailable right now. Please call, email or send us a message.") : "Chat with our team about repairs, prices or sending in a device. If nobody is available, leave a message and we’ll get back to you."}
             </p>
             {configured && <>
               <button type="button" onClick={() => { setFailed(false); setReady(false); setStatus(null); setStarted(true); }} className="btn-primary mt-5 flex min-h-12 w-full items-center justify-center gap-2">
@@ -104,8 +105,8 @@ function ChatPanel({ configured }: { configured: boolean }) {
             </>}
             <div className="mt-6 space-y-2 border-t border-border pt-5">
               <a href={BUSINESS.phoneHref} className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm hover:bg-surface"><Phone className="h-4 w-4 shrink-0" aria-hidden="true" /><span>{BUSINESS.phoneDisplay}</span></a>
-              <a href={`mailto:${BUSINESS.email}`} className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm hover:bg-surface"><Mail className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="break-all">{BUSINESS.email}</span></a>
-              <Link href="/contact" onClick={closeChat} className="flex min-h-12 items-center justify-between gap-3 rounded-lg bg-surface px-3 text-sm font-medium">Send a message<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+              {!CONTACT_ONLY_MODE && <a href={`mailto:${BUSINESS.email}`} className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm hover:bg-surface"><Mail className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="break-all">{BUSINESS.email}</span></a>}
+              <Link href="/contact" onClick={closeChat} className="flex min-h-12 items-center justify-between gap-3 rounded-lg bg-surface px-3 text-sm font-medium">{CONTACT_ONLY_MODE ? "Contact options" : "Send a message"}<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
             </div>
           </div>}
         </Dialog.Content>
