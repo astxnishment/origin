@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
   PageContainer,
@@ -154,14 +155,18 @@ export default function WarrantyPage() {
                 7. Contact
               </h2>
               <p>
-                Email{" "}
-                <a
-                  href={`mailto:${BUSINESS.email}`}
-                  className="text-primary underline underline-offset-4"
-                >
-                  {BUSINESS.email}
-                </a>{" "}
-                or call{" "}
+                {CONTACT_ONLY_MODE ? "Call " : (
+                  <>
+                    Email{" "}
+                    <a
+                      href={`mailto:${BUSINESS.email}`}
+                      className="text-primary underline underline-offset-4"
+                    >
+                      {BUSINESS.email}
+                    </a>{" "}
+                    or call{" "}
+                  </>
+                )}
                 <a
                   href={BUSINESS.phoneHref}
                   className="text-primary underline underline-offset-4"

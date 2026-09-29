@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { contactRequestSchema } from "@/lib/forms/schemas";
 import { BUSINESS } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { sendEmail } from "@/lib/server/email";
 import {
   RequestBodyError,
@@ -18,6 +19,12 @@ import {
 } from "@/lib/server/requestSecurity";
 
 export async function POST(request: NextRequest) {
+  if (CONTACT_ONLY_MODE) {
+    return NextResponse.json(
+      { error: `Website messaging is not available yet. Please call ${BUSINESS.phoneDisplay} or contact us on WhatsApp.` },
+      { status: 503, headers: { "Cache-Control": "no-store" } }
+    );
+  }
   if (!checkRateLimit(request, "contact", 5, 15 * 60 * 1000)) {
     return NextResponse.json(
       { error: "Too many requests. Please wait before trying again." },

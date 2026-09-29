@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { DirectContactPage } from "@/components/DirectContact";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { BUSINESS, FEATURES } from "@/lib/constants";
@@ -16,6 +18,7 @@ import RefreshRepairs from "@/components/tracking/RefreshRepairs";
 export const metadata: Metadata = { title: "Track your repair", robots: { index: false, follow: false } };
 
 export default async function TrackPage({ searchParams }: { searchParams: Promise<{ reference?: string }> }) {
+  if (CONTACT_ONLY_MODE) return <DirectContactPage title="Ask for a repair update." description="Online repair tracking is not available yet. Call or message the team with your repair reference for an update." />;
   if (!FEATURES.trackingEnabled) notFound();
   const query = await searchParams;
   const reference = query.reference?.trim().toUpperCase().slice(0, 40) ?? "";

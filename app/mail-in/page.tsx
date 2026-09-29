@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { DirectContactPage } from "@/components/DirectContact";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Package, ShieldCheck, Truck } from "lucide-react";
 import { BUSINESS, FEATURES } from "@/lib/constants";
@@ -49,6 +51,7 @@ const devices = [
 ];
 
 export default function MailInRepairPage() {
+  if (CONTACT_ONLY_MODE) return <DirectContactPage title="Ask about mail-in repair." description="Call or message us to discuss your device. Online mail-in requests are not available yet. Do not send a device until the team has accepted it and provided shipping instructions." />;
   if (!FEATURES.mailInEnabled) notFound();
 
   return (

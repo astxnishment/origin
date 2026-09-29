@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS, FEATURES } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
   PageContainer,
@@ -115,7 +116,7 @@ export default function TermsPage() {
                 Contact us to withdraw an unaccepted request. For a consumer
                 service contract agreed online, by phone or by post, you normally
                 have 14 days to cancel, starting the day after the contract is
-                agreed. Tell us clearly by email, phone or post; you do not have
+                agreed. Tell us clearly by {CONTACT_ONLY_MODE ? "phone or post" : "email, phone or post"}; you do not have
                 to use the form below.
               </p>
               <p className="mt-3">
@@ -129,7 +130,7 @@ export default function TermsPage() {
               </p>
               <div className="mt-4 rounded-lg border border-border p-4">
                 <h3 className="font-semibold text-foreground">Optional cancellation form</h3>
-                <p className="mt-2">To: {BUSINESS.name}, {BUSINESS.address}, {BUSINESS.email}.</p>
+                <p className="mt-2">To: {BUSINESS.name}, {BUSINESS.address}{!CONTACT_ONLY_MODE && `, ${BUSINESS.email}`}.</p>
                 <p className="mt-2">
                   I give notice that I cancel my contract for the following
                   service: [service and repair reference]. Ordered on: [date].
@@ -176,15 +177,21 @@ export default function TermsPage() {
                 Questions or complaints
               </h2>
               <p>
-                Send questions or complaints, with your repair reference and
-                the outcome you are seeking, to{" "}
-                <a
-                  href={`mailto:${BUSINESS.email}`}
-                  className="text-primary underline underline-offset-4"
-                >
-                  {BUSINESS.email}
-                </a>{" "}
-                or raised by phone on{" "}
+                {CONTACT_ONLY_MODE ? (
+                  <>Raise questions or complaints, with your repair reference and the outcome you are seeking, by phone on{" "}</>
+                ) : (
+                  <>
+                    Send questions or complaints, with your repair reference and
+                    the outcome you are seeking, to{" "}
+                    <a
+                      href={`mailto:${BUSINESS.email}`}
+                      className="text-primary underline underline-offset-4"
+                    >
+                      {BUSINESS.email}
+                    </a>{" "}
+                    or raised by phone on{" "}
+                  </>
+                )}
                 <a
                   href={BUSINESS.phoneHref}
                   className="text-primary underline underline-offset-4"

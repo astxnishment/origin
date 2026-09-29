@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import {
   PageContainer,
   PageIntro,
@@ -38,12 +39,12 @@ export default function PrivacyPage() {
                 {BUSINESS.name}, {BUSINESS.address}, is responsible for the
                 personal data described in this notice. It covers enquiries,
                 repair requests, mail-in repairs, customer accounts and repair
-                tracking. Privacy requests can be sent to{" "}
+                tracking. {CONTACT_ONLY_MODE ? "For privacy requests, call" : "Privacy requests can be sent to"}{" "}
                 <a
-                  href={`mailto:${BUSINESS.email}`}
+                  href={CONTACT_ONLY_MODE ? BUSINESS.phoneHref : `mailto:${BUSINESS.email}`}
                   className="text-primary underline underline-offset-4"
                 >
-                  {BUSINESS.email}
+                  {CONTACT_ONLY_MODE ? BUSINESS.phoneDisplay : BUSINESS.email}
                 </a>
                 .
               </p>

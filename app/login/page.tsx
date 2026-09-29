@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/AuthShell";
 import LoginForm from "@/app/login/LoginForm";
 import { FEATURES } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { getCustomerSession, normaliseNextPath } from "@/lib/server/auth";
 
 export const metadata: Metadata = pageMetadata("/login", {
@@ -26,6 +27,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string; next?: string }>;
 }) {
+  if (CONTACT_ONLY_MODE) redirect("/contact");
   if (!FEATURES.customerAccountsEnabled) redirect("/");
 
   const query = await searchParams;

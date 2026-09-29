@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calculator, CalendarCheck } from "lucide-react";
-import { FEATURES } from "@/lib/constants";
+import { Calculator, CalendarCheck, Phone } from "lucide-react";
+import { BUSINESS, FEATURES } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 
 export default function MobileCTABar() {
   const pathname = usePathname();
@@ -49,6 +50,12 @@ export default function MobileCTABar() {
             <CalendarCheck className="h-4 w-4" />
             <span>Book Repair</span>
           </Link>
+        )}
+        {CONTACT_ONLY_MODE && (
+          <a href={BUSINESS.phoneHref} className="btn-secondary flex h-12 items-center justify-center gap-2 px-3 text-sm">
+            <Phone className="h-4 w-4" aria-hidden="true" />
+            <span>Call us</span>
+          </a>
         )}
       </div>
       {/* Safe area spacer for iOS home indicator */}

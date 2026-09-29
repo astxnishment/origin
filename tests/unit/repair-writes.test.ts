@@ -50,6 +50,19 @@ async function mutateAll() {
 }
 
 describe("repair database write deployment policy", () => {
+  it("blocks every mutation in contact-only mode despite enabled production and preview switches", async () => {
+    vi.stubEnv("NEXT_PUBLIC_CONTACT_ONLY", "true");
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("PRODUCTION_OPERATIONS_ENABLED", "true");
+    vi.stubEnv("REPAIR_WRITES_ENABLED", "true");
+    vi.stubEnv("ALLOW_PREVIEW_REPAIR_WRITES", "true");
+    const responses = await mutateAll();
+    expect(responses.map((response) => response.status)).toEqual([503, 503, 503]);
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.email).not.toHaveBeenCalled();
+  });
+
   it("blocks all mutation routes by default in preview even when tracking is enabled", async () => {
     const responses = await mutateAll();
     expect(responses.map((response) => response.status)).toEqual([503, 503, 503]);

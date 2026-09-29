@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { DirectContactPage } from "@/components/DirectContact";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import BookingForm from "./BookingForm";
 import {
   PageContainer,
@@ -40,6 +42,7 @@ interface PageProps {
 }
 
 export default async function BookRepairPage({ searchParams }: PageProps) {
+  if (CONTACT_ONLY_MODE) return <DirectContactPage title="Arrange your repair." />;
   if (!FEATURES.bookingEnabled) notFound();
 
   const params = await searchParams;

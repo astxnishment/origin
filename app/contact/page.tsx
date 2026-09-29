@@ -2,6 +2,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InteractiveMap from "@/components/InteractiveMap";
 import ContactForm from "@/app/contact/ContactForm";
+import { DirectContactPanel } from "@/components/DirectContact";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { Button } from "@/components/ui/button";
 import { Clock, ExternalLink, MapPin } from "lucide-react";
 import { BUSINESS, FEATURES } from "@/lib/constants";
@@ -43,7 +45,7 @@ export default function ContactPage() {
                   {BUSINESS.phoneDisplay}
                 </a>
               </div>
-              <div>
+              {!CONTACT_ONLY_MODE && <div>
                 <p className="eyebrow mb-2 text-muted-foreground">
                   Email
                 </p>
@@ -53,7 +55,7 @@ export default function ContactPage() {
                 >
                   {BUSINESS.email}
                 </a>
-              </div>
+              </div>}
               <div>
                 <p className="eyebrow mb-2 text-muted-foreground">
                   Address
@@ -103,8 +105,8 @@ export default function ContactPage() {
               </div>
             </aside>
 
-            <div className="order-1 lg:order-2 lg:col-span-3">
-              <ContactForm />
+            <div className="order-1 lg:order-2">
+              {CONTACT_ONLY_MODE ? <DirectContactPanel /> : <ContactForm />}
             </div>
           </PageSection>
 

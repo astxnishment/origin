@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { BUSINESS, FEATURES, TRUST } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
@@ -152,13 +153,24 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <Mail className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
-                <a
-                  href={`mailto:${BUSINESS.email}`}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {BUSINESS.email}
-                </a>
+                {CONTACT_ONLY_MODE ? (
+                  <>
+                    <Phone className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
+                    <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      Contact options
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Mail className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />
+                    <a
+                      href={`mailto:${BUSINESS.email}`}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {BUSINESS.email}
+                    </a>
+                  </>
+                )}
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-[color:var(--icon-fg)] flex-shrink-0 mt-0.5" />

@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BUSINESS, FEATURES } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
   PageContainer,
@@ -125,9 +126,15 @@ export default function AboutPage() {
                   <a href={`tel:${BUSINESS.phone}`} className="block text-foreground hover:text-primary transition-colors">
                     {BUSINESS.phoneDisplay}
                   </a>
-                  <a href={`mailto:${BUSINESS.email}`} className="block text-foreground hover:text-primary transition-colors">
-                    {BUSINESS.email}
-                  </a>
+                  {CONTACT_ONLY_MODE ? (
+                    <Link href="/contact" className="block text-foreground hover:text-primary transition-colors">
+                      Contact options
+                    </Link>
+                  ) : (
+                    <a href={`mailto:${BUSINESS.email}`} className="block text-foreground hover:text-primary transition-colors">
+                      {BUSINESS.email}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

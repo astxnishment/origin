@@ -1,8 +1,23 @@
 # Origin Repairs launch plan
 
-Prepared 22 September 2026; hosting and live-chat setup updated 25 September 2026. This records the implemented release and the remaining real-service setup. No public deployment, hosting purchase, DNS change or real email has been performed.
+Prepared 22 September 2026; Vercel publishing preparation updated 29 September 2026. This records the implemented release and the remaining real-service setup. No hosting purchase, DNS change or real email has been performed.
 
 ## Release status
+
+29 September: the owner explicitly requested an update to the existing Vercel site, superseding the earlier instruction to leave that connection unchanged. The public alias is `https://origin-peach.vercel.app`; it previously served the August main-branch build while the refreshed site remained a protected preview. The Vercel production configuration now selects the explicit contact-only mode below. Publication is pending the new release build and public verification; it is not the full operational launch.
+
+### Publishing the updated pages before service connections
+
+Set these two **Production** variables and rebuild:
+
+```dotenv
+NEXT_PUBLIC_CONTACT_ONLY=true
+NEXT_PUBLIC_SITE_URL=https://origin-peach.vercel.app
+```
+
+All online-operation, public-service, indexing and preview-override switches must be unset or `false`; the deployment gate rejects conflicts. Contact-only mode also enforces disabled email, database writes, accounts, booking, mail-in requests, tracking and live chat at runtime. Provider secrets are not needed. Repair pages, current imagery and local quote estimates remain available. `/book`, `/mail-in`, `/track` and `/contact` offer phone/WhatsApp contact with clear availability messages; the contact API rejects submissions before reading customer data. Unavailable domain email links are replaced with direct contact alternatives. Indexing remains off while this temporary address is used.
+
+For the full operational launch, set `NEXT_PUBLIC_CONTACT_ONLY=false`, configure the canonical custom domain and all real services in the checklist below, and rebuild. This mode is explicit; it does not change local development or preview defaults. Vercel's Hobby plan is restricted to non-commercial use; the owner must arrange an appropriate plan for the business launch. No paid upgrade is included in publishing this update.
 
 The owner supplied the operator name **Origin Repairs** and selected **both mail-in and live tracking**. These services are implemented. Hosting, a production PostgreSQL database, verified email delivery, production spam-protection keys and approved staff addresses are still needed. The existing Leeds address and other business details have been preserved; the owner's name reply did not independently confirm the address.
 

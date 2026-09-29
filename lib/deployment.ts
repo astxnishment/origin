@@ -1,4 +1,4 @@
-import { SEO } from "@/lib/business-config";
+import { CONTACT_ONLY_MODE, SEO } from "@/lib/business-config";
 
 const productionHostname = new URL(SEO.siteUrl).hostname;
 const productionOperationsApproved =
@@ -21,6 +21,7 @@ export function isProductionEnvironment(): boolean {
 }
 
 export const IS_PRODUCTION_DEPLOYMENT =
+  !CONTACT_ONLY_MODE &&
   isProductionEnvironment() &&
   productionOperationsApproved &&
   productionHostname === "originrepairs.co.uk";
@@ -30,11 +31,13 @@ export const INDEXING_ENABLED =
   process.env.SITE_INDEXING_ENABLED === "true";
 
 export const EMAIL_DELIVERY_ENABLED =
+  !CONTACT_ONLY_MODE &&
   process.env.EMAILS_ENABLED === "true" &&
   (IS_PRODUCTION_DEPLOYMENT ||
     (!isProductionEnvironment() && process.env.ALLOW_PREVIEW_EMAILS === "true"));
 
 export function areRepairWritesEnabled(): boolean {
+  if (CONTACT_ONLY_MODE) return false;
   return (IS_PRODUCTION_DEPLOYMENT && process.env.REPAIR_WRITES_ENABLED === "true") ||
     (!isProductionEnvironment() && process.env.ALLOW_PREVIEW_REPAIR_WRITES === "true");
 }

@@ -6,6 +6,7 @@ import MobileCTABar from "@/components/MobileCTABar";
 import LiveChat from "@/components/LiveChat";
 import { liveChatConfiguration } from "@/lib/liveChat";
 import { BUSINESS, FEATURES, SEO, SERVICES, TRUST } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { getDeploymentEnvironment, INDEXING_ENABLED } from "@/lib/deployment";
 
 const geistSans = localFont({
@@ -126,7 +127,7 @@ export default async function RootLayout({
           "Device repair service in Leeds for phones, tablets, laptops, consoles, custom PCs, liquid damage and data recovery assessment.",
         url: SEO.siteUrl,
         telephone: BUSINESS.phone,
-        email: BUSINESS.email,
+        ...(!CONTACT_ONLY_MODE ? { email: BUSINESS.email } : {}),
         image: `${SEO.siteUrl}/logos/origin-logo-light.png`,
         logo: `${SEO.siteUrl}/logos/origin-icon.png`,
         address: {
