@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { NextRequest } from "next/server";
 import { POST as contactPost } from "@/app/api/contact/route";
 import { POST as bookingPost } from "@/app/api/booking/route";
-import { publicAuthOrigin } from "@/app/api/auth/magic-link/route";
+import { publicAuthOrigin } from "@/lib/server/authOrigin";
 
 const futureDate = new Date();
 futureDate.setUTCDate(futureDate.getUTCDate() + 14);
