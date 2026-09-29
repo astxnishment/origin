@@ -2,7 +2,7 @@
 
 Device repair website for Origin Repairs in Leeds, built with Next.js App Router, React, TypeScript and Tailwind CSS. The contact-only website is live on Cloudflare Workers with vinext at [originrepairs.com](https://originrepairs.com), with `www.originrepairs.com` also attached. The existing Next.js/Vercel deployment is untouched and remains available for rollback.
 
-The Cloudflare profile is contact-only: public repair information, estimates, phone and WhatsApp contact. Online requests, accounts, tracking, email, chat, database writes and indexing remain disabled. The repository contains the earlier PostgreSQL repair flows, custom email-link authentication and Tawk adapter. Requested Clerk authentication and a Cloudflare-hosted human chat inbox are not implemented; credentials alone will not enable them.
+The deployed Cloudflare site offers public repair information, estimates, phone/WhatsApp contact and customer-initiated Tawk chat. Online requests, accounts, tracking, website email, database writes and indexing remain disabled. The real widget loads on desktop and narrow mobile screens; staff availability and actual message delivery remain unverified. Tawk replaces the earlier custom Cloudflare inbox proposal. The repository retains PostgreSQL repair flows and custom email-link authentication; requested Clerk integration remains unfinished, and credentials alone will not enable it.
 
 ## Local development
 
@@ -26,7 +26,7 @@ The tracking integration suite is deliberately gated. See `.github/workflows/qua
 
 ## Deployment
 
-Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for the verified deployment record, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. On 29 September 2026, the Cloudflare CLI confirmed deployment to `.com` and `www`; the canonical site returned HTTPS 200 with the expected canonical, CSP and HSTS, and live homepage/client navigation checks passed. Local checks passed 285 unit tests and 31 Cloudflare browser checks, with two duplicate API probes skipped; the dependency audit reported zero vulnerabilities. Repository checks verify both the retained Next.js path and the Cloudflare runtime before changes are merged. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
+Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for the verified deployment record, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. On 29 September 2026, Cloudflare version `9e19d24d-230b-4a68-b899-9e41ac75a1f2` was deployed to `.com` and `www`. The live homepage returned HTTPS 200 with CSP and HSTS; the real Tawk widget rendered on desktop and at 320px without browser errors. Local typecheck, lint and 296 unit tests passed, as did the Cloudflare build/runtime typecheck and 40 browser checks, with two duplicate API probes skipped. The preceding migration dependency audit reported zero vulnerabilities. These results do not claim final CI success or real chat delivery. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
 
 ```sh
 npm run build:cloudflare
@@ -34,15 +34,15 @@ npm run test:cloudflare
 npm run preview:cloudflare -- --host 127.0.0.1 --port 3109
 ```
 
-The Cloudflare wrappers share `scripts/cloudflare-environment.mjs` with the Worker configuration, keeping browser/runtime flags aligned. They run the readiness gate and keep services off. `npm run deploy:cloudflare` changes the hosted Worker and should follow review and runtime verification. Lower-level vinext commands do not apply this safe release profile. The Cloudflare CI workflow builds and tests locally; it does not deploy.
+The Cloudflare wrappers share `scripts/cloudflare-environment.mjs` with the Worker configuration, keeping browser/runtime flags aligned. They run the readiness gate and keep operational services off, with a separate validated opt-in for Tawk chat during contact-only mode. `npm run deploy:cloudflare` changes the hosted Worker and should follow review and runtime verification. Lower-level vinext commands do not apply this safe release profile. The Cloudflare CI workflow builds and tests locally; it does not deploy.
 
 For a Node.js host, set `DEPLOYMENT_ENV=production` on the intended public release or `preview` for staging. Vercel's platform-provided `VERCEL_ENV` takes precedence if present. Production detection, canonical redirects, staff origin checks, spam protection and write controls support both. `NODE_ENV` alone never turns a preview into a live service. Static-only hosting cannot run the database, form or sign-in routes.
 
 ## Customer live chat
 
-The requested replacement is a Cloudflare-hosted conversation between customers and human staff, with a private staff inbox. Durable Object persistence, customer/staff permissions, reconnect/offline behavior and real delivery remain to be implemented. Clerk keys are also pending, and the session adapter and CSP/API integration need work.
+The owner selected Tawk and supplied public Property ID `6abc1fa0926103343dfe973b` and Widget ID `1k3ndn318`. Chat runs through the existing Start chat panel and separate iframe; Tawk provides conversations and the staff inbox while Cloudflare hosts the website. The previous custom Cloudflare inbox plan is superseded. No Clerk session, repair data or provider secret is supplied to the widget.
 
-The retained Tawk adapter is disabled in the Cloudflare profile. Its [setup guide](docs/LIVE-CHAT.md) is historical implementation documentation, not instructions to activate the planned inbox. Preserve explicit customer activation and the existing privacy boundaries when replacing it. Mocked tests do not prove real delivery or staff availability.
+The deployed widget uses Tawk's embedded container mode inside the panel's iframe so it fits desktop and narrow mobile screens. Follow the [Tawk setup guide](docs/LIVE-CHAT.md) for staff access, availability, notifications, privacy and acceptance checks. No real messages were sent during verification; a two-way conversation and offline-message receipt still need testing with the intended team. Clerk integration remains separate future work.
 
 ## Main sources
 

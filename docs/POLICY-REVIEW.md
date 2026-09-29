@@ -1,4 +1,4 @@
-# Policy content review — 22 September 2026 (chat update 25 September)
+# Policy content review — 22 September 2026 (provider update 29 September)
 
 The privacy notice, repair terms, warranty terms and FAQ were rewritten for customers. Operator identity is **Origin Repairs**, as supplied by the owner. The existing Leeds address, telephone number and email remain unchanged. No company number, incorporation status, VAT status, individual proprietor name or legal certification was invented.
 
@@ -10,9 +10,9 @@ This is a content and implementation review, not a certificate of legal complian
 - Booking and repair data persist in the service database. Customer-visible status history and restricted staff access are described without claiming automatic device-location tracking.
 - Email-link sign-in uses a cookie lasting up to 30 days. The cookie can be removed by signing out. The application uses Resend for transactional mail and Cloudflare Turnstile for abuse prevention.
 - Theme storage and session-only device/repair drafts are disclosed. Drafts exclude contact details and fault descriptions. No advertising or behavioural analytics are configured.
-- Cloudflare is selected for the next hosting release; Vercel remains the rollback deployment and the production database still needs setup. The migration is contact-only. Clerk and a Cloudflare-hosted human chat inbox are planned but not implemented. Update provider/storage descriptions to match the final implementation before activating those services; see [the migration plan](CLOUDFLARE.md).
+- The contact-only website is hosted on Cloudflare; Vercel remains the rollback deployment and the production repair database still needs setup. Clerk remains planned but not implemented. The owner selected Tawk for human chat, superseding the custom Cloudflare inbox proposal. Its widget is deployed and renders on desktop and narrow mobile screens; actual delivery and staff availability remain unverified. Update provider/storage descriptions as remaining services are implemented; see [the migration plan](CLOUDFLARE.md).
 - All existing repair prices and warranty durations are preserved. Additional warranty terms are distinguished from statutory rights.
-- Optional live chat now names tawk.to and explains conversation/technical data and provider storage. It is loaded only after Start chat. Closing the iframe disconnects the widget but does not erase stored conversations or provider cookies. The inbox is not connected yet; the owner must configure consent, staff access, notifications and retention before activation. See [chat setup](LIVE-CHAT.md).
+- Optional live chat names tawk.to and explains conversation/technical data and provider storage. It is loaded only after Start chat. Closing the iframe disconnects the widget but does not erase stored conversations or provider cookies. The owner has supplied the public widget identifiers; staff availability, real two-way conversation delivery and offline-message receipt remain unverified. Confirm consent, staff access, notifications and retention for the selected property. See [chat setup](LIVE-CHAT.md).
 
 ## Operational facts to finish with deployment configuration
 

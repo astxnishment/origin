@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { cloudflareEnvironment } from "./scripts/cloudflare-environment.mjs";
 
 const port = process.env.PLAYWRIGHT_CLOUDFLARE_PORT ?? "3109";
 const baseURL = `http://127.0.0.1:${port}`;
@@ -31,26 +32,9 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 120_000,
     env: {
+      ...cloudflareEnvironment,
       VERCEL_ENV: "",
-      DEPLOYMENT_ENV: "production",
-      HOSTING_PROVIDER: "cloudflare",
-      NEXT_PUBLIC_SITE_URL: "https://originrepairs.com",
-      NEXT_PUBLIC_CONTACT_ONLY: "true",
-      PRODUCTION_OPERATIONS_ENABLED: "false",
-      SITE_INDEXING_ENABLED: "false",
-      EMAILS_ENABLED: "false",
-      ALLOW_PREVIEW_EMAILS: "false",
-      REPAIR_WRITES_ENABLED: "false",
-      ALLOW_PREVIEW_REPAIR_WRITES: "false",
-      NEXT_PUBLIC_BOOKING_ENABLED: "false",
-      NEXT_PUBLIC_WALK_INS_ENABLED: "false",
-      NEXT_PUBLIC_MAIL_IN_ENABLED: "false",
-      NEXT_PUBLIC_TRACKING_ENABLED: "false",
-      NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED: "false",
-      NEXT_PUBLIC_LIVE_CHAT_ENABLED: "false",
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
-      NEXT_PUBLIC_TAWK_PROPERTY_ID: "",
-      NEXT_PUBLIC_TAWK_WIDGET_ID: "",
       TURNSTILE_SECRET_KEY: "",
       RESEND_API_KEY: "",
       DATABASE_URL: "",

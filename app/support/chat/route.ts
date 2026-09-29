@@ -32,6 +32,7 @@ export function GET() {
   const script = `
     const notify = (event, status) => window.parent.postMessage({type: 'origin-chat', event, status}, window.location.origin);
     window.Tawk_API = {
+      embedded: 'origin-tawk-container',
       customStyle: {zIndex: 10},
       onLoad: function () {
         document.getElementById('loading').hidden = true;
@@ -50,5 +51,5 @@ export function GET() {
     widget.onerror = function () { notify('error'); };
     document.head.appendChild(widget);
   `;
-  return new Response(`<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Origin Repairs live chat</title><style>html,body{margin:0;width:100%;height:100%;background:#fff;font:14px system-ui;color:#333}#loading{padding:24px}</style></head><body><p id="loading" role="status">Connecting to Origin Repairs…</p><script nonce="${nonce}">${script}</script></body></html>`, { headers });
+  return new Response(`<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Origin Repairs live chat</title><style>html,body{margin:0;width:100%;height:100%;background:#fff;font:14px system-ui;color:#333}#loading{position:absolute;padding:24px}#origin-tawk-container{width:100%;height:100%}</style></head><body><p id="loading" role="status">Connecting to Origin Repairs…</p><div id="origin-tawk-container"></div><script nonce="${nonce}">${script}</script></body></html>`, { headers });
 }

@@ -135,7 +135,7 @@ export default function PrivacyPage() {
                 <li><strong className="text-foreground">Sign-in cookie:</strong> keeps your account signed in for up to 30 days. Signing out removes it from that browser. Avoid staying signed in on a shared device.</li>
                 <li><strong className="text-foreground">Theme preference:</strong> remembers your chosen light or dark display until you change it or clear browser storage.</li>
                 <li><strong className="text-foreground">Repair-request draft:</strong> keeps device, repair and preferred-time selections in session storage while you complete the request. Contact details and fault descriptions are excluded. The draft is cleared after a successful request or when that browser session ends.</li>
-                <li><strong className="text-foreground">Optional live chat:</strong> connects to tawk.to only after you select Start chat. The provider uses cookies and browser storage to operate and reconnect your conversation. Closing the chat disconnects the widget; it does not erase messages or existing chat cookies. You can use phone or email instead.</li>
+                <li><strong className="text-foreground">Optional live chat:</strong> connects to tawk.to only after you select Start chat. The provider uses cookies and browser storage to operate and reconnect your conversation. Closing the chat disconnects the widget; it does not erase messages or existing chat cookies. You can use {CONTACT_ONLY_MODE ? "phone or WhatsApp" : "phone or email"} instead.</li>
               </ul>
               <p className="mt-3">
                 Security checks help protect the forms and sign-in service.

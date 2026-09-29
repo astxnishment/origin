@@ -29,10 +29,7 @@ jobs:
       NEXT_PUBLIC_MAIL_IN_ENABLED: "false"
       NEXT_PUBLIC_TRACKING_ENABLED: "false"
       NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED: "false"
-      NEXT_PUBLIC_LIVE_CHAT_ENABLED: "false"
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
-      NEXT_PUBLIC_TAWK_PROPERTY_ID: ""
-      NEXT_PUBLIC_TAWK_WIDGET_ID: ""
       TURNSTILE_SECRET_KEY: ""
       RESEND_API_KEY: ""
       DATABASE_URL: ""
@@ -45,7 +42,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build the Cloudflare Worker without service credentials
+      - name: Build the Cloudflare profile with public chat IDs and no service secrets
         run: npm run build:cloudflare
       - name: Check Cloudflare runtime types
         run: npx tsc -p tsconfig.cloudflare.json
