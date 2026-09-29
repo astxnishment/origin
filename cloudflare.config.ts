@@ -10,6 +10,7 @@ export default defineConfig({
     compatibilityFlags: ["nodejs_compat"],
     assets: { notFoundHandling: "none" },
     workersDev: true,
+    domains: ["originrepairs.com", "www.originrepairs.com"],
     previewUrls: false,
     observability: {
       enabled: true,
