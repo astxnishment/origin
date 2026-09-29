@@ -2,18 +2,18 @@
 
 Updated 29 September 2026. The informational, contact-only website is live on Cloudflare at **[originrepairs.com](https://originrepairs.com)**. The CLI confirmed deployment to `originrepairs.com` and `www.originrepairs.com`. The existing Vercel deployment is untouched and remains available for rollback.
 
-The owner also requested **Clerk authentication** and a **Cloudflare-hosted human staff/customer chat inbox**. Neither replacement is implemented. Clerk credentials are pending; chat storage, authentication and delivery still need to be built. Adding API keys alone will not enable these services.
+The owner selected **Clerk authentication** for future website accounts and supplied a **tawk.to** widget for human customer/staff chat. Tawk replaces the earlier proposal for a custom Cloudflare inbox; Cloudflare remains the website host. Clerk integration and credentials are still pending. The Tawk widget is deployed and renders on desktop and narrow mobile screens. Staff availability, real two-way delivery and offline-message receipt remain unverified.
 
 ## Verified deployment record
 
-- Cloudflare version: `1d7d3162-2042-4598-b1e7-be9b3012f019`, deployed 29 September 2026 to the `.com` and `www` domains.
-- Live `https://originrepairs.com` returned HTTPS 200 with the correct canonical URL, Content Security Policy and HSTS. Live browser checks verified the homepage and client-side navigation.
-- Local verification passed 285 unit tests and 31 Cloudflare browser checks; two repeated API-probe cases were intentionally skipped. The dependency audit reported zero vulnerabilities.
-- The generated `origin-repairs.blentiugov.workers.dev` address also returned HTTPS 200 after certificate activation. Use `.com` as the public address.
-- Cloudflare Always Use HTTPS is enabled. HTTP returns 301 to HTTPS; `www` returns 308 to the apex domain while preserving the path and query.
-- Live empty-request probes confirmed that contact, booking, account, staff and chat endpoints reject use while disabled. No customer data or real messages were submitted.
+- Cloudflare version: `9e19d24d-230b-4a68-b899-9e41ac75a1f2`, deployed 29 September 2026 to the `.com` and `www` domains.
+- Live `https://originrepairs.com` returned HTTPS 200 with Content Security Policy and HSTS. `/support/chat` returned 200 with the supplied embed URL, embedded container, CSP and `Cache-Control: private, no-store`.
+- The real Tawk widget rendered on desktop and at 320px width without browser errors. Provider status reached the first-party panel. No conversation or offline message was sent; status reporting does not prove staff availability.
+- Local typecheck, lint and all 296 unit tests passed. The Cloudflare build and runtime typecheck passed; 40 Cloudflare browser checks passed, with two duplicate API-probe cases intentionally skipped. This records local checks, not a final CI result. The preceding migration dependency audit reported zero vulnerabilities.
+- Live empty-request probes to `/api/contact`, `/api/booking`, `/api/auth/magic-link` and `/api/admin/repairs` all returned 503. No customer data or real messages were submitted.
+- Earlier migration verification confirmed canonical metadata, client navigation, the generated `origin-repairs.blentiugov.workers.dev` HTTPS address, HTTP-to-HTTPS 301 and `www`-to-apex 308 preserving path and query. Cloudflare Always Use HTTPS remains enabled. Use `.com` as the public address.
 
-These checks verify the contact-only website. Booking, mail-in requests, customer accounts, tracking, Clerk, live chat, outbound email, database writes and indexing remain disabled. They do not establish real message delivery or acceptance of repair requests.
+These checks record the deployed contact-only website with explicit Tawk chat enabled. Booking, mail-in requests, customer accounts, tracking, Clerk, website outbound email, database writes and indexing remain disabled. Widget loading does not establish real message delivery or acceptance of repair requests.
 
 ## Current implementation
 
@@ -43,11 +43,19 @@ ALLOW_PREVIEW_EMAILS=false
 ALLOW_PREVIEW_REPAIR_WRITES=false
 ```
 
-All booking, walk-in, mail-in, tracking, account and live-chat feature flags are also `false`. These settings override the invoking shell's values in the Cloudflare wrappers, including removal of a stale `VERCEL_ENV`. Editing a dashboard setting or adding credentials does not override this reviewed profile. Changing a public feature requires a new build and aligned Worker settings.
+All booking, walk-in, mail-in, tracking and account feature flags remain `false`. The deployed Tawk integration has one explicit exception:
+
+```dotenv
+NEXT_PUBLIC_LIVE_CHAT_ENABLED=true
+NEXT_PUBLIC_TAWK_PROPERTY_ID=6abc1fa0926103343dfe973b
+NEXT_PUBLIC_TAWK_WIDGET_ID=1k3ndn318
+```
+
+The widget identifiers are public. This opt-in must pass configuration validation while all other contact-only safeguards remain in force. Shared settings override the invoking shell's values in the Cloudflare wrappers, including removal of a stale `VERCEL_ENV`. Editing a dashboard setting or adding credentials does not override this reviewed profile. Changing a public feature requires a new build and aligned Worker settings.
 
 Metadata uses the verified `.com` canonical. No wildcard `workers.dev` address is accepted as a production canonical. Contact-only validation also retains the exact `https://origin-peach.vercel.app` address for Vercel compatibility.
 
-Contact-only mode rejects website messages before reading submitted customer data and disables accounts, repair submissions, database writes, outbound email and chat. Public repair information, images, estimates, phone and WhatsApp contact remain available. Search indexing stays off until the canonical public release is reviewed.
+Contact-only mode rejects website contact-form submissions before reading customer data and disables accounts, repair submissions, database writes and website outbound email. The explicit Tawk opt-in permits customer-initiated chat without enabling those services; Tawk handles its own conversations and staff notifications. Public repair information, images, estimates, phone and WhatsApp contact remain available. Search indexing stays off until the canonical public release is reviewed.
 
 ## Build and verify before deployment
 
@@ -86,22 +94,23 @@ This last command changes the hosted service; building or previewing does not. T
 - Add the selected Clerk instance's CSP sources and test sign-in/out, expiry, cross-account denial, staff denial, redirects and API requests in the Worker runtime.
 - Configure the Clerk publishable key, server-only secret and production domain only after integration exists. Never place the secret in a `NEXT_PUBLIC_*` variable or a committed file.
 
-### Human chat on Cloudflare
+### Human chat through Tawk
 
-Cloudflare hosting does not provide this application's staff inbox automatically. The current optional implementation is a tawk.to iframe; it remains disabled. The planned replacement needs:
+The owner-supplied widget uses Tawk for conversation storage and the staff inbox. The previous custom Cloudflare/Durable Object inbox proposal is superseded and is no longer a launch dependency. This integration does not require Clerk or repair-database access.
 
-- Durable Object conversation storage and a declared migration/binding, with reconnect and message retry behavior that prevents duplicate messages.
-- A customer conversation capability or authenticated ownership check, plus a staff inbox with server-enforced read/reply permissions. A guessed conversation ID must never expose another customer's messages.
-- Bounded messages, abuse protection, origin validation for socket/HTTP mutations, safe rendering and retention/deletion procedures. Keep message bodies and customer identifiers out of routine logs.
-- Honest online/offline availability, persistence across restarts, reconnection, offline handling and a staffed notification process. Do not label an unattended inbox online.
-- A real two-way customer/staff delivery check, including offline/reconnect behavior and isolation between customers, before enabling the public launcher.
+- Apply the public widget identifiers through the reviewed build/runtime profile and test the real embed under the iframe's Content Security Policy. No arbitrary script URL or provider secret should be accepted in the public settings.
+- Keep Tawk's `embedded: 'origin-tawk-container'` configuration and full-size container inside `/support/chat`. This makes the vendor UI fit the existing panel, including the verified 320px layout, rather than positioning a floating widget within a narrow iframe.
+- Retain explicit Start chat activation, removal of the iframe on close/navigation, private-route exclusions and the absence of injected account identity or repair data. The same-origin iframe limits the provider's lifetime; it is not a security sandbox against Tawk.
+- Configure the intended team property, staff permissions, notifications, actual staffed hours and honest offline handling. A connected widget does not prove someone is available to reply.
+- Confirm provider consent settings, privacy disclosures and retention/deletion procedures. Closing the panel does not erase Tawk conversations or provider cookies.
+- Verify a real two-way customer/staff conversation and offline-message receipt before claiming delivery. Widget IDs, a rendered launcher and mocked tests alone are insufficient.
 
-Keep the existing explicit customer activation and privacy boundaries. Update the public privacy notice and [legacy Tawk guide](LIVE-CHAT.md) to match the implemented replacement before activation. An AI chatbot is outside the requested human-support scope.
+Follow the current [Tawk setup guide](LIVE-CHAT.md). No paid add-on, hired agent or AI chatbot is part of this update.
 
 ### Repair database, email and spam protection
 
 - Refactor the globally cached PostgreSQL client in `lib/server/repairStore.ts` to use request-scoped Workers connections. Configure a production PostgreSQL service and, if using Hyperdrive, its binding with **query caching disabled** for repair reads and writes. Customers and staff must see committed status updates immediately.
-- Apply the tracked schema using the controlled migration command, restrict database access, configure backups and verify restore into a separate database. Workers/Durable Objects chat storage does not replace the existing PostgreSQL repair schema.
+- Apply the tracked schema using the controlled migration command, restrict database access, configure backups and verify restore into a separate database. Tawk conversation storage does not replace the existing PostgreSQL repair schema.
 - Preserve transactional booking idempotency, customer filtering, append-only status history and stale-update rejection. Contact replay and rate limits currently use isolate-local Maps; they are not global Worker guarantees.
 - `HOSTING_PROVIDER=cloudflare` trusts only a valid `CF-Connecting-IP`. Missing or malformed values fail rate-limit and Turnstile checks without falling back to forwarding headers. Direct local tests of enabled forms must deliberately supply test headers or use a generic local host profile.
 - Configure real email delivery and both Turnstile keys for `originrepairs.com`. Retain server-side hostname verification and challenge recovery. Verify controlled inbox delivery; successful API responses alone are insufficient.
@@ -112,7 +121,7 @@ The business contact mailbox is still `tech@originrepairs.co.uk` pending owner c
 
 `originrepairs.com` and `www.originrepairs.com` are attached to the deployed Worker. Preserve existing MX/TXT email records when maintaining domain routing. Keep secrets in the provider's secret settings and separate test resources from production data.
 
-Before removing contact-only mode, complete the implementation and acceptance work above and the business checks in [DEPLOYMENT.md](DEPLOYMENT.md). Review the readiness gate for the actual selected auth/chat providers; it currently checks the legacy auth/Tawk configuration. Do not set dummy legacy values to bypass it. Enable each service only when its server behavior, UI and build/runtime flags agree.
+Before removing contact-only mode, complete the remaining implementation and acceptance work above and the business checks in [DEPLOYMENT.md](DEPLOYMENT.md). Replace the readiness gate's custom-auth requirements when Clerk is integrated; keep the validated Tawk requirements for the chosen chat provider. Do not set dummy legacy auth values to bypass the gate. Chat has a separate explicit opt-in during contact-only mode; each enabled service must have matching server behavior, UI and build/runtime flags.
 
 Retain the last working Vercel deployment and record the pre-cutover domain routing. If verification fails, keep or restore that known deployment without blindly reverting database schema or losing accepted records. Keep operations and indexing disabled throughout the migration until their own acceptance checks pass.
 
