@@ -4,7 +4,6 @@ import {
   createHash,
   randomBytes,
 } from "node:crypto";
-import { cookies } from "next/headers";
 
 export const SESSION_COOKIE = "origin_customer_session";
 
@@ -175,6 +174,8 @@ export function verifySessionToken(
 }
 
 export async function getCustomerSession(): Promise<CustomerSession | null> {
+  // Token helpers also run outside Next.js when preparing isolated test data.
+  const { cookies } = await import("next/headers");
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   return token ? verifySessionToken(token) : null;
 }

@@ -1,0 +1,60 @@
+name: Cloudflare contact-only preview
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERCEL_ENV: ""
+      DEPLOYMENT_ENV: production
+      HOSTING_PROVIDER: cloudflare
+      NEXT_PUBLIC_SITE_URL: https://originrepairs.com
+      NEXT_PUBLIC_CONTACT_ONLY: "true"
+      PRODUCTION_OPERATIONS_ENABLED: "false"
+      SITE_INDEXING_ENABLED: "false"
+      EMAILS_ENABLED: "false"
+      ALLOW_PREVIEW_EMAILS: "false"
+      REPAIR_WRITES_ENABLED: "false"
+      ALLOW_PREVIEW_REPAIR_WRITES: "false"
+      NEXT_PUBLIC_BOOKING_ENABLED: "false"
+      NEXT_PUBLIC_WALK_INS_ENABLED: "false"
+      NEXT_PUBLIC_MAIL_IN_ENABLED: "false"
+      NEXT_PUBLIC_TRACKING_ENABLED: "false"
+      NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED: "false"
+      NEXT_PUBLIC_LIVE_CHAT_ENABLED: "false"
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
+      NEXT_PUBLIC_TAWK_PROPERTY_ID: ""
+      NEXT_PUBLIC_TAWK_WIDGET_ID: ""
+      TURNSTILE_SECRET_KEY: ""
+      RESEND_API_KEY: ""
+      DATABASE_URL: ""
+      AUTH_SECRET: ""
+      STAFF_EMAILS: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build the Cloudflare Worker without service credentials
+        run: npm run build:cloudflare
+      - name: Check Cloudflare runtime types
+        run: npx tsc -p tsconfig.cloudflare.json
+      - run: npx playwright install --with-deps chromium
+      - name: Exercise the built Worker locally without sending messages
+        run: npx playwright test --config playwright.cloudflare.config.ts
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cloudflare-browser-test-results
+          path: test-results/cloudflare/
+          retention-days: 7

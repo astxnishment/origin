@@ -1,0 +1,268 @@
+import { expect, test as base, type Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+const canonicalOrigin = "https://originrepairs.com";
+const publicPages = [
+  "/", "/repairs", "/repairs/phones", "/repairs/iphone", "/repairs/samsung",
+  "/repairs/google-pixel", "/repairs/ipad", "/repairs/laptops", "/repairs/consoles",
+  "/repairs/custom-pc", "/repairs/data-recovery", "/repairs/liquid-damage",
+  "/pricing", "/quote", "/contact", "/book", "/mail-in", "/about", "/faq",
+  "/privacy", "/terms", "/warranty",
+];
+
+const test = base.extend<{ auditBrowser: void }>({
+  auditBrowser: [async ({ page, baseURL }, use) => {
+    const externalRequests: string[] = [];
+    const browserErrors: string[] = [];
+    const origin = new URL(baseURL!).origin;
+    // A contact-only page must work without contacting maps, chat, spam-check
+    // or messaging providers. Never allow this suite to contact them for real.
+    await page.route("**/*", async (route) => {
+      const url = new URL(route.request().url());
+      if (/^https?:$/.test(url.protocol) && url.origin !== origin) {
+        externalRequests.push(`${url.origin}${url.pathname}`);
+        await route.abort();
+      } else {
+        await route.continue();
+      }
+    });
+    page.on("pageerror", (error) => browserErrors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error" && /hydrati|content.security.policy|refused to (?:load|execute|apply)/i.test(message.text())) {
+        browserErrors.push(message.text());
+      }
+    });
+    await use();
+    expect(externalRequests, "Unexpected third-party browser traffic").toEqual([]);
+    expect(browserErrors, "Runtime, hydration or CSP errors").toEqual([]);
+  }, { auto: true }],
+});
+
+async function expectNoOverflow(page: Page) {
+  const size = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }));
+  expect(size.content).toBeLessThanOrEqual(size.viewport + 1);
+}
+
+async function expectLoadedImages(page: Page) {
+  for (const image of await page.locator("main img").all()) {
+    if (!(await image.isVisible())) continue;
+    // Scroll naturally so lazy loading is exercised without changing the DOM.
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toHaveJSProperty("complete", true);
+    expect(await image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  }
+}
+
+test("public pages render with canonical metadata and working images", async ({ page }) => {
+  test.setTimeout(180_000);
+  for (const path of publicPages) {
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    await expect(page.locator("main#main-content")).toHaveCount(1);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${canonicalOrigin}${path === "/" ? "" : path}`);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    await expect(page.getByRole("button", { name: "Chat with us" })).toHaveCount(0);
+    await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+    await expectLoadedImages(page);
+    await expectNoOverflow(page);
+  }
+});
+
+test("approved service artwork stays in its intended placements", async ({ page }) => {
+  const placements = [
+    ["/", "iphone-samsung-phones.webp", "macbook-pro-current.webp", "data-recovery-v2.webp", "liquid-damage-v5.webp"],
+    ["/repairs", "ipad-directory-thumbnail.webp", "macbook-pro-open.webp", "data-recovery-thumbnail.webp", "liquid-damage-v5.webp"],
+    ["/repairs/data-recovery", "data-recovery-v2.webp"],
+    ["/repairs/liquid-damage", "liquid-damage-v5.webp"],
+  ];
+  for (const [path, ...files] of placements) {
+    await page.goto(path);
+    for (const file of files) {
+      const image = page.locator(`main img[src*="${file}"]`).first();
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toBeVisible();
+      await expect(image).toHaveJSProperty("complete", true);
+      expect(await image.evaluate((element) => (element as HTMLImageElement).naturalWidth), file).toBeGreaterThan(0);
+    }
+  }
+});
+
+test("local fonts and favicon assets are served and fonts actually load", async ({ page, request }) => {
+  for (const [path, signature] of [
+    ["/fonts/geist-latin.woff2", "774f4632"],
+    ["/fonts/geist-mono-latin.woff2", "774f4632"],
+    ["/favicon.ico", "00000100"],
+    ["/favicon-32.png?v=20260926", "89504e47"],
+    ["/apple-touch-icon.png?v=20260926", "89504e47"],
+  ]) {
+    const response = await request.get(path);
+    expect(response.status(), path).toBe(200);
+    expect((await response.body()).subarray(0, 4).toString("hex"), path).toBe(signature);
+  }
+  const icon = await request.get("/icon.svg?v=20260926");
+  expect(icon.status()).toBe(200);
+  expect(icon.headers()["content-type"]).toContain("image/svg+xml");
+  expect(await icon.text()).toContain("<svg");
+
+  await page.goto("/");
+  await expect(page.locator('link[rel="icon"][href*="favicon-32.png"]').first()).toHaveAttribute("href", /favicon-32\.png/);
+  await expect(page.locator('link[rel="icon"][href*="icon.svg"]').first()).toHaveAttribute("href", /icon\.svg/);
+  const fonts = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const styles = getComputedStyle(document.documentElement);
+    const sans = styles.getPropertyValue("--font-geist-sans").trim();
+    const mono = styles.getPropertyValue("--font-geist-mono").trim();
+    const counts = await Promise.all([sans, mono].map(async (family) => family ? (await document.fonts.load(`16px ${family}`)).length : 0));
+    return { sans, mono, counts };
+  });
+  expect(fonts.sans).not.toBe("");
+  expect(fonts.mono).not.toBe("");
+  for (const count of fonts.counts) {
+    expect(count, "Both local font families must load, not silently fall back").toBeGreaterThan(0);
+  }
+});
+
+test("theme and menu hydrate, navigate and preserve the selected theme", async ({ page, viewport, colorScheme }) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", colorScheme!);
+  const mobile = viewport!.width < 1280;
+  if (mobile) await page.getByRole("button", { name: "Menu", exact: true }).click();
+  await page.getByRole("button", { name: /Switch to (light|dark) mode/ }).click();
+  const nextTheme = colorScheme === "light" ? "dark" : "light";
+  await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
+  if (mobile) {
+    const navigation = page.getByRole("dialog", { name: "Site navigation" });
+    await expect(navigation).toBeVisible();
+    await navigation.getByRole("link", { name: "Repairs", exact: true }).click();
+    await expect(navigation).toHaveCount(0);
+  } else {
+    await page.locator("header").getByRole("link", { name: "Repairs", exact: true }).click();
+  }
+  await expect(page).toHaveURL(/\/repairs$/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
+  await expectNoOverflow(page);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
+});
+
+test("quote search and repair choices work and lead to direct contact", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Start with your device" })).toBeVisible();
+  await expect(page.getByText("Estimated price", { exact: true })).toHaveCount(0);
+  await page.goto("/quote");
+  await page.getByRole("button", { name: /^Phone/ }).click();
+  await page.getByRole("button", { name: /^iPhone/ }).click();
+  const search = page.getByRole("searchbox", { name: "Search models" });
+  await search.fill("no such model");
+  await expect(page.getByText("No matching models. Try a shorter name or model number.")).toBeVisible();
+  await search.fill("18 pro");
+  await page.getByRole("button", { name: "iPhone 18 Pro", exact: true }).click();
+  await page.getByRole("button", { name: "Screen replacement", exact: true }).click();
+  await expect(page.getByText("Quote required", { exact: true }).first()).toBeVisible();
+  await expect(page.locator('main a[href^="/book"]')).toHaveCount(0);
+  await page.getByRole("link", { name: "Request a manual quote", exact: true }).click();
+  await expect(page).toHaveURL(/\/contact$/);
+  await expect(page.getByRole("link", { name: "Message on WhatsApp" })).toBeVisible();
+});
+
+test("device quote links retain their prefilled selections", async ({ page }) => {
+  for (const [device, model] of [
+    ["ipad", "iPad Pro 11-inch M5"],
+    ["macbook", "MacBook Neo A18 Pro"],
+    ["galaxy-tab", "Galaxy Tab S11"],
+    ["galaxy-book", "Galaxy Book6 Pro"],
+  ]) {
+    await page.goto("/repairs");
+    await page.locator(`a[href="/quote?device=${device}"]`).click();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "2");
+    await expect(page.getByRole("button", { name: model, exact: true })).toBeVisible();
+  }
+});
+
+test("legacy repair links preserve the selection and disabled accounts redirect safely", async ({ page }) => {
+  await page.goto("/repairs/iphone-15-battery-replacement-leeds?tier=compatible-battery");
+  await expect(page).toHaveURL(/\/book\?.*model=iphone-15.*repair=battery-replacement.*tier=compatible-battery/);
+  await expect(page.getByRole("link", { name: "Message on WhatsApp" })).toBeVisible();
+  await expect(page.locator("main form")).toHaveCount(0);
+  for (const route of ["/login", "/signup", "/forgot-password"]) {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\/contact$/);
+    await expect(page.getByRole("heading", { name: "Get in touch.", exact: true })).toBeVisible();
+  }
+  for (const route of ["/account", "/account/repairs"]) {
+    await page.goto(route);
+    await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+    await expect(page.getByRole("heading", { name: "Start with your device" })).toBeVisible();
+  }
+});
+
+test("contact-only routes expose direct contact without online forms", async ({ page }) => {
+  for (const path of ["/contact", "/book", "/mail-in", "/track"]) {
+    await page.goto(path);
+    await expect(page.locator("main form")).toHaveCount(0);
+    await expect(page.locator('main a[href="tel:+447768426754"]').first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Message on WhatsApp" })).toHaveAttribute("href", "https://wa.me/447768426754");
+    await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+    await expect(page.locator("iframe")).toHaveCount(0);
+  }
+});
+
+test("disabled APIs reject empty probes without accepting messages or repair changes", async ({ request }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-dark", "One set of empty local API probes is sufficient.");
+  for (const [method, path] of [
+    ["POST", "/api/contact"], ["POST", "/api/booking"],
+    ["POST", "/api/auth/magic-link"], ["POST", "/api/admin/repairs"],
+    ["PATCH", "/api/admin/repairs/OR-00000000-000000000000"],
+  ]) {
+    const response = await request.fetch(path, { method, data: {} });
+    expect(response.status(), path).toBe(503);
+    const body = await response.json();
+    expect(body.error, path).toEqual(expect.any(String));
+    expect(body.ok, path).not.toBe(true);
+  }
+  const chat = await request.get("/support/chat");
+  expect(chat.status()).toBe(503);
+  expect(await chat.text()).not.toContain("<script");
+  const login = await request.get("/api/auth/verify", { maxRedirects: 0 });
+  expect(login.status()).toBe(307);
+  expect(login.headers().location).toContain("/login?error=unavailable");
+  expect(login.headers()["set-cookie"]).toBeUndefined();
+});
+
+test("security headers, non-indexing and real 404 responses survive the migration", async ({ page, request }) => {
+  const home = await request.get("/");
+  expect(home.headers()["content-security-policy"]).toContain("'strict-dynamic'");
+  expect(home.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(home.headers()["x-frame-options"]).toBe("SAMEORIGIN");
+  expect(home.headers()["x-robots-tag"]).toContain("noindex");
+  const robots = await request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  expect(await robots.text()).toContain("Disallow: /");
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  expect(await sitemap.text()).not.toContain("<loc>");
+  const missing = await page.goto("/this-route-does-not-exist");
+  expect(missing?.status()).toBe(404);
+  await expect(page.getByRole("heading", { name: "This page could not be found." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to homepage" })).toBeVisible();
+});
+
+test("key public journeys remain keyboard accessible and pass automated accessibility checks", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("main")).toBeFocused();
+  for (const path of ["/", "/repairs", "/quote", "/contact"]) {
+    await page.goto(path);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) })), path).toEqual([]);
+  }
+});

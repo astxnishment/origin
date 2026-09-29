@@ -41,9 +41,9 @@ function input(extra: Record<string, unknown> = {}) {
   };
 }
 function request(body: unknown) {
-  return new NextRequest("https://originrepairs.co.uk/api/contact", {
+  return new NextRequest("https://originrepairs.com/api/contact", {
     method: "POST",
-    headers: { "content-type": "application/json", "x-forwarded-for": randomUUID(), origin: "https://originrepairs.co.uk" },
+    headers: { "content-type": "application/json", "x-forwarded-for": randomUUID(), origin: "https://originrepairs.com" },
     body: JSON.stringify(body),
   });
 }
@@ -172,7 +172,7 @@ describe.each(["vercel", "generic"])("production Turnstile enforcement (%s)", (h
   });
 
   it.each([
-    { success: false, hostname: "originrepairs.co.uk" },
+    { success: false, hostname: "originrepairs.com" },
     { success: true, hostname: "different.example" },
     { success: true },
   ])("rejects provider key/token mismatches or a different widget hostname: %j", async (providerResult) => {
@@ -189,7 +189,7 @@ describe.each(["vercel", "generic"])("production Turnstile enforcement (%s)", (h
     vi.stubEnv("PRODUCTION_OPERATIONS_ENABLED", "true");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "server-key");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "public-key");
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true, hostname: "originrepairs.co.uk" }), { status: 200 })));
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true, hostname: "originrepairs.com" }), { status: 200 })));
     expect(await verifyTurnstile("challenge-token", request({}))).toBe(true);
   });
 });

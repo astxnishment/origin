@@ -10,7 +10,7 @@ This is a content and implementation review, not a certificate of legal complian
 - Booking and repair data persist in the service database. Customer-visible status history and restricted staff access are described without claiming automatic device-location tracking.
 - Email-link sign-in uses a cookie lasting up to 30 days. The cookie can be removed by signing out. The application uses Resend for transactional mail and Cloudflare Turnstile for abuse prevention.
 - Theme storage and session-only device/repair drafts are disclosed. Drafts exclude contact details and fault descriptions. No advertising or behavioural analytics are configured.
-- The hosting and database providers have not been chosen. The notice uses accurate recipient categories and makes no claim that Vercel already hosts the site.
+- Cloudflare is selected for the next hosting release; Vercel remains the rollback deployment and the production database still needs setup. The migration is contact-only. Clerk and a Cloudflare-hosted human chat inbox are planned but not implemented. Update provider/storage descriptions to match the final implementation before activating those services; see [the migration plan](CLOUDFLARE.md).
 - All existing repair prices and warranty durations are preserved. Additional warranty terms are distinguished from statutory rights.
 - Optional live chat now names tawk.to and explains conversation/technical data and provider storage. It is loaded only after Start chat. Closing the iframe disconnects the widget but does not erase stored conversations or provider cookies. The inbox is not connected yet; the owner must configure consent, staff access, notifications and retention before activation. See [chat setup](LIVE-CHAT.md).
 

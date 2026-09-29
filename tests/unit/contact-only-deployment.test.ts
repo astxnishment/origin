@@ -54,7 +54,18 @@ afterEach(() => {
 });
 
 describe("explicit contact-only production gate", () => {
-  it.each(["https://origin-peach.vercel.app", "https://originrepairs.co.uk"])("permits informational publishing at %s without provider credentials", (url) => {
+  it("permits Cloudflare informational production at the confirmed canonical domain", () => {
+    const result = check({ VERCEL_ENV: undefined, DEPLOYMENT_ENV: "production", HOSTING_PROVIDER: "cloudflare", NEXT_PUBLIC_SITE_URL: "https://originrepairs.com" });
+    expect(result.status).toBe(0);
+    expect(result.output).toContain("Full-service launch remains disabled");
+  });
+
+  it.each(["https://originrepairs.co.uk", "https://origin.example.workers.dev", "https://originrepairs.com.evil.example", "https://originrepairs.com:443", "https://originrepairs.com/path"])("does not widen the Cloudflare canonical allowlist: %s", (url) => {
+    const result = check({ VERCEL_ENV: undefined, DEPLOYMENT_ENV: "production", HOSTING_PROVIDER: "cloudflare", NEXT_PUBLIC_SITE_URL: url });
+    expect(result.status).toBe(1);
+  });
+
+  it.each(["https://origin-peach.vercel.app", "https://originrepairs.com"])("permits informational publishing at %s without provider credentials", (url) => {
     const result = check({ NEXT_PUBLIC_SITE_URL: url }, ["--if-production"]);
     expect(result.status).toBe(0);
     expect(result.output).toContain("Contact-only configuration checks passed");
@@ -67,7 +78,7 @@ describe("explicit contact-only production gate", () => {
     "https://origin-peach.vercel.app.evil.example", "https://origin-peach.vercel.app@evil.example",
     "https://user@origin-peach.vercel.app", "https://origin-peach.vercel.app:443",
     "https://origin-peach.vercel.app/path", "https://origin-peach.vercel.app?test=1",
-    "https://origin-peach.vercel.app#section", "https://www.originrepairs.co.uk",
+    "https://origin-peach.vercel.app#section", "https://www.originrepairs.com",
   ])("rejects an unapproved or non-canonical publishing URL: %s", (url) => {
     const result = check({ NEXT_PUBLIC_SITE_URL: url });
     expect(result.status).toBe(1);
@@ -118,7 +129,7 @@ describe("contact-only runtime isolation", () => {
   });
 
   it("also blocks approved operations on the existing custom domain", async () => {
-    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.co.uk");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.com");
     const deployment = await import("@/lib/deployment");
     expect(deployment.IS_PRODUCTION_DEPLOYMENT).toBe(false);
     expect(deployment.EMAIL_DELIVERY_ENABLED).toBe(false);
@@ -168,7 +179,7 @@ describe("contact-only runtime isolation", () => {
 
   it("preserves the full operational mode without contact-only opt-in", async () => {
     vi.stubEnv("NEXT_PUBLIC_CONTACT_ONLY", "false");
-    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.co.uk");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.com");
     const [{ FEATURES }, deployment] = await Promise.all([
       import("@/lib/business-config"), import("@/lib/deployment"),
     ]);

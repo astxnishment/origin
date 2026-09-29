@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { createHash } from "node:crypto";
+import { isIP } from "node:net";
 import { SEO } from "@/lib/business-config";
 import { isProductionEnvironment } from "@/lib/deployment";
 
@@ -73,7 +74,13 @@ export async function readJsonBody(
   }
 }
 
-function clientAddress(request: NextRequest): string {
+function clientAddress(request: NextRequest): string | null {
+  if (process.env.HOSTING_PROVIDER === "cloudflare") {
+    // Only the explicitly configured Cloudflare edge may supply this identity.
+    // Never fall back to client-supplied forwarding headers on that platform.
+    const address = request.headers.get("cf-connecting-ip")?.trim();
+    return address && isIP(address) !== 0 ? address : null;
+  }
   return (
     request.headers.get("x-vercel-forwarded-for") ??
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -87,11 +94,13 @@ export function checkRateLimit(
   limit: number,
   windowMs: number
 ): boolean {
+  const address = clientAddress(request);
+  if (!address) return false;
   const now = Date.now();
   for (const [key, value] of rateLimits) {
     if (value.resetAt <= now) rateLimits.delete(key);
   }
-  const key = `${scope}:${clientAddress(request)}`;
+  const key = `${scope}:${address}`;
   const current = rateLimits.get(key);
 
   if (!current || current.resetAt <= now) {
@@ -202,6 +211,8 @@ export async function verifyTurnstile(
   token: string,
   request: NextRequest
 ): Promise<boolean> {
+  const address = clientAddress(request);
+  if (!address) return false;
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
   const productionOperations = isProductionEnvironment() &&
@@ -214,7 +225,7 @@ export async function verifyTurnstile(
   const form = new URLSearchParams({
     secret,
     response: token,
-    remoteip: clientAddress(request),
+    remoteip: address,
   });
 
   try {

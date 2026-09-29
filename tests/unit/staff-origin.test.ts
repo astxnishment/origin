@@ -43,13 +43,13 @@ describe("staff request origin through NextURL normalization", () => {
   it.each(["vercel", "generic"])("accepts the configured production HTTPS origin behind an internal proxy URL on %s", async (host) => {
     vi.stubEnv("VERCEL_ENV", host === "vercel" ? "production" : undefined);
     vi.stubEnv("DEPLOYMENT_ENV", host === "generic" ? "production" : undefined);
-    const incoming = request("http://127.0.0.1:3108/api/admin/repairs", { host: "originrepairs.co.uk", origin: "https://originrepairs.co.uk" });
+    const incoming = request("http://127.0.0.1:3108/api/admin/repairs", { host: "originrepairs.com", origin: "https://originrepairs.com" });
     await expect(readStaffJsonBody(incoming)).resolves.toEqual({ status: "received" });
   });
 
-  it.each(["http://originrepairs.co.uk", "https://www.originrepairs.co.uk", "https://malicious.example", "http://localhost:3108"])("requires the exact configured production HTTPS origin: %s", async (origin) => {
+  it.each(["http://originrepairs.com", "https://www.originrepairs.com", "https://malicious.example", "http://localhost:3108"])("requires the exact configured production HTTPS origin: %s", async (origin) => {
     vi.stubEnv("VERCEL_ENV", "production");
-    const incoming = request("http://127.0.0.1:3108/api/admin/repairs", { host: "originrepairs.co.uk", origin, "x-forwarded-host": new URL(origin).host });
+    const incoming = request("http://127.0.0.1:3108/api/admin/repairs", { host: "originrepairs.com", origin, "x-forwarded-host": new URL(origin).host });
     await expect(readStaffJsonBody(incoming)).rejects.toMatchObject({ status: 403 });
   });
 
@@ -67,10 +67,10 @@ describe("staff request origin through NextURL normalization", () => {
     vi.stubEnv("TURNSTILE_SECRET_KEY", "test-server-key");
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "test-site-key");
     const provider = vi.fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, hostname: "originrepairs.co.uk" }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, hostname: "originrepairs.com" }), { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ success: true, hostname: "malicious.example" }), { status: 200 }));
     vi.stubGlobal("fetch", provider);
-    const incoming = request("http://127.0.0.1:3108/api/booking", { host: "originrepairs.co.uk", origin: "https://malicious.example", "x-forwarded-host": "malicious.example" });
+    const incoming = request("http://127.0.0.1:3108/api/booking", { host: "originrepairs.com", origin: "https://malicious.example", "x-forwarded-host": "malicious.example" });
     expect(await verifyTurnstile("test-token", incoming)).toBe(true);
     expect(await verifyTurnstile("test-token", incoming)).toBe(false);
   });

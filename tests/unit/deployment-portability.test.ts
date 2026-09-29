@@ -5,7 +5,7 @@ beforeEach(() => {
   vi.stubEnv("NODE_ENV", "production");
   vi.stubEnv("VERCEL_ENV", undefined);
   vi.stubEnv("DEPLOYMENT_ENV", undefined);
-  vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.co.uk");
+  vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://originrepairs.com");
   vi.stubEnv("PRODUCTION_OPERATIONS_ENABLED", "true");
   vi.stubEnv("SITE_INDEXING_ENABLED", "true");
   vi.stubEnv("EMAILS_ENABLED", "true");
@@ -20,6 +20,34 @@ afterEach(() => {
 });
 
 describe("host-independent production controls", () => {
+  it("uses the confirmed .com domain when no canonical override is configured", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", undefined);
+    const { SEO } = await import("@/lib/business-config");
+    expect(SEO.siteUrl).toBe("https://originrepairs.com");
+  });
+
+  it("keeps Cloudflare production operations off until explicitly approved", async () => {
+    vi.stubEnv("HOSTING_PROVIDER", "cloudflare");
+    vi.stubEnv("DEPLOYMENT_ENV", "production");
+    vi.stubEnv("PRODUCTION_OPERATIONS_ENABLED", "false");
+    vi.stubEnv("ALLOW_PREVIEW_EMAILS", "true");
+    vi.stubEnv("ALLOW_PREVIEW_REPAIR_WRITES", "true");
+    const deployment = await import("@/lib/deployment");
+    expect(deployment.IS_PRODUCTION_DEPLOYMENT).toBe(false);
+    expect(deployment.EMAIL_DELIVERY_ENABLED).toBe(false);
+    expect(deployment.areRepairWritesEnabled()).toBe(false);
+    expect(deployment.INDEXING_ENABLED).toBe(false);
+  });
+
+  it.each(["https://originrepairs.co.uk", "https://originrepairs.com:8443", "https://user@originrepairs.com", "https://originrepairs.com/path", "https://originrepairs.com?test=1"])("does not approve a different production origin: %s", async (url) => {
+    vi.stubEnv("DEPLOYMENT_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", url);
+    const deployment = await import("@/lib/deployment");
+    expect(deployment.IS_PRODUCTION_DEPLOYMENT).toBe(false);
+    expect(deployment.EMAIL_DELIVERY_ENABLED).toBe(false);
+    expect(deployment.areRepairWritesEnabled()).toBe(false);
+  });
+
   it.each([
     { vercel: undefined, generic: "production", expected: "production" },
     { vercel: undefined, generic: "preview", expected: "preview" },

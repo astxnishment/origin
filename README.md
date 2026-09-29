@@ -1,10 +1,12 @@
 # Origin Repairs
 
-Device repair website for Origin Repairs in Leeds, built with Next.js App Router, React, TypeScript and Tailwind CSS. Includes repair quotations, drop-off and mail-in requests, email-link customer access, private repair timelines and a staff dashboard backed by PostgreSQL.
+Device repair website for Origin Repairs in Leeds, built with Next.js App Router, React, TypeScript and Tailwind CSS. The contact-only website is live on Cloudflare Workers with vinext at [originrepairs.com](https://originrepairs.com), with `www.originrepairs.com` also attached. The existing Next.js/Vercel deployment is untouched and remains available for rollback.
+
+The Cloudflare profile is contact-only: public repair information, estimates, phone and WhatsApp contact. Online requests, accounts, tracking, email, chat, database writes and indexing remain disabled. The repository contains the earlier PostgreSQL repair flows, custom email-link authentication and Tawk adapter. Requested Clerk authentication and a Cloudflare-hosted human chat inbox are not implemented; credentials alone will not enable them.
 
 ## Local development
 
-Use Node.js 22 or 24, install with `npm ci`, then run `npm run dev`. `.env.local.example` describes configuration; keep real credentials out of git. The public service flags enable booking, mail-in and tracking. Database writes and external email remain disabled until explicitly configured.
+Use Node.js 22 or 24, install with `npm ci`, then run `npm run dev` for the retained Next.js app. `.env.local.example` defaults to safe contact-only settings; keep real credentials out of git. To exercise existing forms locally, explicitly disable contact-only mode and enable the required features using the isolated CI test profile. Database writes and external email require separate opt-ins.
 
 For tracking development, use a separate local PostgreSQL database, set `DATABASE_URL`, apply `npm run db:migrate`, configure a local-only `AUTH_SECRET` and `STAFF_EMAILS`, and opt into `ALLOW_PREVIEW_REPAIR_WRITES=true`. Never connect a public preview to the live customer database. `npm run db:check` verifies connectivity and required columns without reading records.
 
@@ -24,13 +26,23 @@ The tracking integration suite is deliberately gated. See `.github/workflows/qua
 
 ## Deployment
 
-See [the deployment plan](docs/DEPLOYMENT.md) for configuration, migration, verification, monitoring and rollback. Hosting and live service credentials have not been selected or configured. `npm run deploy:check` checks required production settings without contacting providers or printing secret values. Production builds run this check automatically before compiling.
+Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for the verified deployment record, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. On 29 September 2026, the Cloudflare CLI confirmed deployment to `.com` and `www`; the canonical site returned HTTPS 200 with the expected canonical, CSP and HSTS, and live homepage/client navigation checks passed. Local checks passed 285 unit tests and 31 Cloudflare browser checks, with two duplicate API probes skipped; the dependency audit reported zero vulnerabilities. Repository checks verify both the retained Next.js path and the Cloudflare runtime before changes are merged. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
+
+```sh
+npm run build:cloudflare
+npm run test:cloudflare
+npm run preview:cloudflare -- --host 127.0.0.1 --port 3109
+```
+
+The Cloudflare wrappers share `scripts/cloudflare-environment.mjs` with the Worker configuration, keeping browser/runtime flags aligned. They run the readiness gate and keep services off. `npm run deploy:cloudflare` changes the hosted Worker and should follow review and runtime verification. Lower-level vinext commands do not apply this safe release profile. The Cloudflare CI workflow builds and tests locally; it does not deploy.
 
 For a Node.js host, set `DEPLOYMENT_ENV=production` on the intended public release or `preview` for staging. Vercel's platform-provided `VERCEL_ENV` takes precedence if present. Production detection, canonical redirects, staff origin checks, spam protection and write controls support both. `NODE_ENV` alone never turns a preview into a live service. Static-only hosting cannot run the database, form or sign-in routes.
 
 ## Customer live chat
 
-The first-party chat button loads an embedded tawk.to conversation only after the customer chooses Start chat. Set the public property/widget IDs in `.env.local.example`; without them the panel offers phone, email and contact options. Closing or navigating away removes the provider iframe, and chat is excluded from private account, staff and repair-request pages. [Chat setup](docs/LIVE-CHAT.md) covers staff availability, the offline form and live verification. No message delivery or agent availability is implied by the local mocked tests.
+The requested replacement is a Cloudflare-hosted conversation between customers and human staff, with a private staff inbox. Durable Object persistence, customer/staff permissions, reconnect/offline behavior and real delivery remain to be implemented. Clerk keys are also pending, and the session adapter and CSP/API integration need work.
+
+The retained Tawk adapter is disabled in the Cloudflare profile. Its [setup guide](docs/LIVE-CHAT.md) is historical implementation documentation, not instructions to activate the planned inbox. Preserve explicit customer activation and the existing privacy boundaries when replacing it. Mocked tests do not prove real delivery or staff availability.
 
 ## Main sources
 

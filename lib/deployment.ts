@@ -24,7 +24,7 @@ export const IS_PRODUCTION_DEPLOYMENT =
   !CONTACT_ONLY_MODE &&
   isProductionEnvironment() &&
   productionOperationsApproved &&
-  productionHostname === "originrepairs.co.uk";
+  SEO.siteUrl === "https://originrepairs.com";
 
 export const INDEXING_ENABLED =
   IS_PRODUCTION_DEPLOYMENT &&

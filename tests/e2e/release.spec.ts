@@ -10,7 +10,7 @@ test("public pages render with unique canonical URLs and loaded images", async (
   for (const path of pages) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://originrepairs.co.uk${path === "/" ? "" : path}`);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://originrepairs.com${path === "/" ? "" : path}`);
     await expect(page.locator("main#main-content")).toHaveCount(1);
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     const layout = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
