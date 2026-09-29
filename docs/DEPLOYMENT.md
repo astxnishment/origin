@@ -4,7 +4,9 @@ Updated 29 September 2026. The owner selected **Cloudflare** and confirmed **ori
 
 ## Release status
 
-The Cloudflare migration currently uses an explicit **contact-only** profile. Worker deployment, domain routing and live acceptance remain pending verification. No production service activation or successful Cloudflare deployment is asserted by this document. Follow [the Cloudflare migration guide](CLOUDFLARE.md) for the actual build, preview and deploy wrappers; ordinary Next.js verification is not a Workers runtime check.
+The Cloudflare **contact-only** website is live at [originrepairs.com](https://originrepairs.com), with `www.originrepairs.com` also attached. The CLI confirmed version `30fff7df-dac7-4239-8c9e-410387d4f529` on 29 September 2026. The canonical site returned HTTPS 200 with the correct canonical, CSP and HSTS, and live browser checks verified the homepage and client-side navigation. Vercel is untouched and retained for rollback.
+
+Local verification passed 284 unit tests and 31 Cloudflare browser checks, with two duplicate API probes skipped; the dependency audit reported zero vulnerabilities. PR #3's CI installation-compatibility fix is still in progress. These local/live results do not claim a merged PR or completed hosted CI. The generated `origin-repairs.blentiugov.workers.dev` address is not counted as verified because its initial HTTPS certificate may still be pending. Follow [the Cloudflare migration guide](CLOUDFLARE.md) for the deployment record and release wrappers.
 
 The requested replacements are **Clerk authentication** and **Cloudflare-hosted human chat with a staff inbox**. Neither replacement is implemented; Clerk keys and real-service setup are pending. The existing custom email-link auth, PostgreSQL repair flows and Tawk adapter remain in the repository, disabled by the migration profile. Keys alone cannot enable the requested replacements. The detailed session, CSP/API, database and Durable Object chat work is tracked in [CLOUDFLARE.md](CLOUDFLARE.md#work-required-before-full-services).
 
@@ -21,7 +23,7 @@ NEXT_PUBLIC_SITE_URL=https://originrepairs.com
 
 All online-operation, public-service, indexing and preview-override switches are `false`. Contact-only mode also enforces disabled email, database writes, accounts, booking, mail-in requests, tracking and live chat at runtime. Provider secrets are not needed. Repair information, current images and local quote estimates remain available. `/book`, `/mail-in`, `/track` and `/contact` offer phone/WhatsApp alternatives; the contact API rejects submissions before reading customer data. Indexing remains off during migration.
 
-The exact Vercel contact-only address `https://origin-peach.vercel.app` remains supported. No wildcard Workers address is accepted as a production canonical. A generated Worker URL may be used for verification with `.com` metadata and noindex before domain cutover.
+The exact Vercel contact-only address `https://origin-peach.vercel.app` remains supported. No wildcard Workers address is accepted as a production canonical. The verified public address is `.com`; indexing remains off while the service integrations are unfinished.
 
 Do not remove contact-only mode until the requested providers are implemented and accepted. The full-service gate currently checks custom auth and Tawk requirements; update it with those integrations rather than supplying dummy legacy credentials. The owner has selected mail-in and live tracking, but operational service availability still depends on production storage, delivery, authentication and staff procedures.
 
@@ -138,7 +140,7 @@ The browser suite runs a separate production server on port 3108 across desktop,
 
 ## 6. Attach the domain and release
 
-Add `originrepairs.com` and `www.originrepairs.com` to the chosen host using its exact DNS instructions. Preserve MX/TXT email records. Verify HTTPS, the www-to-apex redirect, canonical metadata and security headers. Keep staging deployments private/noindex.
+The contact-only Worker is already deployed to `originrepairs.com` and `www.originrepairs.com`. For subsequent releases and the full-service launch, preserve MX/TXT email records and recheck HTTPS, the www-to-apex redirect, canonical metadata and security headers. Keep staging deployments private/noindex.
 
 Build with the approved configuration, complete the live acceptance checks, then enable indexing and rebuild the final public release. Verify robots permits public pages, sitemap includes intended services and excludes accounts/admin/tracking, and the final hostname loads correctly on mobile. Keep a known working deployment for rollback. Submit the sitemap through the owner's search-console account when ready.
 
@@ -172,4 +174,4 @@ Verified locally on 22 September 2026:
 
 These counts record the final passing coverage across the release run and focused reruns after fixes. The local database tests used PGlite's PostgreSQL engine and wire server with the actual production driver; they are not proof of full managed-PostgreSQL concurrency, availability or backup recovery. CI is configured to repeat the suite against PostgreSQL 16. This historical table does not report the status of the current migration CI run.
 
-Automated accessibility checks supplement visual and keyboard review; they do not certify full accessibility compliance. Mocked delivery and disabled external email do not establish inbox delivery. Public launch remains dependent on the real-service and owner checks above, regardless of automated results.
+Automated accessibility checks supplement visual and keyboard review; they do not certify full accessibility compliance. Mocked delivery and disabled external email do not establish inbox delivery. The contact-only website is public; the full operational launch still depends on the real-service and owner checks above.

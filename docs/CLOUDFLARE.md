@@ -1,8 +1,18 @@
 # Cloudflare migration
 
-Updated 29 September 2026. The owner selected Cloudflare and confirmed **originrepairs.com** as the main domain. The migration currently targets an informational, contact-only website. Cloudflare production deployment, domain routing and live acceptance still need verification; this document is not evidence that a deployment succeeded. Keep the existing Vercel deployment available for rollback.
+Updated 29 September 2026. The informational, contact-only website is live on Cloudflare at **[originrepairs.com](https://originrepairs.com)**. The CLI confirmed deployment to `originrepairs.com` and `www.originrepairs.com`. The existing Vercel deployment is untouched and remains available for rollback.
 
 The owner also requested **Clerk authentication** and a **Cloudflare-hosted human staff/customer chat inbox**. Neither replacement is implemented. Clerk credentials are pending; chat storage, authentication and delivery still need to be built. Adding API keys alone will not enable these services.
+
+## Verified deployment record
+
+- Cloudflare version: `30fff7df-dac7-4239-8c9e-410387d4f529`, deployed 29 September 2026 to the `.com` and `www` domains.
+- Live `https://originrepairs.com` returned HTTPS 200 with the correct canonical URL, Content Security Policy and HSTS. Live browser checks verified the homepage and client-side navigation.
+- Local verification passed 284 unit tests and 31 Cloudflare browser checks; two repeated API-probe cases were intentionally skipped. The dependency audit reported zero vulnerabilities.
+- PR #3 is still undergoing a CI installation-compatibility fix. This record does not claim that the PR is merged or that hosted CI has finished successfully.
+- `origin-repairs.blentiugov.workers.dev` exists, but HTTPS on that generated address was not verified; initial certificate availability may still be pending. Use the verified canonical `.com` site.
+
+These checks verify the contact-only website. Booking, mail-in requests, customer accounts, tracking, Clerk, live chat, outbound email, database writes and indexing remain disabled. They do not establish real message delivery or acceptance of repair requests.
 
 ## Current implementation
 
@@ -34,7 +44,7 @@ ALLOW_PREVIEW_REPAIR_WRITES=false
 
 All booking, walk-in, mail-in, tracking, account and live-chat feature flags are also `false`. These settings override the invoking shell's values in the Cloudflare wrappers, including removal of a stale `VERCEL_ENV`. Editing a dashboard setting or adding credentials does not override this reviewed profile. Changing a public feature requires a new build and aligned Worker settings.
 
-The Worker can be verified on its generated address while metadata uses the confirmed `.com` canonical. No wildcard `workers.dev` address is accepted as a production canonical. Contact-only validation also retains the exact `https://origin-peach.vercel.app` address for Vercel compatibility.
+Metadata uses the verified `.com` canonical. No wildcard `workers.dev` address is accepted as a production canonical. Contact-only validation also retains the exact `https://origin-peach.vercel.app` address for Vercel compatibility.
 
 Contact-only mode rejects website messages before reading submitted customer data and disables accounts, repair submissions, database writes, outbound email and chat. Public repair information, images, estimates, phone and WhatsApp contact remain available. Search indexing stays off until the canonical public release is reviewed.
 
@@ -62,7 +72,7 @@ Use `build:cloudflare`, `preview:cloudflare` and `deploy:cloudflare` for this re
 npm run deploy:cloudflare
 ```
 
-This last command changes the hosted service; building or previewing does not. The deployment gate checks configuration shape, not account access, DNS, credentials or delivery. After deployment, verify HTTPS, images/fonts, navigation, canonical metadata, CSP nonces, security headers, noindex, and direct rejection of disabled API routes. Do not switch the canonical domain away from the existing host until the replacement is verified.
+This last command changes the hosted service; building or previewing does not. The deployment gate checks configuration shape, not account access, DNS, credentials or delivery. For each subsequent release, verify HTTPS, images/fonts, navigation, canonical metadata, CSP nonces, security headers, noindex, and direct rejection of disabled API routes. Preserve the known working deployment until its replacement passes verification.
 
 ## Work required before full services
 
@@ -99,7 +109,7 @@ The business contact mailbox is still `tech@originrepairs.co.uk` pending owner c
 
 ## Domain, operations and rollback
 
-Attach `originrepairs.com` and the intended `www` redirect using the account's actual Cloudflare routing instructions. Preserve existing MX/TXT email records. Keep secrets in the provider's secret settings and separate test resources from production data.
+`originrepairs.com` and `www.originrepairs.com` are attached to the deployed Worker. Preserve existing MX/TXT email records when maintaining domain routing. Keep secrets in the provider's secret settings and separate test resources from production data.
 
 Before removing contact-only mode, complete the implementation and acceptance work above and the business checks in [DEPLOYMENT.md](DEPLOYMENT.md). Review the readiness gate for the actual selected auth/chat providers; it currently checks the legacy auth/Tawk configuration. Do not set dummy legacy values to bypass it. Enable each service only when its server behavior, UI and build/runtime flags agree.
 

@@ -1,6 +1,6 @@
 # Origin Repairs
 
-Device repair website for Origin Repairs in Leeds, built with Next.js App Router, React, TypeScript and Tailwind CSS. The current migration targets Cloudflare Workers with vinext and the canonical domain `https://originrepairs.com`. The existing Next.js/Vercel path remains available for rollback.
+Device repair website for Origin Repairs in Leeds, built with Next.js App Router, React, TypeScript and Tailwind CSS. The contact-only website is live on Cloudflare Workers with vinext at [originrepairs.com](https://originrepairs.com), with `www.originrepairs.com` also attached. The existing Next.js/Vercel deployment is untouched and remains available for rollback.
 
 The Cloudflare profile is contact-only: public repair information, estimates, phone and WhatsApp contact. Online requests, accounts, tracking, email, chat, database writes and indexing remain disabled. The repository contains the earlier PostgreSQL repair flows, custom email-link authentication and Tawk adapter. Requested Clerk authentication and a Cloudflare-hosted human chat inbox are not implemented; credentials alone will not enable them.
 
@@ -26,7 +26,7 @@ The tracking integration suite is deliberately gated. See `.github/workflows/qua
 
 ## Deployment
 
-Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for current status, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. Cloudflare is selected; successful production deployment, domain cutover and service delivery still require verification. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
+Follow [the Cloudflare migration guide](docs/CLOUDFLARE.md) for the verified deployment record, commands and remaining work, and [the operational deployment plan](docs/DEPLOYMENT.md) for service acceptance and rollback. On 29 September 2026, the Cloudflare CLI confirmed deployment to `.com` and `www`; the canonical site returned HTTPS 200 with the expected canonical, CSP and HSTS, and live homepage/client navigation checks passed. Local checks passed 284 unit tests and 31 Cloudflare browser checks, with two duplicate API probes skipped; the dependency audit reported zero vulnerabilities. PR #3's CI compatibility fix is still in progress; these results do not claim a merged PR or completed CI. The current toolchain pins vinext 1.0.0 and the `cf` beta CLI through the lockfile.
 
 ```sh
 npm run build:cloudflare
