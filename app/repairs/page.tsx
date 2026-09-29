@@ -131,7 +131,12 @@ const categories: Array<{
     device: "Data Recovery",
     href: "/repairs/data-recovery",
     tagline: "Phones, tablets, computers, SSDs, hard drives and lost files",
-    image: serviceImages.dataRecovery,
+    image: {
+      src: "/images/services/data-recovery-thumbnail.webp",
+      alt: "Hard drive and external SSD",
+      width: 256,
+      height: 256,
+    },
     repairs: [
       { name: "Data Recovery Assessment", time: "2–10 days estimate", from: getSpecialistPriceLabel("data-recovery", "data-recovery") },
       { name: "Phone Board Recovery", time: "2–7 days estimate", from: getSpecialistPriceLabel("phone", "data-recovery") },
