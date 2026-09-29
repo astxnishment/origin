@@ -3,8 +3,11 @@ import { headers } from "next/headers";
 import localFont from "next/font/local";
 import "./globals.css";
 import MobileCTABar from "@/components/MobileCTABar";
+import LiveChat from "@/components/LiveChat";
+import { liveChatConfiguration } from "@/lib/liveChat";
 import { BUSINESS, FEATURES, SEO, SERVICES, TRUST } from "@/lib/constants";
-import { INDEXING_ENABLED } from "@/lib/deployment";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
+import { getDeploymentEnvironment, INDEXING_ENABLED } from "@/lib/deployment";
 
 const geistSans = localFont({
   src: "../public/fonts/geist-latin.woff2",
@@ -41,9 +44,6 @@ export const metadata: Metadata = {
     "liquid damage repair Leeds",
   ],
   category: "Device repair",
-  alternates: {
-    canonical: SEO.siteUrl,
-  },
   robots: {
     index: INDEXING_ENABLED,
     follow: INDEXING_ENABLED,
@@ -54,10 +54,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/logos/origin-icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-32.png?v=20260926", type: "image/png", sizes: "32x32" },
+      { url: "/icon.svg?v=20260926", type: "image/svg+xml", sizes: "any" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-    shortcut: ["/logos/origin-icon.png"],
+    apple: [{ url: "/apple-touch-icon.png?v=20260926", sizes: "180x180" }],
   },
   openGraph: {
     title: "Origin Repairs — Device Repair in Leeds",
@@ -114,6 +114,7 @@ export default async function RootLayout({
     })();
   `;
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const chat = liveChatConfiguration();
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -126,7 +127,7 @@ export default async function RootLayout({
           "Device repair service in Leeds for phones, tablets, laptops, consoles, custom PCs, liquid damage and data recovery assessment.",
         url: SEO.siteUrl,
         telephone: BUSINESS.phone,
-        email: BUSINESS.email,
+        ...(!CONTACT_ONLY_MODE ? { email: BUSINESS.email } : {}),
         image: `${SEO.siteUrl}/logos/origin-logo-light.png`,
         logo: `${SEO.siteUrl}/logos/origin-icon.png`,
         address: {
@@ -227,15 +228,16 @@ export default async function RootLayout({
         >
           Skip to main content
         </a>
-        <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
+        <div className="flex-1">
           {children}
         </div>
-        {process.env.VERCEL_ENV === "preview" && (
+        {getDeploymentEnvironment() === "preview" && (
           <div className="fixed bottom-16 left-3 z-[90] rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:bottom-3">
             Preview
           </div>
         )}
         <MobileCTABar />
+        {chat.enabled && <LiveChat configured={Boolean(chat.scriptUrl)} />}
       </body>
     </html>
   );

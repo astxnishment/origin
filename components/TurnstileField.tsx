@@ -27,8 +27,10 @@ export const TURNSTILE_ENABLED = Boolean(SITE_KEY);
 
 export default function TurnstileField({
   onToken,
+  resetKey = 0,
 }: {
   onToken: (token: string) => void;
+  resetKey?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,9 +51,9 @@ export default function TurnstileField({
       }
       widgetId = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
-        callback: onToken,
-        "expired-callback": () => onToken(""),
-        "error-callback": () => onToken(""),
+        callback: (token) => { if (!cancelled) onToken(token); },
+        "expired-callback": () => { if (!cancelled) onToken(""); },
+        "error-callback": () => { if (!cancelled) onToken(""); },
         theme: "auto",
       });
     }
@@ -75,11 +77,12 @@ export default function TurnstileField({
 
     return () => {
       cancelled = true;
+      document.getElementById(SCRIPT_ID)?.removeEventListener("load", renderWidget);
       if (widgetId && window.turnstile) {
         window.turnstile.remove(widgetId);
       }
     };
-  }, [onToken]);
+  }, [onToken, resetKey]);
 
   if (!SITE_KEY) return null;
 

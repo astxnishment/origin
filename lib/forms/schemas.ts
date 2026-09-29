@@ -1,17 +1,8 @@
 import { z } from "zod";
 import { BRANDS, REPAIR_TYPES } from "@/lib/calculatorData";
 
-export const REQUEST_TIME_SLOTS = [
-  "9:00am",
-  "10:00am",
-  "11:00am",
-  "12:00pm",
-  "1:00pm",
-  "2:00pm",
-  "3:00pm",
-  "4:00pm",
-  "5:00pm",
-] as const;
+import { REQUEST_TIME_SLOTS, isRequestDateValid, slotsForDate } from "@/lib/appointments";
+export { REQUEST_TIME_SLOTS } from "@/lib/appointments";
 
 const singleLine = (label: string, max: number) =>
   z
@@ -65,29 +56,7 @@ const phone = z
     "Enter a valid UK or international phone number."
   );
 
-const date = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a valid date.")
-  .refine((value) => {
-    const selected = new Date(`${value}T12:00:00Z`);
-    return !Number.isNaN(selected.getTime());
-  }, "Choose a valid date.")
-  .refine((value) => {
-    const selected = new Date(`${value}T12:00:00Z`);
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
-    return selected >= today;
-  }, "Choose a date that has not passed.")
-  .refine((value) => {
-    const selected = new Date(`${value}T12:00:00Z`);
-    const latest = new Date();
-    latest.setUTCFullYear(latest.getUTCFullYear() + 1);
-    return selected <= latest;
-  }, "Choose a date within the next year.")
-  .refine(
-    (value) => new Date(`${value}T12:00:00Z`).getUTCDay() !== 0,
-    "Sunday requests are unavailable."
-  );
+const date = z.string().refine((value) => isRequestDateValid(value), "Choose a valid date within the next year that has not passed.");
 
 const antiSpamFields = {
   website: z.string().max(0).optional().default(""),
@@ -130,6 +99,10 @@ export const bookingRequestSchema = z
     ...antiSpamFields,
   })
   .superRefine((value, context) => {
+    if (!slotsForDate(value.date).includes(value.time)) {
+      context.addIssue({ code: "custom", path: ["time"], message: "Choose an available future time during our opening hours." });
+    }
+
     if (value.serviceMethod === "mail-in" && !value.returnAddress) {
       context.addIssue({
         code: "custom",
@@ -155,7 +128,7 @@ export const contactRequestSchema = z.object({
   email,
   phone: phone.optional().or(z.literal("")).default(""),
   device: optionalSingleLine("Device", 120),
-  issue: singleLine("Message", 3000),
+  issue: multiLine("Message", 3000).refine((value) => value.length > 0, "Message is required."),
   consentToContact: z.literal(true, {
     error: "Consent to contact is required.",
   }),

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -12,11 +13,11 @@ import {
   PageSection,
 } from "@/components/layout/PageContainer";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faq", {
   title: "Frequently Asked Questions",
   description:
     "Repair estimates, parts choices, warranty terms, turnaround and assessment questions for Origin Repairs.",
-};
+});
 
 const categories = [
   {
@@ -24,17 +25,17 @@ const categories = [
     faqs: [
       {
         q: "Does an online request reserve a time?",
-        a: "No. An online submission is a repair-slot request. The team must confirm availability before a time is reserved.",
+        a: "An online submission asks us to confirm a repair and preferred time. Wait for confirmation before travelling or posting your device. Work begins only after you approve the scope and price.",
       },
       {
         q: "Can I get an estimate without requesting a time?",
-        a: "Yes. The quote calculator shows published price ranges. The final price is confirmed after the device and fault have been assessed.",
+        a: "Yes. The quote calculator shows published estimates and enquiry options for newer models. We confirm repair feasibility, parts and the final price before work begins.",
       },
       {
         q: "Are walk-ins available?",
         a: FEATURES.walkInsEnabled
-          ? "Walk-ins are currently enabled in our published business settings. Calling before travelling is sensible for complex repairs or parts-dependent work."
-          : "Walk-in availability is not currently published. Contact us before travelling so the team can confirm the appropriate next step.",
+          ? "You can visit during our published opening hours. Call ahead for complex work or repairs that may need parts ordered."
+          : "Please contact us to arrange a visit before travelling.",
       },
     ],
   },
@@ -47,7 +48,7 @@ const categories = [
       },
       {
         q: "What part options are available?",
-        a: "Options can include compatible aftermarket, refurbished original, pulled original or genuine service parts. Only options supported by the supply chain and current catalogue should be offered, and the exact option is identified in the quote.",
+        a: "Depending on your model and availability, options may include compatible aftermarket, refurbished original, pulled original or genuine service parts. Your quote identifies the proposed option and any known limitations before you decide.",
       },
       {
         q: "Can liquid-damaged devices be assessed?",
@@ -68,11 +69,11 @@ const categories = [
       },
       {
         q: "What does a repair warranty cover?",
-        a: "Coverage is limited to the supplied part or workmanship identified in the accepted quote. It applies only when assessment confirms the fault actually resulted from our installation, workmanship or a part supplied by us.",
+        a: "The additional warranty covers the supplied part or workmanship identified in your accepted quote. We assess the reported fault and explain the available remedy. This does not replace or restrict your statutory consumer rights.",
       },
       {
         q: "Does it cover new accidental damage?",
-        a: "New impact, liquid ingress or another unrelated fault is assessed as a separate issue. See the warranty page for the current draft terms.",
+        a: "New impact, liquid ingress or another unrelated fault is assessed separately. Later damage does not automatically remove rights relating to the original repair. See the warranty terms for claim steps.",
       },
     ],
   },
@@ -85,14 +86,35 @@ const categories = [
       },
       {
         q: "Can diagnostic charges apply?",
-        a: "Some complex faults require extended bench or diagnostic work. Any applicable diagnostic charge should be disclosed before that work begins.",
+        a: "Some faults need extended diagnostic work. We explain any diagnostic charge and obtain your approval before that work begins.",
       },
       {
         q: "What happens before work starts?",
-        a: "The proposed repair, selected part tier, price estimate, time estimate and warranty term are confirmed for approval.",
+        a: "We explain the proposed repair, selected part, total price and any applicable delivery or assessment charges, estimated time and warranty for your approval.",
+      },
+      {
+        q: "Can I cancel?",
+        a: "Contact us to withdraw an unaccepted request. Consumer services agreed at a distance normally have a 14-day cancellation period. Starting work during that period needs your express request and can affect the amount payable if you cancel. Our repair terms explain this and include an optional cancellation form.",
       },
     ],
   },
+  ...(FEATURES.mailInEnabled || FEATURES.trackingEnabled ? [{
+    name: "Mail-in & tracking",
+    faqs: [
+      ...(FEATURES.mailInEnabled ? [{
+        q: "Can I post my device to you?",
+        a: "Yes. Request a mail-in repair and wait for acceptance and shipping instructions before posting it. We confirm packaging requirements, who arranges and pays for shipping, and return arrangements first. Keep proof of posting.",
+      }] : []),
+      ...(FEATURES.trackingEnabled ? [{
+        q: "How do I track my repair?",
+        a: "Open the tracking page and sign in using the email address from your repair request. The email sign-in link verifies access to your repairs. You can see the latest status and updates recorded by the team and use a repair reference to find a particular job. Keep sign-in links private and contact us if anything is unclear.",
+      }] : []),
+      {
+        q: "How is my information used?",
+        a: "We use your details to handle the request, carry out agreed work, return your device and provide updates. Account access uses an email sign-in link. Our privacy notice explains service providers, storage, retention and your rights. Do not send passwords or unrelated sensitive information in website forms.",
+      },
+    ],
+  }] : []),
   {
     name: "Location & contact",
     faqs: [
@@ -134,7 +156,7 @@ export default async function FAQPage() {
         }}
       />
       <Navbar />
-      <main className="pb-24 pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-24 pt-24">
         <PageContainer size="narrow">
           <PageIntro
             eyebrow="FAQ"
@@ -142,7 +164,7 @@ export default async function FAQPage() {
             description={
               <>
               Need help with a specific device?{" "}
-              <a href={BUSINESS.phoneHref} className="text-primary hover:underline">
+              <a href={BUSINESS.phoneHref} className="text-primary underline underline-offset-4">
                 Call us
               </a>
               .
@@ -189,6 +211,12 @@ export default async function FAQPage() {
             </h2>
             <p className="text-[15px] text-muted-foreground mb-8 max-w-sm mx-auto">
               Contact the team before submitting a repair request.
+            </p>
+            <p className="mb-6 text-sm text-muted-foreground">
+              Read our{" "}
+              <Link href="/terms" className="text-primary underline underline-offset-4">repair terms</Link>,{" "}
+              <Link href="/warranty" className="text-primary underline underline-offset-4">warranty terms</Link>{" "}
+              and <Link href="/privacy" className="text-primary underline underline-offset-4">privacy notice</Link>.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild className="btn-primary h-10 rounded-lg px-6 text-[13px]">

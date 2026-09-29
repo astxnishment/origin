@@ -24,6 +24,10 @@ export type FeatureFlags = {
   customerAccountsEnabled: boolean;
 };
 
+// This public build-time switch is shared by browser UI and server handlers.
+// Switching back to the full service requires a new configured build.
+export const CONTACT_ONLY_MODE = process.env.NEXT_PUBLIC_CONTACT_ONLY === "true";
+
 function optionalUrl(value: string | undefined): string | undefined {
   if (!value) return undefined;
 
@@ -82,23 +86,23 @@ export const BUSINESS = {
 } as const;
 
 export const FEATURES: FeatureFlags = {
-  bookingEnabled: publicFlag(
+  bookingEnabled: !CONTACT_ONLY_MODE && publicFlag(
     process.env.NEXT_PUBLIC_BOOKING_ENABLED,
     true
   ),
-  walkInsEnabled: publicFlag(
+  walkInsEnabled: !CONTACT_ONLY_MODE && publicFlag(
     process.env.NEXT_PUBLIC_WALK_INS_ENABLED,
     false
   ),
-  mailInEnabled: publicFlag(
+  mailInEnabled: !CONTACT_ONLY_MODE && publicFlag(
     process.env.NEXT_PUBLIC_MAIL_IN_ENABLED,
-    false
+    true
   ),
-  trackingEnabled: publicFlag(
+  trackingEnabled: !CONTACT_ONLY_MODE && publicFlag(
     process.env.NEXT_PUBLIC_TRACKING_ENABLED,
-    false
+    true
   ),
-  customerAccountsEnabled: publicFlag(
+  customerAccountsEnabled: !CONTACT_ONLY_MODE && publicFlag(
     process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED,
     true
   ),

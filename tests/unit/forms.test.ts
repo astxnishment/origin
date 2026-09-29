@@ -12,6 +12,8 @@ const device = ALL_DEVICES[0];
 const repair = getSupportedRepairTypes(device)[0];
 const futureDate = new Date();
 futureDate.setUTCDate(futureDate.getUTCDate() + 14);
+// A valid fixture must fall on an opening day, even when tests run on Sunday.
+if (futureDate.getUTCDay() === 0) futureDate.setUTCDate(futureDate.getUTCDate() + 1);
 const futureDateValue = futureDate.toISOString().slice(0, 10);
 
 const validBooking = {

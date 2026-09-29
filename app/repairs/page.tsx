@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +21,7 @@ type Choice = {
   note: string;
   href: string;
   image?: (typeof serviceImages)[keyof typeof serviceImages];
+  imageFrameClassName?: string;
   /** When set, render a real DeviceImage (brand/model). */
   brand?: "Apple" | "Samsung" | "Google Pixel";
   model?: string;
@@ -28,10 +30,10 @@ type Choice = {
   icon?: DeviceIconType;
 };
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs", {
   title: "Device Repairs Leeds | Phones, Laptops, Consoles, PCs",
   description: "Repair services in Leeds for phones, tablets, laptops, consoles and custom PCs, including assessment-led liquid damage, board repair and data recovery.",
-};
+});
 
 const categories: Array<{
   device: string;
@@ -49,20 +51,31 @@ const categories: Array<{
     image: serviceImages.phones,
     prompt: "Which phone do you have? Pick your brand to see models & pricing.",
     choices: [
-      { name: "iPhone", note: "iPhone 6 through 17 Pro Max", href: "/repairs/iphone", brand: "Apple", model: "iPhone 17 Pro Max", deviceTypeId: "iphone" },
+      { name: "iPhone", note: "iPhone 8 through 18 Pro Max", href: "/repairs/iphone", brand: "Apple", model: "iPhone 18 Pro Max", deviceTypeId: "iphone" },
       { name: "Samsung Galaxy", note: "Galaxy S, A, Z Fold & Flip", href: "/repairs/samsung", image: serviceImages.samsung },
-      { name: "Google Pixel", note: "Pixel 6 through 9 Pro", href: "/repairs/google-pixel", brand: "Google Pixel", model: "Pixel 9 Pro", deviceTypeId: "google-pixel" },
+      { name: "Google Pixel", note: "Pixel through 11, Pro & Fold", href: "/repairs/google-pixel", brand: "Google Pixel", model: "Pixel 9 Pro", deviceTypeId: "google-pixel" },
       { name: "Other Android", note: "OnePlus, Xiaomi, Sony & more", href: "/repairs/phones", image: serviceImages.otherAndroidPhones },
     ],
   },
   {
     device: "Tablets",
-    href: "/repairs/ipad",
+    href: "/quote?category=tablet",
     tagline: "iPad, Samsung Galaxy Tab and Android tablets",
     image: serviceImages.tablets,
-    prompt: "Which tablet do you have? Pick yours for an instant price.",
+    prompt: "Which tablet do you have? Pick yours to check repair options.",
     choices: [
-      { name: "iPad", note: "Pro, Air, mini & standard", href: "/quote?device=ipad", brand: "Apple", model: 'iPad Pro 11" M4', deviceTypeId: "ipad" },
+      {
+        name: "iPad",
+        note: "Pro, Air, mini & standard",
+        href: "/quote?device=ipad",
+        image: {
+          src: "/images/services/ipad-directory-thumbnail.webp",
+          alt: "iPad Pro, front and back",
+          width: 558,
+          height: 640,
+        },
+        imageFrameClassName: "p-1",
+      },
       { name: "Samsung Galaxy Tab", note: "Tab S, Tab A series", href: "/quote?device=galaxy-tab", image: serviceImages.samsungGalaxyTab },
       { name: "Other Android tablet", note: "Lenovo, Huawei, Amazon & more", href: "/contact", image: serviceImages.androidLogo },
     ],
@@ -74,7 +87,17 @@ const categories: Array<{
     image: serviceImages.macbook,
     prompt: "Which laptop do you have? Pick yours to get started.",
     choices: [
-      { name: "MacBook", note: "Air & Pro, all years", href: "/quote?device=macbook", brand: "Apple", model: 'MacBook Pro 14" M3', deviceTypeId: "macbook" },
+      {
+        name: "MacBook",
+        note: "Air, Pro & Neo",
+        href: "/quote?device=macbook",
+        image: {
+          src: "/images/services/macbook-pro-open.webp",
+          alt: "Open Space Black MacBook Pro with a blue display and visible keyboard",
+          width: 1200,
+          height: 775,
+        },
+      },
       { name: "Samsung Galaxy Book", note: "Galaxy Book series", href: "/quote?device=galaxy-book", image: serviceImages.samsungGalaxyBook },
       { name: "Windows / Gaming laptop", note: "Dell, HP, Lenovo, ASUS, Acer & more", href: "/repairs/laptops", image: serviceImages.windowsLogo },
     ],
@@ -142,7 +165,7 @@ export default function RepairsPage() {
     <>
       <Navbar />
 
-      <main className="pb-16 pt-20 sm:pb-24 sm:pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-20 sm:pb-24 sm:pt-24">
         <PageContainer>
           <PageIntro
             eyebrow="Repairs"
@@ -184,6 +207,7 @@ export default function RepairsPage() {
                         alt={image.alt}
                         width={image.width}
                         height={image.height}
+                        sizes="64px"
                         className="h-10 w-10 object-contain sm:h-12 sm:w-12"
                       />
                     </div>
@@ -214,14 +238,15 @@ export default function RepairsPage() {
                         href={c.href}
                         className="group flex min-h-20 items-center gap-3 bg-card p-4 transition-colors hover:bg-surface sm:gap-4 sm:p-5"
                       >
-                        <div className="flex h-12 w-14 flex-shrink-0 items-center justify-center sm:h-14 sm:w-16">
+                        <div className={`flex h-14 w-16 flex-shrink-0 items-center justify-center ${choices.length < 4 ? "sm:h-16 sm:w-20 xl:h-20 xl:w-24" : "sm:h-14 sm:w-16"} ${c.imageFrameClassName ?? ""}`}>
                           {c.image ? (
                             <Image
                               src={c.image.src}
                               alt={c.image.alt}
                               width={c.image.width}
                               height={c.image.height}
-                              className="h-full w-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
+                              sizes={choices.length < 4 ? "(min-width: 1280px) 96px, 80px" : "64px"}
+                              className="h-auto max-h-full w-auto max-w-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
                             />
                           ) : c.brand ? (
                             <DeviceImage
@@ -229,7 +254,7 @@ export default function RepairsPage() {
                               model={c.model ?? ""}
                               deviceTypeId={c.deviceTypeId}
                               category="phone"
-                              size={52}
+                              size={64}
                               className="w-full h-full flex items-center justify-center"
                               imgClassName="object-contain w-full h-full"
                             />

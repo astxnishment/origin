@@ -25,6 +25,7 @@ import {
   type RepairType,
   type DeviceCategory,
 } from "@/lib/calculatorData";
+import { londonDate } from "@/lib/appointments";
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { ArrowLeft, ArrowRight, AlertCircle } from "lucide-react";
 import TurnstileField, {
@@ -109,7 +110,7 @@ function validateForm(data: {
     errors.partTier = "Please select a part option.";
   if (!data.date) errors.date = "Please select a preferred date.";
   else if (slotsForDate(data.date).length === 0)
-    errors.date = "We're closed on Sundays — please pick another day.";
+    errors.date = "No request times remain on this date — please choose another day.";
   if (!data.time) errors.time = "Please select a preferred time.";
   else if (data.date && !slotsForDate(data.date).includes(data.time))
     errors.time = "That time isn't available on the selected day.";
@@ -216,7 +217,9 @@ export default function BookingForm({
   const [website, setWebsite] = useState("");
   const [consentToContact, setConsentToContact] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [responseMessage, setResponseMessage] = useState("");
+  const [trackingReference, setTrackingReference] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
   const startedAt = useRef(0);
   const idempotencyKey = useRef("");
@@ -261,7 +264,7 @@ export default function BookingForm({
         }
         /* eslint-enable react-hooks/set-state-in-effect */
       } catch {
-        sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+        try { sessionStorage.removeItem(DRAFT_STORAGE_KEY); } catch { /* Draft storage is optional. */ }
       }
     }
 
@@ -270,7 +273,7 @@ export default function BookingForm({
 
   useEffect(() => {
     if (!draftHydrated.current) return;
-    sessionStorage.setItem(
+    try { sessionStorage.setItem(
       DRAFT_STORAGE_KEY,
       JSON.stringify({
         serviceMethod,
@@ -284,7 +287,7 @@ export default function BookingForm({
         time,
         currentStep: Math.min(currentStep, 1),
       })
-    );
+    ); } catch { /* A blocked or full browser store must not interrupt booking. */ }
   }, [
     brand,
     currentStep,
@@ -326,7 +329,7 @@ export default function BookingForm({
     ? getSupportedRepairTypes(selectedModel)
     : REPAIRS_BY_DEVICE[deviceType] ?? REPAIR_TYPES;
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = londonDate();
 
   function currentValidationErrors(): Record<string, string> {
     return validateForm({
@@ -369,6 +372,11 @@ export default function BookingForm({
 
     setErrors({});
     setCurrentStep(Math.min(BOOKING_STEPS.length - 1, Math.max(0, nextStep)));
+  }
+
+  function resetSpamCheck() {
+    setTurnstileToken("");
+    setTurnstileResetKey((key) => key + 1);
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -415,17 +423,20 @@ export default function BookingForm({
       const result = (await response.json()) as {
         error?: string;
         message?: string;
+        reference?: string;
         fields?: Record<string, string[]>;
       };
 
       if (response.ok) {
-        sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+        try { sessionStorage.removeItem(DRAFT_STORAGE_KEY); } catch { /* The request is saved even if browser storage is unavailable. */ }
+        setTrackingReference(result.reference ?? "");
         setResponseMessage(
           result.message ??
             "Repair request received. The team will confirm availability."
         );
         setStatus("sent");
       } else {
+        resetSpamCheck();
         if (result.fields) {
           setErrors(
             Object.fromEntries(
@@ -443,6 +454,7 @@ export default function BookingForm({
         setStatus("error");
       }
     } catch {
+      resetSpamCheck();
       setResponseMessage(
         "We could not send the request. Please try again or contact us directly."
       );
@@ -454,6 +466,7 @@ export default function BookingForm({
     return (
       <BookingSuccess
         responseMessage={responseMessage}
+        reference={trackingReference}
         serviceMethod={serviceMethod}
         warranty={quote?.warranty}
       />
@@ -847,7 +860,7 @@ export default function BookingForm({
         />
       </div>
 
-      <TurnstileField onToken={setTurnstileToken} />
+      <TurnstileField onToken={setTurnstileToken} resetKey={turnstileResetKey} />
       {errors.turnstileToken && (
         <p role="alert" className="text-[12px] text-destructive">
           {errors.turnstileToken}

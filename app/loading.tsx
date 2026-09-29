@@ -1,6 +1,8 @@
 export default function Loading() {
   return (
     <main
+          id="main-content"
+          tabIndex={-1}
       className="mx-auto min-h-[70vh] max-w-6xl animate-pulse px-5 pb-24 pt-32 sm:px-8"
       aria-label="Loading page"
     >

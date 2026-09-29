@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
@@ -30,6 +31,11 @@ import {
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { serviceImages } from "@/lib/serviceImages";
 import { getHomepageRepairs } from "@/lib/serviceCatalogue";
+
+export const metadata = pageMetadata("/", {
+  title: "Origin Repairs — Device Repair in Leeds",
+  description: "Device repair in Leeds for phones, tablets, laptops, consoles and custom PCs, with the price agreed before work begins.",
+});
 
 const homepageMacBookImage = serviceImages.macbook;
 
@@ -72,7 +78,7 @@ const categories = [
     note: "Builds, upgrades and cooling",
     icon: MonitorCog,
     image: serviceImages.customPc,
-    imageClassName: "h-[90%] w-[82%]",
+    imageClassName: "h-[90%] w-full",
   },
   {
     label: "Data Recovery",
@@ -85,7 +91,7 @@ const categories = [
   {
     label: "Liquid Damage",
     href: "/repairs/liquid-damage",
-    note: "All devices and liquid types",
+    note: "Phones, laptops and more",
     icon: Droplets,
     image: serviceImages.liquidDamage,
     imageClassName: "h-auto max-h-[92%] w-[96%]",
@@ -99,7 +105,7 @@ const popularRepairs = getHomepageRepairs().map((repair, index) => ({
 }));
 
 const trustItems = [
-  { icon: Clock, label: "Same-day options" },
+  { icon: Clock, label: "Repair time confirmed" },
   { icon: Shield, label: "Warranty shown with quote" },
   {
     icon: FEATURES.mailInEnabled ? Package : MapPin,
@@ -122,8 +128,10 @@ const processSteps = [
   },
   {
     number: "03",
-    title: "Bring in or send it",
-    body: "Visit Cookridge Street or request mail-in instructions.",
+    title: FEATURES.mailInEnabled ? "Bring in or send it" : "Arrange your drop-off",
+    body: FEATURES.mailInEnabled
+      ? "Arrange a visit to Cookridge Street or request mail-in instructions."
+      : "We confirm a drop-off time at Cookridge Street before you travel.",
   },
 ];
 
@@ -132,7 +140,7 @@ export default function Home() {
     <>
       <Navbar />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <section className="border-b border-border pt-16 md:pt-[72px]">
           <PageContainer>
             <div className="grid min-h-[620px] items-center gap-5 py-5 sm:min-h-[650px] sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,0.52fr)_minmax(0,0.48fr)] lg:gap-12 lg:py-12">
@@ -162,10 +170,10 @@ export default function Home() {
                   >
                     <Link
                       href="/quote"
-                      aria-label="Get an instant repair quote"
+                      aria-label="Get a repair quote"
                       className="flex items-center gap-2"
                     >
-                      Instant Quote
+                      Get a Quote
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -202,23 +210,23 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="relative order-first h-40 sm:h-60 lg:order-last lg:h-[460px]">
+              <div className="order-first flex h-40 items-end justify-center gap-1 pb-2 sm:h-60 lg:order-last lg:h-[460px] lg:pb-14">
                 <Image
                   src={serviceImages.iphone.src}
-                  alt="Latest iPhone supported by Origin Repairs"
+                  alt={serviceImages.iphone.alt}
                   width={serviceImages.iphone.width}
                   height={serviceImages.iphone.height}
-                  priority
-                  sizes="(max-width: 639px) 152px, (max-width: 1023px) 220px, 330px"
-                  className="absolute right-[8%] top-0 z-20 h-[152px] w-[152px] object-contain drop-shadow-[0_24px_44px_rgba(0,0,0,0.28)] sm:right-[10%] sm:h-[220px] sm:w-[220px] lg:right-[2%] lg:top-[2%] lg:h-[330px] lg:w-[330px]"
+                  preload
+                  sizes="(max-width: 639px) 46vw, (max-width: 1023px) 220px, 260px"
+                  className="order-last h-[150px] w-[46%] object-contain object-bottom drop-shadow-[0_20px_28px_rgba(0,0,0,0.2)] sm:h-[220px] lg:h-[350px]"
                 />
                 <Image
                   src={homepageMacBookImage.src}
                   alt={homepageMacBookImage.alt}
                   width={homepageMacBookImage.width}
                   height={homepageMacBookImage.height}
-                  sizes="(max-width: 639px) 176px, (max-width: 1023px) 260px, 360px"
-                  className="absolute bottom-0 left-[3%] z-10 h-[88px] w-44 object-contain drop-shadow-[0_22px_40px_rgba(0,0,0,0.24)] sm:left-[5%] sm:h-32 sm:w-[260px] lg:bottom-[8%] lg:left-0 lg:h-[200px] lg:w-[360px]"
+                  sizes="(max-width: 639px) 50vw, (max-width: 1023px) 260px, 290px"
+                  className="h-[90px] w-1/2 object-contain object-bottom drop-shadow-[0_16px_24px_rgba(0,0,0,0.18)] sm:h-36 lg:h-[220px]"
                 />
               </div>
             </div>
@@ -292,7 +300,7 @@ export default function Home() {
           <PageContainer>
             <div className="grid items-start gap-8 lg:grid-cols-[0.68fr_1.32fr] lg:gap-14">
               <div className="lg:sticky lg:top-28">
-                <p className="eyebrow">Instant quote</p>
+                <p className="eyebrow">Repair quote</p>
                 <h2 className="section-title mt-3">Price your repair.</h2>
                 <p className="mt-4 max-w-[42ch] text-[15px] leading-6 text-muted-foreground">
                   Choose a device, model and repair to see the available part
@@ -390,11 +398,12 @@ export default function Home() {
           <PageContainer>
             <div className="grid items-center gap-8 lg:grid-cols-[1fr_auto]">
               <div>
-                <p className="eyebrow">Leeds and mail-in</p>
+                <p className="eyebrow">{FEATURES.mailInEnabled ? "Leeds and mail-in" : "Leeds drop-off"}</p>
                 <h2 className="section-title mt-3">Repair your way.</h2>
                 <p className="mt-4 max-w-[58ch] text-[15px] leading-6 text-muted-foreground">
-                  Visit 76 Cookridge Street in Leeds, or request current
-                  packing and postage instructions before sending a device.
+                  {FEATURES.mailInEnabled
+                    ? "Arrange a visit to 76 Cookridge Street in Leeds, or request packing and postage instructions before sending a device."
+                    : "Request a drop-off time at 76 Cookridge Street in Leeds. We confirm availability before you travel."}
                 </p>
               </div>
               <div className="flex flex-col gap-2.5 sm:flex-row">

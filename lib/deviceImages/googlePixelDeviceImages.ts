@@ -25,7 +25,7 @@ export interface PixelDeviceImage {
 
 export const PIXEL_IMAGES: Record<string, PixelDeviceImage> = {
   // ── Pixel 9 line ────────────────────────────────────────────────────────────
-  "Pixel 9 Pro Fold": { photoSrc: "/GooglePixel/Pixel-9-pro-repair-in-Leeds.png",    variant: "pixelfold" },
+  "Pixel 9 Pro Fold": { variant: "pixelfold" },
   "Pixel 9 Pro XL":   { photoSrc: "/GooglePixel/Pixel-9-Pro-XL-repair-in-Leeds.png", variant: "pixel9pro" },
   "Pixel 9 Pro":      { photoSrc: "/GooglePixel/Pixel-9-pro-repair-in-Leeds.png",    variant: "pixel9pro" },
   "Pixel 9":          { photoSrc: "/GooglePixel/Pixel-9-repair-in-Leeds.png",         variant: "pixel9"    },
@@ -52,7 +52,7 @@ export const PIXEL_IMAGES: Record<string, PixelDeviceImage> = {
 };
 
 export function getPixelDeviceImage(modelName: string): PixelDeviceImage {
-  return PIXEL_IMAGES[modelName] ?? { variant: "generic" };
+  return PIXEL_IMAGES[modelName] ?? { variant: /Fold/i.test(modelName) ? "pixelfold" : "generic" };
 }
 
 /** Legacy helper — returns just the SVG variant */

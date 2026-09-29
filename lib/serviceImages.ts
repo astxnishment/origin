@@ -1,3 +1,5 @@
+import { appleCategoryImages, applePhoneImages } from "@/lib/deviceImages/appleDeviceImages";
+
 export interface ServiceImage {
   src: string;
   alt: string;
@@ -8,22 +10,20 @@ export interface ServiceImage {
 export const serviceImages: Record<string, ServiceImage> = {
   // ── Homepage service card illustrations ───────────────────────────────────
   iphone: {
-    src: "/images/services/iphone.webp",
-    alt: "iPhone repair at Origin Repairs Leeds — screen, battery, charging port and more",
-    width: 969,
-    height: 1200,
+    ...applePhoneImages["iPhone 18 Pro"],
+    alt: "iPhone 18 Pro in Burgundy, front and back",
   },
   phones: {
-    src: "/images/services/phone-lineup.webp",
-    alt: "iPhone, Samsung Galaxy and Google Pixel phone repair at Origin Repairs Leeds",
-    width: 1092,
-    height: 970,
+    src: "/images/services/iphone-samsung-phones.webp",
+    alt: "Burgundy iPhone and silver Samsung Galaxy side by side — phone repairs at Origin Repairs Leeds",
+    width: 1058,
+    height: 1148,
   },
   samsung: {
-    src: "/images/services/samsung-galaxy-phone.webp",
-    alt: "Samsung Galaxy phone repair at Origin Repairs Leeds",
-    width: 411,
-    height: 416,
+    src: "/images/services/samsung-galaxy-s26-ultra.webp",
+    alt: "Cobalt Violet Samsung Galaxy S26 Ultra, front and back with S Pen",
+    width: 1093,
+    height: 1093,
   },
   otherAndroidPhones: {
     src: "/images/services/other-android-phones.webp",
@@ -32,10 +32,8 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 990,
   },
   ipad: {
-    src: "/images/services/ipad.webp",
+    ...appleCategoryImages.ipad,
     alt: "iPad repair at Origin Repairs Leeds — screen and battery replacement",
-    width: 698,
-    height: 800,
   },
   tablets: {
     src: "/images/services/tablet-lineup.webp",
@@ -56,10 +54,8 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 96,
   },
   macbook: {
-    src: "/images/services/macbook.webp",
-    alt: "MacBook repair at Origin Repairs Leeds — screen, battery and keyboard",
-    width: 1076,
-    height: 658,
+    ...appleCategoryImages.macbook,
+    alt: "Space Black MacBook Pro with a dark display, viewed from the front",
   },
   samsungGalaxyBook: {
     src: "/images/services/samsung-galaxy-book.webp",
@@ -74,10 +70,8 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 122,
   },
   laptop: {
-    src: "/images/services/macbook.webp",
-    alt: "Laptop repair at Origin Repairs Leeds",
-    width: 1076,
-    height: 658,
+    ...appleCategoryImages.macbook,
+    alt: "Space Black MacBook Pro — laptop repair at Origin Repairs Leeds",
   },
   dataRecovery: {
     src: "/images/services/data-recovery-v2.webp",
@@ -116,10 +110,10 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 320,
   },
   customPc: {
-    src: "/images/services/custom-pc-build.webp",
-    alt: "Custom gaming PC build and upgrade service at Origin Repairs Leeds",
-    width: 696,
-    height: 815,
+    src: "/images/services/custom-pc-modern.webp",
+    alt: "White custom PC with a glass case, neatly routed cables and soft blue lighting",
+    width: 1200,
+    height: 1200,
   },
   // ── Aliases kept for any other pages that reference these keys ───────────
   samsungTab: {

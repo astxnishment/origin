@@ -78,7 +78,7 @@ export function ServiceHero({
           alt={imageAlt}
           width={imageWidth}
           height={imageHeight}
-          priority
+          preload
           sizes="(max-width: 1023px) 88vw, 48vw"
           className={cn(
             "h-[220px] w-full object-contain drop-shadow-[0_26px_52px_rgba(0,0,0,0.25)] sm:h-full",

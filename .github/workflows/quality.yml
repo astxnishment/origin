@@ -9,15 +9,36 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       NEXT_PUBLIC_SITE_URL: https://originrepairs.co.uk
       SITE_INDEXING_ENABLED: "false"
       EMAILS_ENABLED: "false"
+      ALLOW_PREVIEW_EMAILS: "false"
+      PRODUCTION_OPERATIONS_ENABLED: "false"
+      ALLOW_PREVIEW_REPAIR_WRITES: "true"
+      TRACKING_INTEGRATION_TEST: "true"
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55432/postgres?sslmode=disable
+      AUTH_SECRET: ci-only-origin-tracking-session-secret-never-use-in-production
+      STAFF_EMAILS: teststaff@example.com
       NEXT_PUBLIC_BOOKING_ENABLED: "true"
       NEXT_PUBLIC_WALK_INS_ENABLED: "false"
-      NEXT_PUBLIC_MAIL_IN_ENABLED: "false"
-      NEXT_PUBLIC_TRACKING_ENABLED: "false"
-      NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED: "false"
+      NEXT_PUBLIC_MAIL_IN_ENABLED: "true"
+      NEXT_PUBLIC_TRACKING_ENABLED: "true"
+      NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,6 +49,36 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test:unit
+      - run: npm run db:migrate
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e -- --project=desktop
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run test:e2e -- --workers=1
+      - name: Build local chat-provider test configuration
+        run: npm run build
+        env:
+          NEXT_PUBLIC_LIVE_CHAT_ENABLED: "true"
+          NEXT_PUBLIC_TAWK_PROPERTY_ID: "000000000000000000000000"
+          NEXT_PUBLIC_TAWK_WIDGET_ID: "localtest"
+      - name: Verify chat lifecycle without contacting a provider
+        run: npm run test:e2e -- tests/e2e/live-chat.spec.ts --workers=1
+        env:
+          NEXT_PUBLIC_LIVE_CHAT_ENABLED: "true"
+          NEXT_PUBLIC_TAWK_PROPERTY_ID: "000000000000000000000000"
+          NEXT_PUBLIC_TAWK_WIDGET_ID: "localtest"
+          TRACKING_INTEGRATION_TEST: "false"
+      - name: Build spam-check recovery test configuration
+        run: npm run build
+        env:
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: local-mocked-widget
+      - name: Verify spam-check recovery without sending messages
+        run: npm run test:e2e -- tests/e2e/turnstile-retry.spec.ts --workers=1
+        env:
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: local-mocked-widget
+          TRACKING_INTEGRATION_TEST: "false"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-results
+          path: test-results/
+          retention-days: 7

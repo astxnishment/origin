@@ -603,7 +603,29 @@
 }
 
 /* Mobile form controls stay readable and do not trigger iOS focus zoom. */
+.live-chat-launcher {
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+.live-chat-panel {
+  inset: auto 1rem calc(1rem + env(safe-area-inset-bottom, 0px)) auto;
+  width: min(400px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem - env(safe-area-inset-bottom, 0px));
+}
+
+.live-chat-panel[data-started="true"] {
+  height: min(660px, calc(100dvh - 2rem - env(safe-area-inset-bottom, 0px)));
+}
+
 @media (max-width: 767px) {
+  body.mobile-cta-active .live-chat-launcher {
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.price-bar-active .live-chat-launcher {
+    display: none;
+  }
+
   body.mobile-cta-active {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
   }

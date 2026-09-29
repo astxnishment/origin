@@ -23,40 +23,17 @@ import { BUSINESS, FEATURES } from "@/lib/constants";
 export type ServiceMethod = "drop-off" | "mail-in";
 export type FormErrors = Record<string, string>;
 
-const WEEKDAY_SLOTS = [
-  "9:00am",
-  "10:00am",
-  "11:00am",
-  "12:00pm",
-  "1:00pm",
-  "2:00pm",
-  "3:00pm",
-  "4:00pm",
-  "5:00pm",
-];
-const SATURDAY_SLOTS = [
-  "10:00am",
-  "11:00am",
-  "12:00pm",
-  "1:00pm",
-  "2:00pm",
-  "3:00pm",
-];
-
-export function slotsForDate(dateStr: string): string[] {
-  if (!dateStr) return WEEKDAY_SLOTS;
-  const day = new Date(`${dateStr}T12:00:00`).getDay();
-  if (day === 0) return [];
-  if (day === 6) return SATURDAY_SLOTS;
-  return WEEKDAY_SLOTS;
-}
+import { slotsForDate, latestRequestDate } from "@/lib/appointments";
+export { slotsForDate } from "@/lib/appointments";
 
 export function BookingSuccess({
   responseMessage,
+  reference,
   serviceMethod,
   warranty,
 }: {
   responseMessage: string;
+  reference?: string;
   serviceMethod: ServiceMethod;
   warranty?: string;
 }) {
@@ -85,6 +62,7 @@ export function BookingSuccess({
           Repair request received.
         </h2>
         <p className="text-[15px] text-muted-foreground">{responseMessage}</p>
+        {reference && <p className="mt-3 text-sm">Your reference: <strong className="font-mono">{reference}</strong></p>}
       </div>
       <div className="space-y-3 rounded-md border border-border bg-card p-6">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
@@ -100,6 +78,7 @@ export function BookingSuccess({
         ))}
       </div>
       <div className="flex flex-wrap gap-3">
+        {reference && <Button asChild><Link href={`/track?reference=${encodeURIComponent(reference)}`}>Track this repair</Link></Button>}
         <Button asChild className="h-11 rounded-md px-6 text-[13px] sm:h-10">
           <Link href="/">Back to home</Link>
         </Button>
@@ -478,6 +457,7 @@ export function AppointmentRequestStep({
           type="date"
           value={date}
           min={today}
+          max={latestRequestDate()}
           onChange={(event) => onDate(event.target.value)}
           className="h-11 max-w-xs rounded-md border-border bg-card text-[13px] sm:h-10"
         />
@@ -498,7 +478,7 @@ export function AppointmentRequestStep({
         )}
         {slots.length === 0 && date && (
           <p className="mt-2 text-[12px] text-muted-foreground">
-            Sunday requests are unavailable.
+            No request times remain on this date. Please choose another day.
           </p>
         )}
         <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">

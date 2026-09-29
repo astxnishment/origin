@@ -1,8 +1,11 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { DirectContactPage } from "@/components/DirectContact";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Package, ShieldCheck, Truck } from "lucide-react";
 import { BUSINESS, FEATURES } from "@/lib/constants";
@@ -13,11 +16,11 @@ import {
   SectionHeading,
 } from "@/components/layout/PageContainer";
 
-export const metadata: Metadata = {
-  title: "Mail-in Device Repair UK | Origin Repairs Leeds",
+export const metadata: Metadata = pageMetadata("/mail-in", {
+  title: "Mail-in Device Repair UK Leeds",
   description:
     "Request mail-in assessment for a phone, tablet, laptop, console or custom PC. Shipping instructions and the quote process are confirmed before dispatch.",
-};
+});
 
 const steps = [
   {
@@ -48,13 +51,14 @@ const devices = [
 ];
 
 export default function MailInRepairPage() {
+  if (CONTACT_ONLY_MODE) return <DirectContactPage title="Ask about mail-in repair." description="Call or message us to discuss your device. Online mail-in requests are not available yet. Do not send a device until the team has accepted it and provided shipping instructions." />;
   if (!FEATURES.mailInEnabled) notFound();
 
   return (
     <>
       <Navbar />
 
-      <main className="pb-24 pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-24 pt-24">
         <PageContainer>
           <PageIntro
             eyebrow="Mail-in repairs"
@@ -98,9 +102,9 @@ export default function MailInRepairPage() {
             <div className="border-l-2 border-primary pl-5">
               <p className="eyebrow mb-2">Before dispatch</p>
               <p className="text-sm leading-6 text-muted-foreground">
-                A submitted form does not create a repair reference or confirm
-                that a parcel can be accepted. Keep the carrier tracking details
-                once we have confirmed the shipment.
+                A repair reference confirms that your request was recorded;
+                it is not permission to send a parcel. Wait for our acceptance
+                and shipping instructions, then keep the carrier tracking details.
               </p>
             </div>
           </PageSection>

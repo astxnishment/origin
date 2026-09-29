@@ -1,9 +1,11 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BUSINESS, FEATURES } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
   PageContainer,
@@ -12,11 +14,11 @@ import {
   SectionHeading,
 } from "@/components/layout/PageContainer";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/about", {
   title: "About — Leeds Device Repair Specialists",
   description:
     "Learn how Origin Repairs approaches device assessment, repair quotes, parts choices and warranty terms in Leeds.",
-};
+});
 
 const values = [
   {
@@ -42,7 +44,7 @@ export default function AboutPage() {
     <>
       <Navbar />
 
-      <main className="pb-24 pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-24 pt-24">
         <PageContainer>
           <PageIntro
             eyebrow="About Origin"
@@ -124,9 +126,15 @@ export default function AboutPage() {
                   <a href={`tel:${BUSINESS.phone}`} className="block text-foreground hover:text-primary transition-colors">
                     {BUSINESS.phoneDisplay}
                   </a>
-                  <a href={`mailto:${BUSINESS.email}`} className="block text-foreground hover:text-primary transition-colors">
-                    {BUSINESS.email}
-                  </a>
+                  {CONTACT_ONLY_MODE ? (
+                    <Link href="/contact" className="block text-foreground hover:text-primary transition-colors">
+                      Contact options
+                    </Link>
+                  ) : (
+                    <a href={`mailto:${BUSINESS.email}`} className="block text-foreground hover:text-primary transition-colors">
+                      {BUSINESS.email}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

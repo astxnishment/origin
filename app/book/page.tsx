@@ -1,8 +1,11 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { DirectContactPage } from "@/components/DirectContact";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import BookingForm from "./BookingForm";
 import {
   PageContainer,
@@ -19,11 +22,11 @@ import {
 } from "@/lib/calculatorData";
 import { Phone, Mail, MapPin, Clock, Package } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Request a Repair — Leeds | Origin Repairs",
+export const metadata: Metadata = pageMetadata("/book", {
+  title: "Request a Repair — Leeds",
   description:
     "Request a device repair assessment in Leeds. Select your device, preferred time and part option, and Origin Repairs will confirm availability.",
-};
+});
 
 interface PageProps {
   searchParams: Promise<{
@@ -39,6 +42,7 @@ interface PageProps {
 }
 
 export default async function BookRepairPage({ searchParams }: PageProps) {
+  if (CONTACT_ONLY_MODE) return <DirectContactPage title="Arrange your repair." />;
   if (!FEATURES.bookingEnabled) notFound();
 
   const params = await searchParams;
@@ -59,7 +63,7 @@ export default async function BookRepairPage({ searchParams }: PageProps) {
     <>
       <Navbar />
 
-      <main className="pb-20 pt-16 md:pb-28 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-20 pt-16 md:pb-28 md:pt-[72px]">
         <PageContainer>
           <PageIntro
             eyebrow="Repair request"

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,11 +11,11 @@ import {
   getVisibleModels,
 } from "@/lib/serviceCatalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/google-pixel", {
   title: "Google Pixel Repair Leeds | Screen, Battery & More",
   description:
-    "Google Pixel repairs in Leeds for visible catalogue models. Compare screen, battery, port and back-glass estimates with repair-specific warranty terms.",
-};
+    "Google Pixel repair enquiries in Leeds, including Pixel 10 and Pixel 11 models. Parts, repair options, price and warranty are confirmed before work starts.",
+});
 
 function pixelPrice(repairTypeIds: string[]): string {
   return getStartingPriceLabel({
@@ -33,7 +34,7 @@ const repairTypes = [
 ];
 
 const guarantees = [
-  "Visible Pixel models listed below",
+  "Pixel 10 and Pixel 11 enquiries",
   "Warranty shown with the selected repair",
   "Repair time estimated before approval",
   "Price agreed before repair",
@@ -45,20 +46,20 @@ const allModels = getVisibleModels("Google Pixel", "phone");
 const totalModels = allModels.length;
 
 // Group by generation
-const modelGroups = [
-  { label: "Pixel 9 Series", models: allModels.filter((m) => m.startsWith("Pixel 9")) },
-  { label: "Pixel 8 Series", models: allModels.filter((m) => m.startsWith("Pixel 8")) },
-  { label: "Pixel 7 Series", models: allModels.filter((m) => m.startsWith("Pixel 7")) },
-  { label: "Pixel 6 Series", models: allModels.filter((m) => m.startsWith("Pixel 6")) },
-  { label: "Older Pixel",    models: allModels.filter((m) => m.startsWith("Pixel 5") || m.startsWith("Pixel 4")) },
-];
+const modelGroups = [...new Set(allModels.map((model) => model.match(/^Pixel (\d+)/)?.[1]))]
+  .filter((generation): generation is string => Boolean(generation))
+  .sort((a, b) => Number(b) - Number(a))
+  .map((generation) => ({
+    label: `Pixel ${generation} Series`,
+    models: allModels.filter((model) => model.match(/^Pixel (\d+)/)?.[1] === generation),
+  }));
 
 export default function GooglePixelRepairsPage() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-24 pb-24">
+      <main id="main-content" tabIndex={-1} className="pt-24 pb-24">
         <div className="max-w-6xl mx-auto px-5 sm:px-8">
           {/* Header */}
           <div className="pt-10 pb-16 border-b border-border">
@@ -71,9 +72,10 @@ export default function GooglePixelRepairsPage() {
                   Google Pixel repair, done right.
                 </h1>
                 <p className="text-[15px] text-muted-foreground leading-relaxed mb-6 max-w-md">
-                  {totalModels} visible Pixel models are currently listed.
-                  Price, part type, availability and warranty are confirmed for
-                  the selected repair.
+                  Find your phone among {totalModels} Pixel models, including
+                  the Pixel 10 and Pixel 11 families. New additions are available
+                  for enquiries: we confirm repair feasibility, parts, price and
+                  warranty before any work is agreed.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {guarantees.map((g) => (
@@ -88,10 +90,10 @@ export default function GooglePixelRepairsPage() {
                     asChild
                     className="btn-primary h-10 rounded-lg px-6 text-[13px]"
                   >
-                    <Link href="/book">Request Pixel Repair</Link>
+                    <Link href="/book?brand=google-pixel">Request Pixel Repair</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-lg h-10 px-6 text-[13px] border-border hover:bg-muted">
-                    <Link href="/quote" className="flex items-center gap-2">
+                    <Link href="/quote?brand=google-pixel" className="flex items-center gap-2">
                       Get a quote <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </Button>
@@ -106,7 +108,7 @@ export default function GooglePixelRepairsPage() {
                     width={220}
                     height={440}
                     className="relative object-contain max-h-80 w-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
-                    priority
+                    preload
                   />
                 </div>
               </div>
@@ -118,7 +120,7 @@ export default function GooglePixelRepairsPage() {
             <h2 className="text-xl font-semibold mb-2">Repair types &amp; pricing</h2>
             <p className="text-[13px] text-muted-foreground mb-8">
               Starting prices shown. Use the{" "}
-              <Link href="/quote" className="text-primary hover:underline">
+              <Link href="/quote" className="text-primary underline underline-offset-4">
                 quote calculator
               </Link>{" "}
               for your specific model.
@@ -139,9 +141,9 @@ export default function GooglePixelRepairsPage() {
 
           {/* Supported models */}
           <div className="py-16 border-b border-border">
-            <h2 className="text-xl font-semibold mb-2">Supported models</h2>
+            <h2 className="text-xl font-semibold mb-2">Find your Pixel model</h2>
             <p className="text-[13px] text-muted-foreground mb-10">
-              {totalModels} models covered
+              {totalModels} models listed. If a price is not published, send an enquiry so we can check your options.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {modelGroups.filter((g) => g.models.length > 0).map(({ label, models }) => (
@@ -176,7 +178,7 @@ export default function GooglePixelRepairsPage() {
               asChild
               className="btn-primary h-10 rounded-lg px-8 text-[13px]"
             >
-              <Link href="/book">Request a Repair</Link>
+              <Link href="/book?brand=google-pixel">Request a Repair</Link>
             </Button>
           </div>
         </div>

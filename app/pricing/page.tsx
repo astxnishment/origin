@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -13,11 +14,11 @@ import { ArrowRight } from "lucide-react";
 import { FEATURES } from "@/lib/constants";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/pricing", {
   title: "Repair Pricing Leeds | Transparent Fixed Quotes",
   description:
     "Clear repair pricing for screens, batteries, charging ports, liquid damage, data recovery and board-level repairs in Leeds. Fixed quote before work starts.",
-};
+});
 
 const faqs = [
   {
@@ -47,7 +48,7 @@ export default function PricingPage() {
     <>
       <Navbar />
 
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <PageIntro
             eyebrow="Pricing"

@@ -1,3 +1,5 @@
+import { compareIPhoneModels } from "@/lib/iphoneModels";
+import { isCurrentDeviceModel, isSelectableDeviceModel } from "@/lib/currentDevices";
 import {
   CATALOGUE_BRANDS,
   PUBLIC_REPAIR_CATALOGUE,
@@ -42,7 +44,7 @@ export type RepairType = (typeof REPAIR_TYPES)[number];
 export type DeviceCategory = "phone" | "tablet" | "laptop";
 
 const SOURCE_REPAIR_IDS: Record<RepairType, string[]> = {
-  "Screen replacement": ["screen-replacement"],
+  "Screen replacement": ["screen-replacement", "screen-digitizer-replacement", "display-assembly-replacement"],
   "Battery replacement": ["battery-replacement"],
   "Back glass": ["back-glass-replacement", "back-glass"],
   "Charging port": [
@@ -118,6 +120,7 @@ const deviceMap = new Map<string, DeviceModel>();
 for (const entry of PUBLIC_REPAIR_CATALOGUE) {
   if (
     entry.source === "specialist" ||
+    !isSelectableDeviceModel(entry.model) ||
     !CATALOGUE_BRANDS.includes(entry.brand as Brand) ||
     !["phone", "tablet", "laptop"].includes(entry.category)
   ) {
@@ -133,7 +136,7 @@ for (const entry of PUBLIC_REPAIR_CATALOGUE) {
   });
 }
 
-export const ALL_DEVICES = [...deviceMap.values()];
+export const ALL_DEVICES = [...deviceMap.values()].sort((a, b) => compareIPhoneModels(a.name, b.name));
 export const APPLE_DEVICES = ALL_DEVICES.filter((d) => d.brand === "Apple");
 export const SAMSUNG_DEVICES = ALL_DEVICES.filter((d) => d.brand === "Samsung");
 export const PIXEL_DEVICES = ALL_DEVICES.filter(
@@ -187,7 +190,7 @@ export function isRepairSupported(
   }
 
   return Boolean(
-    getSpecialistEntry(
+    !isCurrentDeviceModel(device.name) && getSpecialistEntry(
       device.category as CatalogueCategory,
       repairTypeToSlug(repairType)
     )
@@ -199,6 +202,7 @@ export function getSupportedRepairTypes(
 ): RepairType[] {
   return REPAIR_TYPES.filter((repairType) => {
     const direct = getRepairTiers(device, repairType).length > 0;
+    if (isCurrentDeviceModel(device.name)) return direct;
     const specialist = getSpecialistEntry(
       device.category,
       repairTypeToSlug(repairType)
@@ -218,7 +222,9 @@ export function getRepairQuote(
     : selectRecommendedTier(tiers);
   const entry =
     selected ??
-    getSpecialistEntry(device.category, repairTypeToSlug(repairType));
+    (!isCurrentDeviceModel(device.name)
+      ? getSpecialistEntry(device.category, repairTypeToSlug(repairType))
+      : undefined);
 
   if (!entry) {
     return {
@@ -248,7 +254,9 @@ export function getRepairQuote(
 export function slugToRepairType(
   slug: string
 ): RepairType | undefined {
-  return REPAIR_TYPES.find((repairType) => repairTypeToSlug(repairType) === slug);
+  return REPAIR_TYPES.find((repairType) =>
+    repairTypeToSlug(repairType) === slug || SOURCE_REPAIR_IDS[repairType].includes(slug)
+  );
 }
 
 export function buildRepairSlug(

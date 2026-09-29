@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,11 +12,11 @@ import { serviceImages } from "@/lib/serviceImages";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 import { BUSINESS } from "@/lib/constants";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/liquid-damage", {
   title: "Liquid Damage Repair Leeds | Phones, Laptops, Consoles & PCs",
   description:
     "Liquid damage repair in Leeds for phones, tablets, laptops, consoles and custom PCs. Internal assessment, corrosion cleaning and board-level repair available.",
-};
+});
 
 const liquidRepairs = [
   { name: "Phone liquid damage", price: getSpecialistPriceLabel("phone", "liquid-damage-repair"), time: "1–5 days estimate", note: "Internal inspection, cleaning and repair options for all phone brands." },
@@ -34,7 +35,7 @@ const process = [
 ];
 
 const features = [
-  "All device families and liquid types",
+  "Phones, tablets, laptops, consoles and PCs",
   "Internal corrosion inspection",
   "Board-level repair available",
   "Quote agreed before work",
@@ -44,7 +45,7 @@ export default function LiquidDamagePage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="Liquid damage repair · Leeds"

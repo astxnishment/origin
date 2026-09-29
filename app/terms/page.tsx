@@ -1,8 +1,10 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BUSINESS, FEATURES } from "@/lib/constants";
+import { CONTACT_ONLY_MODE } from "@/lib/business-config";
 import { WARRANTY_NOTICE } from "@/lib/warranty";
 import {
   PageContainer,
@@ -10,24 +12,24 @@ import {
   PageSection,
 } from "@/components/layout/PageContainer";
 
-export const metadata: Metadata = {
-  title: "Repair Terms | Origin Repairs",
+export const metadata: Metadata = pageMetadata("/terms", {
+  title: "Repair Terms",
   description:
     "Terms for estimates, assessments, repairs, data work and customer approvals at Origin Repairs.",
-};
+});
 
 const sections = [
   {
     title: "Estimates, assessment and approval",
-    body: "Website prices are estimates based on the selected device and repair record. The device may need inspection before the cause, part requirement and final price are known. Any diagnostic charge is explained before that work begins. Repair work does not begin until the customer approves the quoted scope and price.",
+    body: "Website prices are estimates. Some models are listed for enquiries until repair feasibility and parts are confirmed. We explain the proposed work, total price including any applicable taxes, diagnostic charges and delivery charges before you agree. Repair work begins only after you approve the scope and price. Additional work or a price change needs your further approval.",
   },
   {
     title: "Parts and manufacturer messages",
-    body: "The part description in the quote identifies whether an option is compatible aftermarket, refurbished original, pulled original or a genuine service part. Availability is checked before repair. Some devices may display a parts, calibration, battery-health or repair-history message after a third-party repair; any known limitation relevant to the selected option should be explained before approval.",
+    body: "The quote identifies whether the proposed part is compatible aftermarket, refurbished original, pulled original or a genuine service part. We check availability before repair and explain known limitations, including calibration, battery-health or repair-history messages. A genuine part description does not mean that Origin Repairs is authorised by the device manufacturer.",
   },
   {
     title: "Customer-supplied parts",
-    body: "Where Origin Repairs agrees to fit a customer-supplied part, the customer remains responsible for that part's suitability, condition and supplier warranty. Workmanship cover may still apply to the installation, but the supplied part itself is not covered by Origin Repairs.",
+    body: "If we agree to fit your part, we first discuss its suitability and any known limitations. We do not provide a separate warranty for a part supplied by someone else. We remain responsible for carrying out the agreed installation with reasonable care and skill, and any additional workmanship warranty is recorded in the quote.",
   },
   {
     title: "Data and device access",
@@ -47,15 +49,15 @@ const sections = [
   },
   {
     title: "Uncollected devices",
-    body: "Origin Repairs will not treat a device as abandoned or dispose of it without reasonable contact attempts, appropriate notice and a process consistent with applicable law. The final notice period and procedure require owner and legal confirmation before launch.",
+    body: "Please keep your contact details current and arrange collection or return when we contact you. We will make reasonable attempts to reach you about an uncollected device. We will not treat it as abandoned or dispose of it without appropriate notice and a lawful process. Any storage charge must be disclosed and agreed in advance.",
   },
   {
     title: "Warranty",
-    body: `${WARRANTY_NOTICE} Cover applies only where assessment shows the reported fault was caused by Origin Repairs' installation, workmanship or a part supplied by Origin Repairs. See the repair warranty page for exclusions and claim steps.`,
+    body: `${WARRANTY_NOTICE} Any additional warranty covers the supplied part or workmanship identified in your repair record. It does not replace your statutory rights. See the repair warranty page for claim steps.`,
   },
   {
     title: "Statutory rights",
-    body: "Nothing in these terms excludes or restricts rights or remedies that cannot lawfully be excluded, including applicable UK consumer rights. These terms are intended to be governed by the law of England and Wales, subject to the customer's mandatory rights.",
+    body: "We must perform services with reasonable care and skill. If a service does not meet the applicable legal standard, you may be entitled to repeat performance or an appropriate price reduction. Rights also apply to goods we supply. Nothing in these terms or a warranty limits rights or liabilities that cannot lawfully be excluded. The law of England and Wales applies subject to your mandatory consumer protections.",
   },
 ];
 
@@ -63,26 +65,20 @@ export default function TermsPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-24 pt-24">
+      <main id="main-content" tabIndex={-1} className="pb-24 pt-24">
         <PageContainer size="narrow">
           <PageIntro
             eyebrow="Legal"
             title="Repair Terms"
             description={
               <>
-              Last updated: 29 July 2026
+              Last updated: 22 September 2026
               </>
             }
             className="lg:grid-cols-1"
           />
 
-          <div className="panel-muted my-10 p-5 text-[12px] leading-6 text-muted-foreground">
-            Draft launch terms. The business identity, payment, uncollected
-            device procedure and final wording must be reviewed by a qualified
-            UK legal professional before production use.
-          </div>
-
-          <PageSection bordered={false} className="space-y-10 pt-0 text-[14px] leading-7 text-muted-foreground">
+          <PageSection bordered={false} className="space-y-10 text-[14px] leading-7 text-muted-foreground">
             <section className="border-b border-border pb-10">
               <h2 className="mb-3 text-[16px] font-semibold text-foreground">
                 Service provider
@@ -104,7 +100,7 @@ export default function TermsPage() {
                 {section.title === "Warranty" && (
                   <Link
                     href="/warranty"
-                    className="mt-2 inline-block text-primary hover:underline"
+                    className="mt-2 inline-block text-primary underline underline-offset-4"
                   >
                     Read the repair warranty
                   </Link>
@@ -112,41 +108,98 @@ export default function TermsPage() {
               </section>
             ))}
 
+            <section className="border-b border-border pb-10">
+              <h2 className="mb-3 text-[16px] font-semibold text-foreground">
+                Cancelling a request or service
+              </h2>
+              <p>
+                Contact us to withdraw an unaccepted request. For a consumer
+                service contract agreed online, by phone or by post, you normally
+                have 14 days to cancel, starting the day after the contract is
+                agreed. Tell us clearly by {CONTACT_ONLY_MODE ? "phone or post" : "email, phone or post"}; you do not have
+                to use the form below.
+              </p>
+              <p className="mt-3">
+                Work within that period needs your express request. If you then
+                cancel, you may owe a proportionate amount for work already
+                supplied where the legal conditions are met. The cancellation
+                right ends after full performance only if you requested the early
+                start and acknowledged this consequence. Any refund due is made
+                within the applicable legal deadline. These rules do not remove
+                rights concerning faulty goods or services.
+              </p>
+              <div className="mt-4 rounded-lg border border-border p-4">
+                <h3 className="font-semibold text-foreground">Optional cancellation form</h3>
+                <p className="mt-2">To: {BUSINESS.name}, {BUSINESS.address}{!CONTACT_ONLY_MODE && `, ${BUSINESS.email}`}.</p>
+                <p className="mt-2">
+                  I give notice that I cancel my contract for the following
+                  service: [service and repair reference]. Ordered on: [date].
+                  Name: [your name]. Address: [your address]. Date: [today&apos;s
+                  date]. Signature: [only if sent on paper].
+                </p>
+              </div>
+            </section>
+
             {FEATURES.mailInEnabled && (
               <section className="border-b border-border pb-10">
                 <h2 className="mb-3 text-[16px] font-semibold text-foreground">
                   Mail-in repairs
                 </h2>
                 <p>
-                  A mail-in request must be accepted before dispatch. The
-                  customer is responsible for appropriate packaging and for
-                  the device while it is with the outbound carrier. Shipping,
-                  insurance, return cost and return method are confirmed before
-                  the device is sent or work is approved.
+                  Wait for our acceptance and shipping instructions before
+                  sending a device. We confirm who arranges and pays for each
+                  journey, the return method and any insurance before dispatch.
+                  Follow the agreed packaging and carrier requirements and keep
+                  proof of posting. Tell us promptly about a lost or damaged
+                  parcel so we can help establish what happened. Shipping
+                  arrangements do not remove your statutory rights or our
+                  responsibility where the law makes us liable.
+                </p>
+              </section>
+            )}
+
+            {FEATURES.trackingEnabled && (
+              <section className="border-b border-border pb-10">
+                <h2 className="mb-3 text-[16px] font-semibold text-foreground">Repair tracking</h2>
+                <p>
+                  Sign in using the email from your repair request to see the
+                  latest status recorded by the team. Keep sign-in links private.
+                  A status update is progress information; a requested time,
+                  estimated completion or notification does not replace an
+                  agreed quote or collection instruction. Contact us if an
+                  update needs clarification.
                 </p>
               </section>
             )}
 
             <section>
               <h2 className="mb-3 text-[16px] font-semibold text-foreground">
-                Contact
+                Questions or complaints
               </h2>
               <p>
-                Questions can be sent to{" "}
-                <a
-                  href={`mailto:${BUSINESS.email}`}
-                  className="text-primary hover:underline"
-                >
-                  {BUSINESS.email}
-                </a>{" "}
-                or raised by phone on{" "}
+                {CONTACT_ONLY_MODE ? (
+                  <>Raise questions or complaints, with your repair reference and the outcome you are seeking, by phone on{" "}</>
+                ) : (
+                  <>
+                    Send questions or complaints, with your repair reference and
+                    the outcome you are seeking, to{" "}
+                    <a
+                      href={`mailto:${BUSINESS.email}`}
+                      className="text-primary underline underline-offset-4"
+                    >
+                      {BUSINESS.email}
+                    </a>{" "}
+                    or raised by phone on{" "}
+                  </>
+                )}
                 <a
                   href={BUSINESS.phoneHref}
-                  className="text-primary hover:underline"
+                  className="text-primary underline underline-offset-4"
                 >
                   {BUSINESS.phoneDisplay}
                 </a>
-                .
+                . We will review the circumstances and explain the proposed
+                resolution and any relevant next steps.
               </p>
             </section>
           </PageSection>

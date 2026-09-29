@@ -9,6 +9,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    env: { NEXT_PUBLIC_TRACKING_ENABLED: "false", NEXT_PUBLIC_MAIL_IN_ENABLED: "false" },
     include: ["tests/unit/**/*.test.ts"],
     clearMocks: true,
   },

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,11 +12,11 @@ import { serviceImages } from "@/lib/serviceImages";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 import { BUSINESS } from "@/lib/constants";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/data-recovery", {
   title: "Data Recovery Leeds | Phones, SSDs & Hard Drives",
   description:
     "Data recovery in Leeds for phones, tablets, laptops, desktops, SSDs and hard drives. Assessment first, with the recovery route and price agreed before work.",
-};
+});
 
 const recoveryTypes = [
   { name: "Phone data recovery", price: getSpecialistPriceLabel("phone", "data-recovery"), time: "2–7 days estimate", note: "Assessment-led recovery for phones that cannot access important data." },
@@ -42,7 +43,7 @@ export default function DataRecoveryPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="Data recovery · Leeds"

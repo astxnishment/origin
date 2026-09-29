@@ -1,3 +1,5 @@
+import { compareIPhoneModels } from "@/lib/iphoneModels";
+import { isSelectableDeviceModel } from "@/lib/currentDevices";
 import {
   PUBLIC_REPAIR_CATALOGUE,
   getSpecialistEntry,
@@ -78,11 +80,12 @@ export function getVisibleModels(
       PUBLIC_REPAIR_CATALOGUE.filter(
         (entry) =>
           entry.source !== "specialist" &&
+          isSelectableDeviceModel(entry.model) &&
           entry.brand === brand &&
           entry.category === category
       ).map((entry) => entry.model)
     ),
-  ];
+  ].sort(compareIPhoneModels);
 }
 
 export function getSpecialistPriceLabel(

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -17,16 +18,17 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { BUSINESS, FEATURES } from "@/lib/constants";
 import { getCustomerSession } from "@/lib/server/auth";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/account", {
   title: "Your Account",
   robots: {
     index: false,
     follow: false,
   },
-};
+});
 
 export default async function AccountPage() {
   if (!FEATURES.customerAccountsEnabled) redirect("/");
+  if (FEATURES.trackingEnabled) redirect("/track");
 
   const session = await getCustomerSession();
   if (!session) redirect("/login?next=/account");
@@ -34,7 +36,7 @@ export default async function AccountPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-20 pt-16 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-20 pt-16 md:pt-[72px]">
         <PageContainer size="narrow" className="py-10 sm:py-14">
           <div className="flex flex-col justify-between gap-5 border-b border-border pb-8 sm:flex-row sm:items-end">
             <div>

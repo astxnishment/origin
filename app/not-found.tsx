@@ -17,7 +17,7 @@ export default function NotFound() {
     <>
       <Navbar />
 
-      <main className="flex min-h-[76vh] items-center pb-20 pt-28">
+      <main id="main-content" tabIndex={-1} className="flex min-h-[76vh] items-center pb-20 pt-28">
         <PageContainer size="narrow" className="text-center">
           <p className="eyebrow mb-4 text-muted-foreground">
             Error 404

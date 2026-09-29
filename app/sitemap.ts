@@ -10,7 +10,7 @@ import { INDEXING_ENABLED } from "@/lib/deployment";
 
 const BASE_URL = SEO.siteUrl;
 const CONTENT_LAST_MODIFIED = new Date(
-  process.env.SITE_CONTENT_LAST_MODIFIED ?? "2026-07-29"
+  process.env.SITE_CONTENT_LAST_MODIFIED ?? "2026-09-22"
 );
 
 export default function sitemap(): MetadataRoute.Sitemap {

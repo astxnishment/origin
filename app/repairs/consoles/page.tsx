@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
@@ -12,11 +13,11 @@ import {
 import { serviceImages } from "@/lib/serviceImages";
 import { getSpecialistPriceLabel } from "@/lib/serviceCatalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/repairs/consoles", {
   title: "Console Repair Leeds | PlayStation, Xbox, Nintendo",
   description:
     "Game console repair in Leeds for PlayStation, Xbox, Nintendo Switch and handheld consoles. HDMI ports, no power, overheating, liquid damage and board-level repair.",
-};
+});
 
 const repairTypes = [
   { name: "HDMI port repair", price: getSpecialistPriceLabel("console", "hdmi-port-repair"), time: "1–3 days estimate" },
@@ -29,20 +30,22 @@ const repairTypes = [
 ];
 
 const consoles = [
+  "PlayStation 5 Pro",
   "PlayStation 5",
   "PlayStation 4",
   "Xbox Series X",
   "Xbox Series S",
   "Xbox One",
+  "Nintendo Switch 2",
   "Nintendo Switch",
   "Nintendo Switch OLED",
   "Steam Deck",
 ];
 
 const consoleFamilies = [
-  { name: "PlayStation", note: "PS5 and PS4", image: serviceImages.playstation },
+  { name: "PlayStation", note: "PS5 Pro, PS5 and PS4", image: serviceImages.playstation },
   { name: "Xbox", note: "Series X/S and Xbox One", image: serviceImages.xbox },
-  { name: "Nintendo Switch", note: "Switch, OLED and Lite", image: serviceImages.nintendoSwitch },
+  { name: "Nintendo Switch", note: "Switch 2, Switch, OLED and Lite", image: serviceImages.nintendoSwitch },
 ];
 
 const guarantees = [
@@ -56,7 +59,7 @@ export default function ConsoleRepairsPage() {
   return (
     <>
       <Navbar />
-      <main className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
+      <main id="main-content" tabIndex={-1} className="pb-16 pt-16 md:pb-24 md:pt-[72px]">
         <PageContainer>
           <ServiceHero
             eyebrow="Console repairs · Leeds"
@@ -108,8 +111,8 @@ export default function ConsoleRepairsPage() {
           />
 
           <ServiceTags
-            title="Consoles supported"
-            description="Ask about other modern consoles and handheld gaming devices even when they are not listed."
+            title="Console repair enquiries"
+            description="Tell us the exact model and fault so we can confirm repair options and price. PS5 Pro, Switch 2 and other unpriced models need an assessment; ask about any console or handheld that is not listed."
             items={consoles}
           />
 
