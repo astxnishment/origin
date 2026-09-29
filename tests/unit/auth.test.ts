@@ -36,9 +36,11 @@ describe("customer authentication tokens", () => {
     );
     const now = Date.now();
     const token = createLoginToken("customer@example.com", "/account", now);
+    const tampered = Buffer.from(token, "base64url");
+    tampered[tampered.length - 1] ^= 1;
 
     expect(verifyLoginToken(token, now + 16 * 60 * 1_000)).toBeNull();
-    expect(verifyLoginToken(`${token.slice(0, -1)}x`, now + 1_000)).toBeNull();
+    expect(verifyLoginToken(tampered.toString("base64url"), now + 1_000)).toBeNull();
   });
 
   it("does not accept a login token as a customer session", async () => {

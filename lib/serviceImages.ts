@@ -80,10 +80,10 @@ export const serviceImages: Record<string, ServiceImage> = {
     height: 941,
   },
   liquidDamage: {
-    src: "/images/services/liquid-damage-v4.webp",
-    alt: "Water-spill damaged phone and laptop repair at Origin Repairs Leeds",
-    width: 1223,
-    height: 1104,
+    src: "/images/services/liquid-damage-v5.webp",
+    alt: "Phone and laptop with spilled water and droplets",
+    width: 1320,
+    height: 1192,
   },
   console: {
     src: "/images/services/console-lineup.webp",

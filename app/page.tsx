@@ -284,7 +284,7 @@ export default function Home() {
                         alt={image.alt}
                         width={image.width}
                         height={image.height}
-                        loading={label === "Liquid Damage" ? "eager" : "lazy"}
+                        loading="lazy"
                         sizes="(max-width: 639px) 130px, (max-width: 1023px) 180px, 160px"
                         className={`${imageClassName} object-contain transition-transform duration-200 group-hover:scale-[1.025]`}
                       />
